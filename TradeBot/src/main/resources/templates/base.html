@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.w3.org/1999/xhtml">
 <head th:fragment="baseHeader(title,links)">
 
     <title th:replace="${title}">Base Title | FrontBackend</title>
@@ -76,7 +76,7 @@
                                     <td>
                                         <input name="detailVolume" class="form-control"
                                                th:value="${tradeSettingsDetail.volume}">
-<!--                                        <div th:replace="form-input :: errorSpan('tradeSettingsDetail.volume')"/>-->
+                                        <!--                                        <div th:replace="form-input :: errorSpan('tradeSettingsDetail.volume')"/>-->
                                     </td>
                                     <td><input name="detailPriceOffset" class="form-control"
                                                th:value="${tradeSettingsDetail.priceOffset}">
@@ -94,7 +94,7 @@
                 </div>
 
 
-<!--                <div th:replace="form-input :: errorSpan('priceOffset')"/>-->
+                <!--                <div th:replace="form-input :: errorSpan('priceOffset')"/>-->
                 <div th:if="${#fields.hasAnyErrors()}">
                     <h3 class="text-danger">All errors</h3>
                     <ul>
@@ -140,6 +140,11 @@
                         <a class="nav-link" th:href="@{/test/}">Проверка работоспособности сервиса</a>
                     </li>
                 </ul>
+            </div>
+            <div th:if="${#authentication != null}">
+                <form class="form-inline" th:action="@{/logout}" method="post">
+                    <input class="btn btn-info" type="submit" value="Sign Out"/>
+                </form>
             </div>
         </div>
     </nav>
