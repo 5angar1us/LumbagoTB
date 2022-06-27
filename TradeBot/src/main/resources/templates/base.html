@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="baseHeader(title,links)">
+
+    <title th:replace="${title}">Base Title | FrontBackend</title>
+
+    <!-- Common styles and scripts -->
+    <link rel="stylesheet" th:href="@{/static/css/bootstrap.min.css}">
+    <link rel="stylesheet" th:href="@{/static/css/shards.min.css}">
+
+    <!-- Optional JavaScript -->
+    <!-- JavaScript Dependencies: jQuery, Popper.js, Bootstrap JS, Shards JS -->
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+            integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"
+            integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49"
+            crossorigin="anonymous"></script>
+    <script th:src="@{/static/js/bootstrap.min.js}"></script>
+    <script th:src="@{/static/js/shards.min.js}"></script>
+
+    <!--/* This is a laceholder for additional links */-->
+    <th:block th:replace="${links}"/>
+
+</head>
+<body>
+
+<div th:fragment="trade_settings_form(baseUrl, submitButtonText)" th:remove="tag">
+    <form id="form_id" action="" th:action="${baseUrl}" th:object="${tradeSettings}" method="post"
+          class="shadow-sm">
+        <div class="card">
+            <h3 class="card-header text-center">Настройки для торговли</h3>
+            <div class="card-body">
+
+
+                <th:block th:unless="${tradeSettings.id == null}">
+                    <input type="hidden" name="id" th:value="*{id}">
+                </th:block>
+                <div th:replace="form-input :: input('Market name', 'marketName')"/>
+                <!--                <span th:if="${#fields.hasErrors('marketName')}" th:errors="*{marketName}"></span>-->
+                <div th:replace="form-input :: input('Maximum definition', 'maximumDefinition')"/>
+                <div th:replace="form-input :: input('Trade delay', 'tradeDelay')"/>
+
+                <div class="form-group mt-4 mb-4">
+                    <div th:switch="*{tradeSettingsDetails}">
+                        <h2 th:case="null">No trades settings yet!</h2>
+                        <div th:case="*">
+                            <h2 class="text-center">Лимитные ордера</h2>
+                            <table class="table ">
+                                <thead class="">
+                                <tr>
+                                    <th class="text-center" scope="col">Type</th>
+                                    <th class="text-center" scope="col">Volume</th>
+                                    <th class="text-center" scope="col">Price offset</th>
+                                    <th class="text-center" scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="tradeSettingsDetail, iter : *{tradeSettingsDetails}"
+                                    th:with="deletePath=${'/trade_settings/trade_settings_details/delete/' + iter.count}">
+                                    <td>
+                                        <th:block th:unless="${tradeSettingsDetail.id == null}">
+                                            <input type="hidden" name="detailID"
+                                                   th:value="${tradeSettingsDetail.id}">
+                                        </th:block>
+                                        <input type="hidden" name="detailTradingStrategyType"
+                                               th:value="${tradeSettingsDetail.tradingStrategy.name}">
+                                        <select class="form-control" th:name="detailTradingStrategyTypeSelect">
+                                            <option th:each="tradingStrategyType : ${tradingStrategyTypes}"
+                                                    th:text="${tradingStrategyType.name}"
+                                                    th:value="${tradingStrategyType.name}"
+                                                    th:selected="${tradingStrategyType.name == tradeSettingsDetail.tradingStrategy.name}"
+                                            ></option>
+                                        </select>
+                                    </td>
+                                    <td>
+                                        <input name="detailVolume" class="form-control"
+                                               th:value="${tradeSettingsDetail.volume}">
+<!--                                        <div th:replace="form-input :: errorSpan('tradeSettingsDetail.volume')"/>-->
+                                    </td>
+                                    <td><input name="detailPriceOffset" class="form-control"
+                                               th:value="${tradeSettingsDetail.priceOffset}">
+                                    </td>
+                                    <td><input type="button" class="btn btn-secondary"
+                                               th:attr="onclick=|changeAction('${deletePath}')|"
+                                               value="Delete"></td>
+
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                </div>
+
+
+<!--                <div th:replace="form-input :: errorSpan('priceOffset')"/>-->
+                <div th:if="${#fields.hasAnyErrors()}">
+                    <h3 class="text-danger">All errors</h3>
+                    <ul>
+                        <li class="text-danger" th:each="err : ${#fields.allErrors()}" th:text="${err}"/>
+                    </ul>
+                </div>
+                <div class="form-group">
+                    <input type="button" class="btn btn-primary" value="Add row"
+                           onclick="changeAction('/trade_settings/add_row')"/>
+                </div>
+            </div>
+            <div class="card-footer">
+                <div class="row">
+                    <input class="btn btn-primary btn-lg mx-auto " type="submit" th:value="${submitButtonText}"
+                           onclick="saveSelectedValuesInHiddenInputs()">
+                </div>
+            </div>
+        </div>
+    </form>
+
+    <script th:src="@{/static/js/send.js}"></script>
+</div>
+
+<div th:fragment="navbar()" th:remove="tag">
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-light" style="background-color: #e3f2fd;">
+        <div class="container">
+            <a class="navbar-brand" href="#">Навигация</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link" th:href="@{/control_panel}">Панель управления<span
+                                class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/trade_settings/index}">Редактирование настроек торговли</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" th:href="@{/test/}">Проверка работоспособности сервиса</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+
+</div>
+
+<div th:fragment="baseScripts">
+
+</div>
+</body>
+</html>

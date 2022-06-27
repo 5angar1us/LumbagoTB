@@ -1,0 +1,61 @@
+plugins {
+	id 'org.springframework.boot' version '2.7.1'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'commons-codec:commons-codec:1.15'
+	implementation 'org.apache.commons:commons-lang3:3.12.0'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+task printSourceSetInformation(){
+
+	doLast{
+		sourceSets.each { srcSet ->
+			println "["+srcSet.name+"]"
+			print "-->Source directories: "+srcSet.allJava.srcDirs+"\n"
+			print "-->Output directories: "+srcSet.output.classesDirs.files+"\n"
+			print "-->Compile classpath:\n"
+			srcSet.compileClasspath.files.each {
+				print "  "+it.path+"\n"
+			}
+			println ""
+		}
+	}
+}
+bootJar {
+	exclude ('application-dev.properties')
+}
+
+var finalize = tasks.register('copyAllPdfReportsForArchiving', Copy) {
+	from layout.projectDirectory.dir('src/main/resources')
+	include "*.properties"
+	into layout.buildDirectory.dir("configs")
+
+	//from layout.projectDirectory.file('application.properties')
+	//
+	//into layout.buildDirectory.dir('toArchive')
+
+}
+
+build.finalizedBy(finalize)

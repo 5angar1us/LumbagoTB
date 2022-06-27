@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: baseHeader(~{::title},~{::link})">
+
+    <title>etting Started: Serving Web Content</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+
+    <link/>
+
+</head>
+<body>
+<div th:replace="base :: navbar()"/>
+<div class="row justify-content-md-center m-5">
+
+    <div class="card">
+        <div class="card-header text-center">
+            <h2>Настройки торговли на монетах\спотах</h2>
+        </div>
+
+        <div th:switch="${tradesSettings}">
+            <div class="card-body ml-5 mr-5">
+                <div class="">
+                    <h2 th:case="null">No trades settings yet!</h2>
+                    <div class="" th:case="*">
+
+                        <div class="col-md-auto">
+                            <table class="table">
+                                <thead class="">
+                                <tr>
+                                    <th class="text-center" scope="col">Market name</th>
+                                    <th class="text-center" scope="col">Maximum definition</th>
+                                    <th class="text-center" scope="col">Trade delay</th>
+                                    <th class="text-center" scope="col">Detail count</th>
+                                    <th class="text-center" scope="col">Edit</th>
+                                    <th class="text-center" scope="col">Delete</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="tradeSettings : ${tradesSettings}">
+                                    <td class="text-center" th:text="${tradeSettings.marketName}"></td>
+                                    <td class="text-center" th:text="${tradeSettings.maximumDefinition}"></td>
+                                    <td class="text-center" th:text="${tradeSettings.tradeDelay}"></td>
+                                    <td><p class="text-center" th:text="${tradeSettings.getDetailCount()}"/></td>
+                                    <td><a class="btn btn-secondary"
+                                           th:href="@{edit/{id}(id=${tradeSettings.id})}">Edit</a>
+                                    </td>
+                                    <td><a class="btn btn-secondary" th:href="@{delete/{id}(id=${tradeSettings.id})}">Delete</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="row">
+                    <a class="btn btn-primary btn-large mx-auto ml-auto  " th:href="@{/trade_settings/signup}">Add a
+                        new
+                        tradeSettings</a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+<div th:replace="base :: baseScripts"></div>
+</body>
+</html>

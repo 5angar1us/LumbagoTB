@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: baseHeader(~{::title},~{::link})">
+
+    <title>Getting Started: Serving Web Content</title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link/>
+</head>
+<body>
+<div th:replace="base :: navbar()"/>
+<div class="row justify-content-md-center m-5">
+    <div class="col col-sm-1">
+
+    </div>
+    <div class="col-sm-6">
+        <div th:replace="base :: trade_settings_form(@{/trade_settings/add}, 'Add trade settings')"/>
+    </div>
+    <div class="col col-sm-1">
+
+    </div>
+</div>
+
+
+<div th:replace="base :: baseScripts"></div>
+<!--    <script src="../static/js/send.js"></script>-->
+</body>
+</html>

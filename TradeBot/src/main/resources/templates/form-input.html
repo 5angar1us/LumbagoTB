@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+
+
+<!--            <label for="tradeDelay">Trade delay</label>-->
+<!--            <input type="text" th:field="*{tradeDelay}" id="tradeDelay" placeholder="Trade delay" value="1000">-->
+<!--            <span th:if="${#fields.hasErrors('tradeDelay')}" th:errors="*{tradeDelay}"></span>-->
+    <div th:fragment="input(textValue, fieldValue)" th:remove="tag">
+        <div class="form-group">
+            <label th:text ="${textValue}" >Test text</label>
+            <input class="form-control" th:field="*{__${fieldValue}__}" type="text">
+            <span class="text-danger" th:if="${#fields.hasErrors('__${fieldValue}__')}"  th:errors="*{__${fieldValue}__}" >message</span>
+        </div>
+
+    </div>
+
+    <div th:fragment="errorSpan(fieldValue)">
+        <span class="text-danger" th:if="${#fields.hasErrors('__${fieldValue}__')}"  th:errors="*{__${fieldValue}__}" >message</span>
+<!--       -->
+    </div>
+</body>
+</html>
