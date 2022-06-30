@@ -8,11 +8,8 @@ import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
 import com.example.TradeBoot.api.services.MarketService;
 import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.trade.model.MarketInformation;
+import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
-import com.example.TradeBoot.trade.model.OrderInformation;
-import com.example.TradeBoot.trade.model.Persent;
-import com.example.TradeBoot.trade.model.TradeInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,14 +23,14 @@ public class TradingService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradingService.class);
 
-    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, Logger log , Boolean isStop) {
+    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, Logger log , TradeStatus tradeStatus) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceCalculator = orderPriceCalculator;
         this.marketInformation = marketInformation;
         this.maximumDiviantion = maximumDiviantion;
         this.log = log;
-        this.isStop = isStop;
+        this.tradeStatus = tradeStatus;
     }
     public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
         this.ordersService = ordersService;
@@ -53,18 +50,16 @@ public class TradingService {
     private MarketInformation marketInformation;
 
     private Persent maximumDiviantion;
-    private Boolean isStop;
+    private TradeStatus tradeStatus;
 
     public void workWithOrders(TradeInformation tradeInformation) {
-        isStop = false;
-
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
         log.info("Start place orders as ", ordersToPlace.values());
         try {
             log.info("Place orders in market" + marketInformation.getMarket());
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
-            while (anyClosed(getOrderStatuses(placedOrders)) == false || isStop == false) {
+            while (anyClosed(getOrderStatuses(placedOrders)) == false && tradeStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = optionalCreateCorrectOrderToPlace(
                         placedOrders,

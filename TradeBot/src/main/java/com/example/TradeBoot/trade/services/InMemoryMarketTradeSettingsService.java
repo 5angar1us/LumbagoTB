@@ -1,4 +1,4 @@
-package com.example.TradeBoot.trade;
+package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.trade.model.MarketTradeSettings;
 import org.springframework.stereotype.Service;

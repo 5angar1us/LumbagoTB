@@ -8,14 +8,15 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
-public class TradeSettingsService {
+public class BaseTradeSettingsService implements ITradeSettingsService {
 
     private TradeSettingsRepository tradeSettingsRepository;
 
     @Autowired
-    public TradeSettingsService(TradeSettingsRepository tradeSettingsRepository) {
+    public BaseTradeSettingsService(TradeSettingsRepository tradeSettingsRepository) {
         this.tradeSettingsRepository = tradeSettingsRepository;
     }
+    @Override
     public TradeSettings update(TradeSettings tradeSettings){
         var preventDetails = tradeSettingsRepository.findById(tradeSettings.getId()).orElseThrow();
 
@@ -47,6 +48,7 @@ public class TradeSettingsService {
         return tradeSettingsRepository;
     }
 
+    @Override
     public void save(TradeSettings tradeSettings) {
         tradeSettings.getTradeSettingsDetails().stream()
                 .forEach(tradeSettingsDetail -> tradeSettingsDetail.setId(0));
@@ -54,14 +56,17 @@ public class TradeSettingsService {
         tradeSettingsRepository.save(tradeSettings);
     }
 
+    @Override
     public void delete(TradeSettings tradeSettings) {
         tradeSettingsRepository.delete(tradeSettings);
     }
 
+    @Override
     public Optional<TradeSettings> findById(long id) {
         return tradeSettingsRepository.findById(id);
     }
 
+    @Override
     public List<TradeSettings> findAll() {
         return StreamSupport.stream( tradeSettingsRepository.findAll().spliterator(), false)
                                 .collect(Collectors.toList());
