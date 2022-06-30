@@ -3,15 +3,17 @@ package com.example.TradeBoot.ui;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
-public class TradeSettingsRepositoryWrapper {
+public class TradeSettingsService {
 
     private TradeSettingsRepository tradeSettingsRepository;
 
     @Autowired
-    public TradeSettingsRepositoryWrapper(TradeSettingsRepository tradeSettingsRepository) {
+    public TradeSettingsService(TradeSettingsRepository tradeSettingsRepository) {
         this.tradeSettingsRepository = tradeSettingsRepository;
     }
     public TradeSettings update(TradeSettings tradeSettings){
@@ -60,7 +62,9 @@ public class TradeSettingsRepositoryWrapper {
         return tradeSettingsRepository.findById(id);
     }
 
-    public Iterable<TradeSettings> findAll() {
-        return tradeSettingsRepository.findAll();
+    public List<TradeSettings> findAll() {
+        return StreamSupport.stream( tradeSettingsRepository.findAll().spliterator(), false)
+                                .collect(Collectors.toList());
+
     }
 }

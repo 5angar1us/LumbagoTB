@@ -6,18 +6,18 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class StaticValueService {
+public class InMemoryMarketTradeSettingsService {
 
     public List<MarketTradeSettings> getTradeSettings() {
-        return TradeSettingsRepostiory.get();
+        return InMemoryTradeSettingsRepostiory.get();
     }
 
     public void setTradeSettings(List<MarketTradeSettings> marketTradeSettings) {
-        TradeSettingsRepostiory.set(marketTradeSettings);
+        InMemoryTradeSettingsRepostiory.set(marketTradeSettings);
     }
 
     public MarketTradeSettings getTradeSettingsByMarketName(String name){
-        var tradeSetting = TradeSettingsRepostiory.get()
+        var tradeSetting = InMemoryTradeSettingsRepostiory.get()
                 .stream()
                 .filter(marketTradeSettings -> marketTradeSettings.getMarket().equals(name))
                 .findFirst();
@@ -27,7 +27,7 @@ public class StaticValueService {
 
         var t = new MarketTradeSettings();
         t.setMarket(name);
-        TradeSettingsRepostiory.add(t);
+        InMemoryTradeSettingsRepostiory.add(t);
 
         return t;
     }
