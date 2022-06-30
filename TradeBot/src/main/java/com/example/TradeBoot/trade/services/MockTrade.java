@@ -15,8 +15,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class MockTrade extends TradingEngineService {
-    public MockTrade(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionService closePositionService) {
-        super(ordersService, marketService, walletService, orderPriceCalculator, closePositionService);
+    public MockTrade(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionInformationService closePositionInformationService) {
+        super(ordersService, marketService, walletService, orderPriceCalculator, closePositionInformationService);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class MockTrade extends TradingEngineService {
 
         tradingService.workWithOrders(pair.tradeInformation());
 
-        var closePositionTradeInformation = closePositionService.createTradeInformation(
+        var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
                 pair.tradeInformation().getBaseSide(),
                 pair.market());
 

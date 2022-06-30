@@ -16,11 +16,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-public class ClosePositionService {
+public class ClosePositionInformationService {
     private  WalletService walletService;
 
     @Autowired
-    public ClosePositionService(WalletService walletService) {
+    public ClosePositionInformationService(WalletService walletService) {
         this.walletService = walletService;
     }
 

@@ -1,4 +1,4 @@
-package com.example.TradeBoot.app;
+package com.example.TradeBoot.trade;
 
 import com.example.TradeBoot.trade.model.MarketTradeSettings;
 

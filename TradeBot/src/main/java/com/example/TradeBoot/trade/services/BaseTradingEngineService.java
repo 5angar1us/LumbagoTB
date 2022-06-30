@@ -13,8 +13,6 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,8 +22,8 @@ public class BaseTradingEngineService extends TradingEngineService {
     private List<TradingRunnableEngine> engines = new ArrayList<>();
     private ExtendedExecutor executorService;
 
-    public BaseTradingEngineService(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionService closePositionService) {
-        super(ordersService, marketService, walletService, orderPriceCalculator, closePositionService);
+    public BaseTradingEngineService(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionInformationService closePositionInformationService) {
+        super(ordersService, marketService, walletService, orderPriceCalculator, closePositionInformationService);
     }
 
 
@@ -59,7 +57,7 @@ public class BaseTradingEngineService extends TradingEngineService {
                 .map(tradingOrderInfoPair -> {
                     return new TradingRunnableEngine(
                             tradingOrderInfoPair.tradingService(),
-                            closePositionService,
+                            closePositionInformationService,
                             tradingOrderInfoPair.tradeInformation(),
                             tradingOrderInfoPair.market());
                 })
@@ -96,15 +94,15 @@ public class BaseTradingEngineService extends TradingEngineService {
 
         private TradingService tradingService;
 
-        private TradeInformation sourceTradeInformation;
-        private ClosePositionService closePositionService;
+        private TradeInformation openPositionTradeInformation;
+        private ClosePositionInformationService closePositionInformationService;
 
         private String market;
 
-        public TradingRunnableEngine(TradingService tradingService, ClosePositionService closePositionService, TradeInformation sourceTradeInformation, String market) {
+        public TradingRunnableEngine(TradingService tradingService, ClosePositionInformationService closePositionInformationService, TradeInformation openPositionTradeInformation, String market) {
             this.tradingService = tradingService;
-            this.closePositionService = closePositionService;
-            this.sourceTradeInformation = sourceTradeInformation;
+            this.closePositionInformationService = closePositionInformationService;
+            this.openPositionTradeInformation = openPositionTradeInformation;
             this.market = market;
         }
 
@@ -113,10 +111,10 @@ public class BaseTradingEngineService extends TradingEngineService {
 
             while (this.isStop == false) {
 
-                tradingService.workWithOrders(sourceTradeInformation);
+                tradingService.workWithOrders(openPositionTradeInformation);
 
-                var closePositionTradeInformation = closePositionService.createTradeInformation(
-                        sourceTradeInformation.getBaseSide(),
+                var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
+                        openPositionTradeInformation.getBaseSide(),
                         market);
 
                 if (closePositionTradeInformation.isPresent()) {

@@ -15,7 +15,7 @@ import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
-import com.example.TradeBoot.trade.services.ClosePositionService;
+import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.TradingService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,7 +32,7 @@ public class HardCodeShortTests {
     private static PositionsService positionsService;
     private static OrdersService ordersService;
     private static MarketService marketService;
-    private static ClosePositionService closePositionService;
+    private static ClosePositionInformationService closePositionInformationService;
     private static WalletService walletService;
 
     @BeforeAll
@@ -43,7 +43,7 @@ public class HardCodeShortTests {
         marketService = TestServiceInstances.getMarketService();
         walletService = TestServiceInstances.getWalletService();
 
-        closePositionService = new ClosePositionService(walletService);
+        closePositionInformationService = new ClosePositionInformationService(walletService);
     }
 
 
@@ -79,7 +79,7 @@ public class HardCodeShortTests {
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 
 
-        var closePostionMarketTradeInformation = closePositionService.createTradeInformation(
+        var closePostionMarketTradeInformation = closePositionInformationService.createTradeInformation(
                 tradeInformation.getBaseSide(),
                 marketInformation.getMarket());
 

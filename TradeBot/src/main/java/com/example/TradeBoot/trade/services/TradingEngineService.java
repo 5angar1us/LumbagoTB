@@ -27,7 +27,7 @@ public abstract class TradingEngineService {
 
     protected final OrderPriceCalculator orderPriceCalculator;
 
-    protected final ClosePositionService closePositionService;
+    protected final ClosePositionInformationService closePositionInformationService;
 
     protected List<MarketTradeSettings> marketTradeSettings;
 
@@ -38,12 +38,12 @@ public abstract class TradingEngineService {
 
 
     @Autowired
-    public TradingEngineService(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionService closePositionService) {
+    public TradingEngineService(OrdersService ordersService, MarketService marketService, WalletService walletService, OrderPriceCalculator orderPriceCalculator, ClosePositionInformationService closePositionInformationService) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.walletService = walletService;
         this.orderPriceCalculator = orderPriceCalculator;
-        this.closePositionService = closePositionService;
+        this.closePositionInformationService = closePositionInformationService;
     }
 
     public boolean isStop() {
