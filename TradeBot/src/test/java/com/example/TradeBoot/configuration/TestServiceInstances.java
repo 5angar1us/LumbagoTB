@@ -4,18 +4,12 @@ import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
 import com.example.TradeBoot.api.services.*;
+import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.model.TradeStatus;
+import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.ui.service.TradeStatusService;
 
 public class TestServiceInstances {
-
-    private static HttpClientWorker httpClient;
-
-    private static PositionsService positionsService;
-    private static OrdersService ordersService;
-    private static MarketService marketService;
-
-    private static FutureService futureService;
-
-    private static FinancialInstrumentService financialInstrumentService;
 
     public static FutureService getFutureService() {
         return futureService;
@@ -47,8 +41,33 @@ public class TestServiceInstances {
         return walletService;
     }
 
-    public static FinancialInstrumentService getFinancialInstrumentService() { return financialInstrumentService;}
+    public static FinancialInstrumentService getFinancialInstrumentService() {
+        return financialInstrumentService;
+    }
+
+    public static OrderPriceCalculator getOrderPriceCalculator() {
+        return orderPriceCalculator;
+    }
+
+    public static ClosePositionInformationService getClosePositionInformationService() {
+        return closePositionInformationService;
+    }
+
+    private static HttpClientWorker httpClient;
+
+    private static PositionsService positionsService;
+    private static OrdersService ordersService;
+    private static MarketService marketService;
+
+    private static FutureService futureService;
+
+    private static FinancialInstrumentService financialInstrumentService;
+
+    private static OrderPriceCalculator orderPriceCalculator;
     private static WalletService walletService;
+
+    private static ClosePositionInformationService closePositionInformationService;
+
 
     static {
 
@@ -67,8 +86,9 @@ public class TestServiceInstances {
         futureService = new FutureService(httpClient);
 
         financialInstrumentService = new FinancialInstrumentService(marketService, futureService);
+        orderPriceCalculator = new OrderPriceCalculator();
+        closePositionInformationService = new ClosePositionInformationService(walletService);
     }
-
 
 
 }

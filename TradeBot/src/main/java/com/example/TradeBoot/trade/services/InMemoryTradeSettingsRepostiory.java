@@ -1,11 +1,11 @@
-package com.example.TradeBoot.trade;
+package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.trade.model.MarketTradeSettings;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class TradeSettingsRepostiory {
+public class InMemoryTradeSettingsRepostiory {
 
     private static List<MarketTradeSettings> _Market_tradeSettings = new ArrayList<>();
 

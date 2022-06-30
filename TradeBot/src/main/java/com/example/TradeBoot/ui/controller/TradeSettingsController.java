@@ -2,7 +2,7 @@ package com.example.TradeBoot.ui.controller;
 
 import com.example.TradeBoot.BigDecimalUtils;
 import com.example.TradeBoot.api.services.FinancialInstrumentService;
-import com.example.TradeBoot.ui.TradeSettingsRepositoryWrapper;
+import com.example.TradeBoot.ui.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.models.TradingStrategy;
@@ -29,13 +29,13 @@ import java.util.List;
 public class TradeSettingsController {
 
     @Autowired
-    public TradeSettingsController(TradeSettingsRepositoryWrapper tradeSettingsRepositoryWrapper, FinancialInstrumentService financialInstrumentService) {
-        this.tradeSettingsRepositoryWrapper = tradeSettingsRepositoryWrapper;
+    public TradeSettingsController(BaseTradeSettingsService baseTradeSettingsService, FinancialInstrumentService financialInstrumentService) {
+        this.baseTradeSettingsService = baseTradeSettingsService;
         financialInstrumentsNames = financialInstrumentService.getAllNames();
     }
 
     @Autowired
-    private TradeSettingsRepositoryWrapper tradeSettingsRepositoryWrapper;
+    private BaseTradeSettingsService baseTradeSettingsService;
 
     private Validator baseValidator =  Validation.buildDefaultValidatorFactory().getValidator();
 
@@ -63,7 +63,7 @@ public class TradeSettingsController {
 
         var tradeSettings = (TradeSettings) model.getAttribute("tradeSettings");
         if (tradeSettings == null) {
-            tradeSettings = this.tradeSettingsRepositoryWrapper.findById(id)
+            tradeSettings = this.baseTradeSettingsService.findById(id)
                     .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
             model.addAttribute("tradeSettings", tradeSettings);
         }
@@ -106,7 +106,7 @@ public class TradeSettingsController {
             return "add-trade-settings";
         }
 
-        this.tradeSettingsRepositoryWrapper.save(tradeSettings);
+        this.baseTradeSettingsService.save(tradeSettings);
         return "redirect:/trade_settings/index";
     }
 
@@ -124,15 +124,15 @@ public class TradeSettingsController {
             return "update-trade-settings";
         }
 
-        this.tradeSettingsRepositoryWrapper.update(tradeSettings);
+        this.baseTradeSettingsService.update(tradeSettings);
         return "redirect:/trade_settings/index";
     }
 
     @GetMapping("trade_settings/delete/{id}")
     public String delete(@PathVariable("id") long id, Model model) {
-        TradeSettings tradeSettings = this.tradeSettingsRepositoryWrapper.findById(id)
+        TradeSettings tradeSettings = this.baseTradeSettingsService.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
-        this.tradeSettingsRepositoryWrapper.delete(tradeSettings);
+        this.baseTradeSettingsService.delete(tradeSettings);
 
         return "redirect:/trade_settings/index";
     }
@@ -141,7 +141,7 @@ public class TradeSettingsController {
 
     @GetMapping("trade_settings/index")
     public String showUserList(Model model) {
-        model.addAttribute("tradesSettings", tradeSettingsRepositoryWrapper.findAll());
+        model.addAttribute("tradesSettings", baseTradeSettingsService.findAll());
         return "trade-settings-list";
     }
 

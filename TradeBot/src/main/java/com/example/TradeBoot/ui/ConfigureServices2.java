@@ -9,6 +9,6 @@ public class ConfigureServices2 {
 
     @Autowired
     @Bean
-    public TradeSettingsRepositoryWrapper tradeSettingsRepositoryWrapper(TradeSettingsRepository tradeSettingsRepository)
-    { return  new TradeSettingsRepositoryWrapper(tradeSettingsRepository);}
+    public BaseTradeSettingsService tradeSettingsRepositoryWrapper(TradeSettingsRepository tradeSettingsRepository)
+    { return  new BaseTradeSettingsService(tradeSettingsRepository);}
 }
