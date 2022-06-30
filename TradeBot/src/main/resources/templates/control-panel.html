@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head th:replace="base :: baseHeader(~{::title},~{::link})">
 
-    <title>Getting Started: Serving Web Content</title>
+    <title>TradeBot</title>
 
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
     <link/>
@@ -14,32 +14,30 @@
     <div class="card m-4">
 
         <div class="card-body">
-            <div class="row">
-
-                <div class="col-sm-2"></div>
-                <div class="col-md-auto">
+            <div class="col-md-auto">
+                <div class="row">
                     <h2>Status: [[${status}]]</h2>
+                </div>
+                <div class="row">
                     <h3>Настроено монет\спотов: [[${tradeSettingsCount}]]</h3>
+                </div>
+                <div class="row">
                     <h3>Сейчас торгуется монет\спотов: [[${runnableEngineCount}]]</h3>
-                    <form class="row" id="form_id" method="post">
-                        <button class="btn btn-primary col-sm m-1" onclick="changeAction('/control_panel/start')">
+                </div>
+                <div class="row">
+                    <form id="form_id" method="post">
+                        <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/start')">
                             Start
                         </button>
-                        <button class="btn btn-primary col-sm m-1" onclick="changeAction('/control_panel/stop')">
+                        <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/stop')">
                             Stop
                         </button>
                     </form>
                 </div>
-                <div class="col-sm-2"></div>
             </div>
-
-
-
 
         </div>
     </div>
-
-
 </div>
 
 <script th:src="@{/static/js/send.js}"></script>

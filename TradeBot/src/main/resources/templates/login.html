@@ -1,20 +1,45 @@
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org"
       xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-<head>
+<head th:replace="base :: baseHeader(~{::title},~{::link})">
     <title>Spring Security Example </title>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <link/>
 </head>
 <body>
-<div th:if="${param.error}">
-    Invalid username and password.
+<div class="row justify-content-md-center m-5">
+    <div class="col col-sm-1">
+
+    </div>
+    <div class="col-sm-3">
+        <form th:action="@{/login}" method="post">
+            <div class="card">
+                <h3 class="card-header text-center">Login</h3>
+                <div class="card-body">
+                    <div class="text-danger" th:if="${param.error}">
+                        Invalid username and password.
+                    </div>
+                    <div class="text-warning" th:if="${param.logout}">
+                        You have been logged out.
+                    </div>
+
+                    <div class="form-group"><label> User Name : </label> <input class="form-control" type="text"
+                                                                                name="username"/></div>
+                    <div class="form-group"><label> Password: </label> <input class="form-control" type="password"
+                                                                              name="password"/></div>
+                </div>
+                <div class="card-footer">
+                    <div class="row">
+                        <input class="btn btn-primary btn-lg mx-auto " type="submit" value="Sign In">
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="col col-sm-1">
+    </div>
 </div>
-<div th:if="${param.logout}">
-    You have been logged out.
-</div>
-<form th:action="@{/login}" method="post">
-    <div><label> User Name : <input type="text" name="username"/> </label></div>
-    <div><label> Password: <input type="password" name="password"/> </label></div>
-    <div><input type="submit" value="Sign In"/></div>
-</form>
 </body>
 </html>
+
