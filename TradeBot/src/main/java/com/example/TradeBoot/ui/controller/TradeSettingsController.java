@@ -29,9 +29,8 @@ import java.util.List;
 public class TradeSettingsController {
 
     @Autowired
-    public TradeSettingsController(BaseTradeSettingsService baseTradeSettingsService, FinancialInstrumentService financialInstrumentService) {
+    public TradeSettingsController(BaseTradeSettingsService baseTradeSettingsService) {
         this.baseTradeSettingsService = baseTradeSettingsService;
-        financialInstrumentsNames = financialInstrumentService.getAllNames();
     }
 
     @Autowired
@@ -39,7 +38,6 @@ public class TradeSettingsController {
 
     private Validator baseValidator =  Validation.buildDefaultValidatorFactory().getValidator();
 
-    private List<String> financialInstrumentsNames;
 
 
     @GetMapping("trade_settings/signup")

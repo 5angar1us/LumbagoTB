@@ -16,7 +16,6 @@ public class TradeBootApplication {
 		log.info("Before Starting application");
 		SpringApplication.run(TradeBootApplication.class, args);
 		log.debug("Starting my application in debug with {} args", args.length);
-		log.info("Starting my application with {} args.", args.length);
 	}
 
 }

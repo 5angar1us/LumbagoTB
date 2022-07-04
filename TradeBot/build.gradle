@@ -49,7 +49,7 @@ bootJar {
 	exclude ('application-dev.properties')
 }
 
-var finalize = tasks.register('copyAllPdfReportsForArchiving', Copy) {
+var finalize = tasks.register('copyAllConfigs', Copy) {
 	from layout.projectDirectory.dir('src/main/resources')
 	include "*.properties"
 	into layout.buildDirectory.dir("configs")
