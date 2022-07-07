@@ -23,13 +23,14 @@ public class TradingService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradingService.class);
 
-    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, Logger log , TradeStatus tradeStatus) {
-        this.ordersService = ordersService;
-        this.marketService = marketService;
-        this.orderPriceCalculator = orderPriceCalculator;
-        this.marketInformation = marketInformation;
-        this.maximumDiviantion = maximumDiviantion;
+    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion,  TradeStatus tradeStatus, Logger log) {
+        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, tradeStatus);
+
         this.log = log;
+    }
+    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus) {
+        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion);
+
         this.tradeStatus = tradeStatus;
     }
     public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
@@ -38,7 +39,9 @@ public class TradingService {
         this.orderPriceCalculator = orderPriceCalculator;
         this.marketInformation = marketInformation;
         this.maximumDiviantion = maximumDiviantion;
+
         this.log = defaultLog;
+        this.tradeStatus = new TradeStatus(false);
     }
     //generall
 
@@ -54,9 +57,9 @@ public class TradingService {
 
     public void workWithOrders(TradeInformation tradeInformation) {
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
-        log.info("Start place orders as ", ordersToPlace.values());
+        log.debug("Start place orders as ", ordersToPlace.values());
         try {
-            log.info("Place orders in market" + marketInformation.getMarket());
+            log.debug("Place orders in market" + marketInformation.getMarket());
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
             while (anyClosed(getOrderStatuses(placedOrders)) == false && tradeStatus.isNeedStop() == false) {
@@ -68,16 +71,16 @@ public class TradingService {
 
                 if (optionalOrderToPlaces.isPresent()) {
 
-                    log.info("Close orders to change price in " + marketInformation.getMarket());
+                    log.debug("Close orders to change price in " + marketInformation.getMarket());
                     closeOrders(placedOrders);
-                    log.info("Place orders in market " + marketInformation.getMarket() + " as " + optionalOrderToPlaces.get());
+                    log.debug("Place orders in market " + marketInformation.getMarket() + " as " + optionalOrderToPlaces.get());
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
                 }
-                log.info("Sleep");
+                log.debug("Sleep");
                 Thread.sleep(marketInformation.getTradingDelay());
             }
 
-            log.info("Close trap orders in market " + marketInformation.getMarket());
+            log.debug("Close trap orders in market " + marketInformation.getMarket());
             closeOrders(notClosedOrders(getOrderStatuses(placedOrders)));
 
         } catch (InterruptedException e) {

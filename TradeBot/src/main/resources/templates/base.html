@@ -38,8 +38,8 @@
                 </th:block>
                 <div th:replace="form-input :: input('Market name', 'marketName')"/>
                 <!--                <span th:if="${#fields.hasErrors('marketName')}" th:errors="*{marketName}"></span>-->
-                <div th:replace="form-input :: input('Maximum definition', 'maximumDefinition')"/>
-                <div th:replace="form-input :: input('Trade delay', 'tradeDelay')"/>
+                <div th:replace="form-input :: input('Максимальное отклонение от указанной цены', 'maximumDefinition')"/>
+                <div th:replace="form-input :: input('Trade delay(ms)', 'tradeDelay')"/>
 
                 <div class="form-group mt-4 mb-4">
                     <div th:switch="*{tradeSettingsDetails}">
@@ -49,9 +49,9 @@
                             <table class="table ">
                                 <thead class="">
                                 <tr>
-                                    <th class="text-center" scope="col">Type</th>
-                                    <th class="text-center" scope="col">Volume</th>
-                                    <th class="text-center" scope="col">Price offset</th>
+                                    <th class="text-center" scope="col">Тип</th>
+                                    <th class="text-center" scope="col">Объём</th>
+                                    <th class="text-center" scope="col">Расстояние от цены в %</th>
                                     <th class="text-center" scope="col">Delete</th>
                                 </tr>
                                 </thead>
@@ -137,7 +137,7 @@
                         <a class="nav-link" th:href="@{/trade_settings/index}">Редактирование настроек торговли</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/test/}">Проверка работоспособности сервиса</a>
+                        <a class="nav-link" th:href="@{/test/}">Все споты\фьючи с FTX</a>
                     </li>
                 </ul>
             </div>

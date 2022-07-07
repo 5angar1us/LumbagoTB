@@ -2,6 +2,7 @@ package com.example.TradeBoot.ui.controller;
 
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
+import com.example.TradeBoot.ui.models.TradingStrategy;
 import com.example.TradeBoot.ui.utils.HttpServletRequestUitls;
 import com.example.TradeBoot.ui.utils.TradeSettingsFiledParser;
 import org.springframework.stereotype.Controller;
@@ -68,6 +69,7 @@ public class TradeSettingsDetailsController {
         tradeSettings.getTradeSettingsDetails().remove(index - 1);
 
         redirectAttributes.addFlashAttribute("tradeSettings", tradeSettings);
+        redirectAttributes.addFlashAttribute("tradingStrategyTypes", TradingStrategy.values());
         return "redirect:" + HttpServletRequestUitls.getPreventPath(request);
     }
 

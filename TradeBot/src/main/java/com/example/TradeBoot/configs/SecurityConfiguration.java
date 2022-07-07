@@ -37,7 +37,7 @@ public class SecurityConfiguration {
             case "production" ->{
                 http
                 .authorizeRequests()
-                    .antMatchers("/").permitAll()
+                    //.antMatchers("/").permitAll()
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()

@@ -90,7 +90,7 @@ public abstract class AbstractTradingEngineService {
     }
 
     public boolean isStop() {
-        return tradeStatus.isNeedStop();
+        return !tradeStatus.isNeedStop();
     }
 
 
@@ -159,7 +159,6 @@ public abstract class AbstractTradingEngineService {
                 orderPriceCalculator,
                 marketInformation,
                 maximumDivination,
-                log,
                 tradeStatus
         );
     }

@@ -140,7 +140,8 @@ public class HardCodeShortTests {
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),
-                marketInformation, new Persent(1)
+                marketInformation,
+                new Persent(1)
         );
 
     }

@@ -43,13 +43,15 @@ public class OrdersService {
         return JsonModelConverter.convertJsonToListOfModels(OpenOrder.class, json);
     }
 
+    private String placeOrderURI = UriComponentsBuilder.newInstance()
+            .path(ORDERS_PATH)
+            .toUriString();
+
     public PlacedOrder placeOrder(OrderToPlace order) throws BadImportantRequestByFtxException {
-        String uri = UriComponentsBuilder.newInstance()
-                .path(ORDERS_PATH)
-                .toUriString();
+
 
         String placeOrderJson = JsonModelConverter.convertModelToJson(order);
-        String placedOrderJson = this.httpClient.createPostRequest(uri, placeOrderJson);
+        String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson);
         return JsonModelConverter.convertJsonToModel(PlacedOrder.class, placedOrderJson);
     }
 

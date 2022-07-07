@@ -6,10 +6,7 @@ import com.example.TradeBoot.ui.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.models.TradingStrategy;
-import com.example.TradeBoot.ui.utils.ErrorsUtils;
-import com.example.TradeBoot.ui.utils.HttpServletRequestUitls;
-import com.example.TradeBoot.ui.utils.TradeSettingsFiledParser;
-import com.example.TradeBoot.ui.utils.ValidorUtil;
+import com.example.TradeBoot.ui.utils.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,6 +49,7 @@ public class TradeSettingsController {
             //tradeSettings.setMaximumDefinition(0.01);
             tradeSettings.setMaximumDefinition(new BigDecimal("0.01"));
         }
+        model.addAttribute("tradingStrategyTypes", TradingStrategy.values());
 
         return "add-trade-settings";
     }
@@ -159,6 +157,7 @@ public class TradeSettingsController {
 
         tradeSettings.getTradeSettingsDetails().add(new TradeSettingsDetail(TradingStrategy.ALL,10, new BigDecimal("0.001")));
 
+        //redirectUtils.addTradeSettingsCrudAttributes(redirectAttributes, tradeSettings);
 
         redirectAttributes.addFlashAttribute("tradingStrategyTypes", TradingStrategy.values());
         redirectAttributes.addFlashAttribute("tradeSettings", tradeSettings);
