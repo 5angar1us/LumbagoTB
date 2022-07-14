@@ -6,8 +6,8 @@ import com.example.TradeBoot.api.domain.orders.OrderStatus;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
-import com.example.TradeBoot.api.services.MarketService;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import org.slf4j.Logger;
@@ -23,17 +23,17 @@ public class TradingService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradingService.class);
 
-    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion,  TradeStatus tradeStatus, Logger log) {
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log) {
         this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, tradeStatus);
 
         this.log = log;
     }
-    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus) {
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus) {
         this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion);
 
         this.tradeStatus = tradeStatus;
     }
-    public TradingService(OrdersService ordersService, MarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceCalculator = orderPriceCalculator;
@@ -47,7 +47,7 @@ public class TradingService {
 
     private Logger log;
     private OrdersService ordersService;
-    private MarketService marketService;
+    private IMarketService marketService;
     private OrderPriceCalculator orderPriceCalculator;
 
     private MarketInformation marketInformation;

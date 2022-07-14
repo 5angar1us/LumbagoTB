@@ -8,18 +8,28 @@
     <link/>
 </head>
 <body>
-    <div th:replace="base :: navbar()"/>
-    <div class="container">
-        <div class="card m-4">
-            <div class="card-body">
-                <div class="">
-                    <div class="row">
+<div th:replace="base :: navbar()"/>
+<div class="container">
+    <div class="card m-4">
+        <h2 class="card-header text-center" >Добро пожаловать</h2>
+        <div class="card-body">
+            <div class="column">
+                <div class="row">
 
-                    </div>
+                </div>
+                <div class="row">
+                    <a class="btn btn-primary m-1" th:href="@{/trade_settings/index}">Параметры торговли</a>
+                </div>
+                <div class="row">
+                    <a class="btn btn-primary m-1" th:href="@{/control_panel}">Панель управления</a>
+                </div>
+                <div class="row">
+                    <a class="btn btn-primary m-1" th:href="@{/test/}">Все споты\фьючи с FTX</a>
                 </div>
             </div>
         </div>
     </div>
+</div>
 
 </body>
 </html>

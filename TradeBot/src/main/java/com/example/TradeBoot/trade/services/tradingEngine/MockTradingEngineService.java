@@ -1,9 +1,8 @@
 package com.example.TradeBoot.trade.services.tradingEngine;
 
-import com.example.TradeBoot.ExtendedExecutor;
-import com.example.TradeBoot.api.services.MarketService;
-import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.api.services.WalletService;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.implemetations.IWalletService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.ui.ITradeSettingsService;
@@ -18,8 +17,8 @@ import java.util.stream.Collectors;
 public class MockTradingEngineService extends AbstractTradingEngineService {
     public MockTradingEngineService(
             OrdersService ordersService,
-            MarketService marketService,
-            WalletService walletService,
+            IMarketService marketService,
+            IWalletService walletService,
             OrderPriceCalculator orderPriceCalculator,
             ClosePositionInformationService closePositionInformationService,
             ITradeSettingsService tradeSettingsService)

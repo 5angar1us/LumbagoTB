@@ -28,8 +28,12 @@ public class TestUtils {
 
 
     private static String TABULATION = "\t";
+
     private static String addParameter(String parameterName, String value){
-        return TABULATION + parameterName + " : " + value;
+       return addParameter(parameterName, value, 1);
+    }
+    private static String addParameter(String parameterName, String value, int tabulationCount){
+        return TABULATION.repeat(tabulationCount) + parameterName + " : " + value;
     }
 
     public static  void printPosition(String market) {
@@ -46,6 +50,19 @@ public class TestUtils {
         List<Position> positions = TestServiceInstances.getPositionsService().getAllPositions();
         System.out.println("AllPositionInfo");
         for (Position position : positions) {
+            var joiner = new StringJoiner("\n");
+            joiner.add(addParameter("Future name", position.getFuture()));
+            joiner.add(addParameter("Cost", position.getCost().toString(), 2));
+            joiner.add(addParameter("OpenSize", position.getOpenSize().toString(), 2));
+            joiner.add(addParameter("NetSize",position.getNetSize().toString(), 2));
+            System.out.println(joiner.toString());
+        }
+    }
+
+    public static  void printAllInfoPositions() {
+        List<Position> positions = TestServiceInstances.getPositionsService().getAllPositions();
+        System.out.println("AllPositionInfo");
+        for (Position position : positions) {
             System.out.println(TABULATION + position);
         }
     }
@@ -58,6 +75,14 @@ public class TestUtils {
         }
         else {
             System.out.println("Balance of " + market + " not found");
+        }
+    }
+    public static void printAllInfoBalances() {
+
+        var balances = TestServiceInstances.getWalletService().getBalances();
+        System.out.println("All Balances  info");
+        for (Balance balance : balances) {
+            System.out.println(balance);
         }
     }
 
@@ -76,13 +101,16 @@ public class TestUtils {
         for (OpenOrder order : orders) {
             System.out.println(TABULATION + order);
         }
-
+        System.out.println("OpenOrders");
     }
 
     public static void printOpenOrdersId(List<OpenOrder> openOrders) {
         System.out.println("OpenOrdersId:");
         for (OpenOrder openOrder : openOrders) {
+
             System.out.println(TABULATION + openOrder.getId());
         }
     }
+
+
 }

@@ -3,6 +3,7 @@ package com.example.TradeBoot.trade.model;
 import com.example.TradeBoot.BigDecimalUtils;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
 public class Persent {
 
@@ -53,5 +54,18 @@ public class Persent {
         return "Persent{" +
                 "value=" + value +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Persent persent = (Persent) o;
+        return BigDecimalUtils.check(value, BigDecimalUtils.EOperator.EQUALS, persent.value);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getValue());
     }
 }

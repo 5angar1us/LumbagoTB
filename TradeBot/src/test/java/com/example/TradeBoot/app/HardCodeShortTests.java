@@ -2,10 +2,7 @@ package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.services.MarketService;
-import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.api.services.PositionsService;
-import com.example.TradeBoot.api.services.WalletService;
+import com.example.TradeBoot.api.services.implemetations.*;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
@@ -29,11 +26,11 @@ public class HardCodeShortTests {
 
     private static HttpClientWorker httpClient;
 
-    private static PositionsService positionsService;
+    private static IPositionsService positionsService;
     private static OrdersService ordersService;
-    private static MarketService marketService;
+    private static IMarketService marketService;
     private static ClosePositionInformationService closePositionInformationService;
-    private static WalletService walletService;
+    private static IWalletService walletService;
 
     @BeforeAll
     static void init() {
@@ -43,7 +40,7 @@ public class HardCodeShortTests {
         marketService = TestServiceInstances.getMarketService();
         walletService = TestServiceInstances.getWalletService();
 
-        closePositionInformationService = new ClosePositionInformationService(walletService);
+        closePositionInformationService = new ClosePositionInformationService(walletService, TestServiceInstances.getFinancialInstrumentService() , positionsService);
     }
 
 

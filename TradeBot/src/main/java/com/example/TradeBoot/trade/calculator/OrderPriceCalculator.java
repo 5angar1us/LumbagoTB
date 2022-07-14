@@ -7,6 +7,9 @@ import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.BigDecimalUtils;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
+import com.example.TradeBoot.trade.services.TradingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -15,6 +18,9 @@ import java.util.Set;
 
 public class OrderPriceCalculator {
 
+
+    static final Logger log =
+            LoggerFactory.getLogger(OrderPriceCalculator.class);
     public OrderPriceCalculator() {}
 
     public Map<OrderInformation, OrderToPlace> createOrdersToPlaceMap(
@@ -81,19 +87,29 @@ public class OrderPriceCalculator {
                 placedPrice
         );
 
-        return isLessOrEqualTopBoarding || isMoreOrEqualsBottomBoarding;
+        log.debug("bottomBording " + bottomBoarding + " currentPrice "+ currentPrice + " topBording " + topBoarding + " placedPrice " + placedPrice);
+        log.debug("isLessOrEqualTopBoarding " + isLessOrEqualTopBoarding + " " + " isMoreOrEqualsBottomBoarding " + isMoreOrEqualsBottomBoarding);
+        return isLessOrEqualTopBoarding && isMoreOrEqualsBottomBoarding;
     }
 
     public BigDecimal calculateCorrectPrice(OrderBook orderBook, Persent distance, ESide side) {
         BigDecimal price;
         switch (side) {
-            case BUY -> price = targetPriceLower(
-                    orderBook.getBestBid().getPrice(),
-                    distance);
+            case BUY -> {
+                price = targetPriceLower(
+                        orderBook.getBestBid().getPrice(),
+                        distance);
 
-            case SELL -> price = targetPriceHigher(
-                    orderBook.getBestAsk().getPrice(),
-                    distance);
+                log.debug("bestBid" + orderBook.getBestBid().getPrice());
+            }
+
+            case SELL -> {
+                price = targetPriceHigher(
+                        orderBook.getBestAsk().getPrice(),
+                        distance);
+
+                log.debug("bestAsk" + orderBook.getBestAsk().getPrice());
+            }
 
             default -> throw new IllegalArgumentException("side");
         }

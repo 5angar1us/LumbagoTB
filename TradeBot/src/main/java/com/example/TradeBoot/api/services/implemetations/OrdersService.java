@@ -1,4 +1,4 @@
-package com.example.TradeBoot.api.services;
+package com.example.TradeBoot.api.services.implemetations;
 
 import com.example.TradeBoot.api.domain.orders.OpenOrder;
 import com.example.TradeBoot.api.domain.orders.OrderStatus;

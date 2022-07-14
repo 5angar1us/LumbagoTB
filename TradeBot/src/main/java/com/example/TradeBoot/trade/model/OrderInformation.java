@@ -42,18 +42,6 @@ public class OrderInformation {
 
         this.volume = volume;
     }
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        OrderInformation that = (OrderInformation) o;
-        return getVolume().equals(that.getVolume()) && getSide() == that.getSide() && getDistanceInPercent().equals(that.getDistanceInPercent());
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(getVolume(), getSide(), getDistanceInPercent());
-    }
 
     @Override
     public String toString() {
@@ -62,5 +50,21 @@ public class OrderInformation {
                 ", side=" + side +
                 ", distanceInPercent=" + distanceInPercent +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        OrderInformation that = (OrderInformation) o;
+
+        return BigDecimalUtils.check(getVolume(), BigDecimalUtils.EOperator.EQUALS, that.getVolume())
+                && getSide() == that.getSide()
+                && getDistanceInPercent().equals(that.getDistanceInPercent());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getVolume(), getSide(), getDistanceInPercent());
     }
 }

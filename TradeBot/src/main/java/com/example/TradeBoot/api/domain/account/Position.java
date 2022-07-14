@@ -204,4 +204,30 @@ public class Position {
     public void setCollateralUsed(BigDecimal collateralUsed) {
         this.collateralUsed = collateralUsed;
     }
+
+    @Override
+    public String toString() {
+        return "Position{" +
+                "cost=" + cost +
+                ", cumulativeBuySize=" + cumulativeBuySize +
+                ", cumulativeSellSize=" + cumulativeSellSize +
+                ", entryPrice=" + entryPrice +
+                ", estimatedLiquidationPrice=" + estimatedLiquidationPrice +
+                ", future='" + future + '\'' +
+                ", initialMarginRequirement=" + initialMarginRequirement +
+                ", longOrderSize=" + longOrderSize +
+                ", maintenanceMarginRequirement=" + maintenanceMarginRequirement +
+                ", netSize=" + netSize +
+                ", openSize=" + openSize +
+                ", realizedPnl=" + realizedPnl +
+                ", recentAverageOpenPrice=" + recentAverageOpenPrice +
+                ", recentBreakEvenPrice=" + recentBreakEvenPrice +
+                ", recentPnl=" + recentPnl +
+                ", shortOrderSize=" + shortOrderSize +
+                ", side=" + side +
+                ", size=" + size +
+                ", unrealizedPnl=" + unrealizedPnl +
+                ", collateralUsed=" + collateralUsed +
+                '}';
+    }
 }

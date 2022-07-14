@@ -4,8 +4,13 @@ import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.model.TradeStatus;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.TradingService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public interface ITradingRunnableEngine extends Runnable {
+
+    static final Logger log =
+            LoggerFactory.getLogger(ITradingRunnableEngine.class);
 
     Boolean isStopped();
 
@@ -64,26 +69,31 @@ public interface ITradingRunnableEngine extends Runnable {
 
         @Override
         public void run() {
-
             final Thread currentThread = Thread.currentThread();
             final String defaultName = currentThread.getName();
-            currentThread.setName("Trade in market " + market);
+
+            currentThread.setName(market + " " + openPositionTradeInformation.getBaseSide());
+            log.debug("Start Engine " + market + " " + openPositionTradeInformation.getBaseSide());
             isStopped = false;
 
             while (this.tradeStatus.isNeedStop() == false) {
 
                 tradingService.workWithOrders(openPositionTradeInformation);
-
+                log.debug("work with orders end");
                 var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
                         openPositionTradeInformation.getBaseSide(),
                         market);
+
 
                 if (closePositionTradeInformation.isPresent()) {
                     tradingService.workWithOrders(closePositionTradeInformation.get());
                 }
             }
+            log.debug("Stop Engine " + market + " " + openPositionTradeInformation.getBaseSide());
             currentThread.setName(defaultName);
+
             isStopped = true;
+
         }
 
         public Boolean isStopped() {
@@ -113,7 +123,7 @@ public interface ITradingRunnableEngine extends Runnable {
 
             final Thread currentThread = Thread.currentThread();
             final String defaultName = currentThread.getName();
-            currentThread.setName("Trade in market " + market);
+            currentThread.setName("Trade in market " + market + " " + openPositionTradeInformation.getBaseSide());
             isStopped = false;
 
             tradingService.workWithOrders(openPositionTradeInformation);

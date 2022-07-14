@@ -134,11 +134,9 @@
                                 class="sr-only">(current)</span></a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" th:href="@{/trade_settings/index}">Редактирование настроек торговли</a>
+                        <a class="nav-link" th:href="@{/trade_settings/index}">Параметры торговли</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" th:href="@{/test/}">Все споты\фьючи с FTX</a>
-                    </li>
+
                 </ul>
             </div>
             <div sec:authorize="isAuthenticated()">
@@ -148,7 +146,6 @@
             </div>
         </div>
     </nav>
-
 
 </div>
 

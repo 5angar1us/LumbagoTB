@@ -1,14 +1,14 @@
 package com.example.TradeBoot.app;
 
 
-import com.example.TradeBoot.api.services.MarketService;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import org.junit.jupiter.api.BeforeAll;
 
 public class FutureTest {
 
 
-    private static MarketService marketService;
+    private static IMarketService marketService;
 
 
     @BeforeAll

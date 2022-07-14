@@ -9,6 +9,8 @@ import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -119,7 +121,7 @@ public class OrdersTests {
     public void defaultSetOrders(IPlaceOrders placeOrders, String marketName) {
 
 
-        var marketService = new MarketService(httpClient);
+        var marketService = new IMarketService.Base(httpClient);
 
         TestUtils.printAccountInfo();
         TestUtils.printOpenOrders(marketName);

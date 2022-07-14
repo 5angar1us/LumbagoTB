@@ -37,7 +37,9 @@ public class SecurityConfiguration {
             case "production" ->{
                 http
                 .authorizeRequests()
-                    //.antMatchers("/").permitAll()
+                    .antMatchers("/static/js/**", "/static/css/**").permitAll()
+                .and()
+                        .authorizeRequests()
                     .anyRequest().authenticated()
                 .and()
                     .formLogin()
@@ -50,7 +52,7 @@ public class SecurityConfiguration {
             }
             default -> throw new IllegalArgumentException("activeProfile");
         }
-        log.info("Security profile" + activeProfile);
+        log.info("Security profile " + activeProfile);
         return http.build();
     }
 

@@ -1,7 +1,6 @@
 package com.example.TradeBoot.ui.controller;
 
 import com.example.TradeBoot.BigDecimalUtils;
-import com.example.TradeBoot.api.services.FinancialInstrumentService;
 import com.example.TradeBoot.ui.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
@@ -20,7 +19,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import java.math.BigDecimal;
 import java.net.MalformedURLException;
-import java.util.List;
 
 @Controller
 public class TradeSettingsController {

@@ -1,6 +1,5 @@
-package com.example.TradeBoot;
+package com.example.TradeBoot.trade.services.tradingEngine;
 
-import com.example.TradeBoot.trade.services.TradingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,7 +13,7 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
     public ExtendedExecutor(int nThreads) {
         super(nThreads, // core threads
                 nThreads, // max threads
-                0L, // timeout
+                1L, // timeout
                 TimeUnit.MINUTES, // timeout units
                 new LinkedBlockingQueue<Runnable>() // work queue
         );
@@ -37,7 +36,7 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
             }
         }
         if (throwable != null) {
-            log.info(throwable.getMessage());
+            log.info(throwable.toString());
         }
     }
 }

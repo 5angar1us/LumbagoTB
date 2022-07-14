@@ -7,29 +7,20 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-public class HttpFTXResponce {
+public class HttpFTXResponseHandler {
 
-    private final Boolean success;
-    private final Optional<String> result;
-    private final Optional<String> error;
+    public HttpFTXResponseHandler()
+    {
 
-    public Boolean isSuccess() {
-        return success;
     }
 
-    public Optional<String> getResult() {
-        return result;
-    }
-
-    public Optional<String> getError() {
-        return error;
-    }
-
-    public HttpFTXResponce(HttpResponse<String> response){
+    public FTXResponceData getResponseData(HttpResponse<String> response){
         JsonNode node = readNode(response);
-        result = GetNode(node,"result");
-        error = GetNode(node,"error");
-        success = isSuccess(node);
+        var result = GetNode(node,"result");
+        var error = GetNode(node,"error");
+        var success = isSuccess(node);
+
+        return new FTXResponceData(success, result, error);
     }
 
     private boolean isSuccess(JsonNode node){
@@ -52,5 +43,10 @@ public class HttpFTXResponce {
             throw new RuntimeException("Processing json '" + response.body() + "' throw exception", e);
         }
     }
+
+
+
+}
+record FTXResponceData(boolean isSuccess,Optional<String> result, Optional<String> error){
 
 }

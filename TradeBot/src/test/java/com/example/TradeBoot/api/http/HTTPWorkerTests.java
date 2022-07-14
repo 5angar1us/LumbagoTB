@@ -32,9 +32,10 @@ public class HTTPWorkerTests {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            HttpFTXResponce httpFTXResponce = new HttpFTXResponce(response);
+            HttpFTXResponseHandler httpFTXResponseHandler = new HttpFTXResponseHandler();
+            var responceData = httpFTXResponseHandler.getResponseData(response);
 
-            assertEquals(true, httpFTXResponce.isSuccess());
+            assertEquals(true, responceData.isSuccess());
 
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException("Get request to '" + uri + "' throws exception.", e);

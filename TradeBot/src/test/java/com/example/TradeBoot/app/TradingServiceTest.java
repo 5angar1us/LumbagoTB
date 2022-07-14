@@ -4,8 +4,8 @@ import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
-import com.example.TradeBoot.api.services.MarketService;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestUtils;
 
@@ -25,7 +25,7 @@ import java.util.List;
 public class TradingServiceTest {
 
     private static OrdersService ordersService;
-    private static MarketService marketService;
+    private static IMarketService.Base marketService;
 
     private static HttpClientWorker httpClient;
 
@@ -37,7 +37,7 @@ public class TradingServiceTest {
         httpClient = new HttpClientWorker(httpRequestFactory, httpResponseHandler);
 
         ordersService = new OrdersService(httpClient);
-        marketService = new MarketService(httpClient);
+        marketService = new IMarketService.Base(httpClient);
 
     }
 

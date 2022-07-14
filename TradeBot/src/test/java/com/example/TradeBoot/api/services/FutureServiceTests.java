@@ -2,6 +2,7 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.futures.Future;
 import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.services.implemetations.IFutureService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -12,7 +13,7 @@ public class FutureServiceTests {
 
     private static HttpClientWorker httpClient;
 
-    private static FutureService futureService;
+    private static IFutureService futureService;
 
     @BeforeAll
     static void init() {

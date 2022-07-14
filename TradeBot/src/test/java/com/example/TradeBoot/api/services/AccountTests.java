@@ -10,7 +10,9 @@ public class AccountTests {
         var market= "SOL/USD";
         TestUtils.printAccountInfo();
         TestUtils.printBalances();
-        TestUtils.printBalance(market);
+        TestUtils.printAllInfoBalances();
         TestUtils.printOpenOrders(market);
+        TestUtils.printPositions();
+        TestUtils.printAllInfoPositions();
     }
 }

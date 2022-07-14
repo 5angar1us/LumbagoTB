@@ -1,10 +1,9 @@
 package com.example.TradeBoot.trade.services.tradingEngine;
 
-import com.example.TradeBoot.ExtendedExecutor;
+import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.implemetations.IWalletService;
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.services.MarketService;
-import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.api.services.WalletService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
@@ -27,9 +26,9 @@ public abstract class AbstractTradingEngineService {
     static final Logger log =
             LoggerFactory.getLogger(AbstractTradingEngineService.class);
     protected final OrdersService ordersService;
-    protected final MarketService marketService;
+    protected final IMarketService marketService;
 
-    protected final WalletService walletService;
+    protected final IWalletService walletService;
 
     protected final OrderPriceCalculator orderPriceCalculator;
 
@@ -40,7 +39,7 @@ public abstract class AbstractTradingEngineService {
 
     protected List<TradingOrderInfoPair> trapLimitPositionPairs;
 
-    protected TradeStatus tradeStatus = new TradeStatus(false);
+    protected TradeStatus tradeStatus = new TradeStatus(true);
 
     protected ITradeSettingsService tradeSettingsService;
 
@@ -51,8 +50,8 @@ public abstract class AbstractTradingEngineService {
     @Autowired
     public AbstractTradingEngineService(
             OrdersService ordersService,
-            MarketService marketService,
-            WalletService walletService,
+            IMarketService marketService,
+            IWalletService walletService,
             OrderPriceCalculator orderPriceCalculator,
             ClosePositionInformationService closePositionInformationService,
             ITradeSettingsService tradeSettingsService) {
@@ -90,7 +89,7 @@ public abstract class AbstractTradingEngineService {
     }
 
     public boolean isStop() {
-        return !tradeStatus.isNeedStop();
+        return tradeStatus.isNeedStop();
     }
 
 
@@ -135,12 +134,31 @@ public abstract class AbstractTradingEngineService {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        tradingOrderInfoPairPairs.add(
-                new TradingOrderInfoPair(
-                        createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
-                        new TradeInformation(tradeInformations),
-                        marketInformation.getMarket()
-                ));
+        var tradeInformationsLong = tradeInformations.stream()
+                .filter(tradeInfo -> tradeInfo.getSide() == ESide.BUY)
+                .collect(Collectors.toList());
+
+        var tradeInformationsShort = tradeInformations.stream()
+                .filter(tradeInfo -> tradeInfo.getSide() == ESide.SELL)
+                .collect(Collectors.toList());
+
+        if(tradeInformationsLong.size() > 0){
+            tradingOrderInfoPairPairs.add(
+                    new TradingOrderInfoPair(
+                            createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
+                            new TradeInformation(tradeInformationsLong),
+                            marketInformation.getMarket()
+                    ));
+        }
+
+        if(tradeInformationsShort.size() > 0){
+            tradingOrderInfoPairPairs.add(
+                    new TradingOrderInfoPair(
+                            createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
+                            new TradeInformation(tradeInformationsShort),
+                            marketInformation.getMarket()
+                    ));
+        }
 
         return tradingOrderInfoPairPairs;
     }

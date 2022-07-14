@@ -1,10 +1,14 @@
-package com.example.TradeBoot.api.services;
+package com.example.TradeBoot.api.services.implemetations;
 
 import com.example.TradeBoot.api.domain.account.AccountInformation;
+import com.example.TradeBoot.api.domain.account.Position;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.List;
 
 @Service
 public class AccountService {
@@ -20,6 +24,11 @@ public class AccountService {
     public AccountInformation getAccountInformation() {
         String json = this.httpClient.createGetRequest("/account");
         return JsonModelConverter.convertJsonToModel(AccountInformation.class, json);
+    }
+
+    public List<Position> getAllPositions() {
+        String json = this.httpClient.createGetRequest("/api/positions");
+        return JsonModelConverter.convertJsonToListOfModels(Position.class, json);
     }
 }
 

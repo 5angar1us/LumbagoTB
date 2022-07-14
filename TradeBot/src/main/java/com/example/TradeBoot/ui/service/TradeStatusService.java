@@ -1,8 +1,9 @@
 package com.example.TradeBoot.ui.service;
 
 import com.example.TradeBoot.BigDecimalUtils;
-import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.api.services.WalletService;
+import com.example.TradeBoot.api.services.implemetations.IPositionsService;
+import com.example.TradeBoot.api.services.implemetations.IWalletService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.ui.ITradeSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,24 +11,28 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
 public class TradeStatusService {
 
     @Autowired
-    public TradeStatusService(ITradeSettingsService tradeSettingsService, WalletService walletService, OrdersService ordersService) {
+    public TradeStatusService(ITradeSettingsService tradeSettingsService, IWalletService walletService, OrdersService ordersService, IPositionsService positionsService) {
         this.tradeSettingsService = tradeSettingsService;
         this.walletService = walletService;
         this.ordersService = ordersService;
+        this.positionsService = positionsService;
     }
 
 
     private ITradeSettingsService tradeSettingsService;
 
-    private WalletService walletService;
+    private IWalletService walletService;
 
     private OrdersService ordersService;
+
+    private IPositionsService positionsService;
 
 
     private List<String> ignoredBalanceNames = List.of("USD", "EUR");
@@ -51,16 +56,23 @@ public class TradeStatusService {
 
     public List<OpenPositionInfo> getOpenPositions() {
 
-        var openPositions = walletService.getBalances()
+        var openCoinsPositions = walletService.getBalances()
                 .stream()
                 .filter(balance -> ignoredBalanceNames.contains(balance.getCoin()) == false)
                 .filter(balance -> {
                     return BigDecimalUtils.check(balance.getTotal(), BigDecimalUtils.EOperator.EQUALS, BigDecimal.ZERO) == false;
                 })
-                .map(balance -> new OpenPositionInfo(balance.getCoin(), balance.getTotal()))
-                .collect(Collectors.toList());
+                .map(balance -> new OpenPositionInfo(balance.getCoin(), balance.getTotal()));
 
-        return openPositions;
+       var openFuturesPositions = positionsService.getAllPositions()
+               .stream()
+               .filter(position -> {
+                   return BigDecimalUtils.check(position.getCost(), BigDecimalUtils.EOperator.EQUALS, BigDecimal.ZERO) == false;
+               })
+               .map(position -> new OpenPositionInfo(position.getFuture(), position.getNetSize()));
+
+        return Stream.concat(openCoinsPositions, openFuturesPositions)
+                .collect(Collectors.toList());
     }
 
     public record OpenPositionInfo(String marketName, BigDecimal total) {

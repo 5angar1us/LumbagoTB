@@ -12,60 +12,58 @@ public class HttpResponseHandler {
 
     static final Logger log =
             LoggerFactory.getLogger(HttpResponseHandler.class);
+    HttpFTXResponseHandler ftxResponseHandler = new HttpFTXResponseHandler();
     public String handleGetResponse(HttpResponse<String> response) {
-        HttpFTXResponce ftxResponce = new HttpFTXResponce(response);
+        var responseData = ftxResponseHandler.getResponseData(response);
 
-        if (ftxResponce.isSuccess() == false){
-            System.out.println("Get request: " + response.body());
+        if (responseData.isSuccess() == false){
             log.error("Get request: " + response.body());
             throw new BadRequestByFtxException(
                     String.format("Bad request. Status %d. Error: %s. Body: %s",
                             Integer.valueOf(response.statusCode()),
-                            ftxResponce.getError().get(),
+                            responseData.error().get(),
                             response.body()
                     )
             );
         }
 
-        return ftxResponce.getResult().get();
+        return responseData.result().get();
     }
 
     public boolean handleDeleteResponse(HttpResponse<String> response) throws BadImportantRequestByFtxException {
-        HttpFTXResponce ftxResponce = new HttpFTXResponce(response);
+        var responseData = ftxResponseHandler.getResponseData(response);
 
 
-        if (ftxResponce.isSuccess() == false){
-            System.out.println("Delete request: " + response.body());
+        if (responseData.isSuccess() == false){
             log.error("Delete request: " + response.body());
 
             throw new BadImportantRequestByFtxException(
                     String.format("Bad request. Status %d. Error: %s. Body: %s",
                             Integer.valueOf(response.statusCode()),
-                            ftxResponce.getError().get(),
+                            responseData.error().get(),
                             response.body()
                     )
             );
         }
 
-        return ftxResponce.isSuccess();
+        return responseData.isSuccess();
     }
 
     public String handlePostResponse(HttpResponse<String> response) throws BadImportantRequestByFtxException {
-        HttpFTXResponce ftxResponce = new HttpFTXResponce(response);
+        var responseData = ftxResponseHandler.getResponseData(response);
 
-        if (ftxResponce.isSuccess() == false){
-            System.out.println("Post request: " + response.body());
+        if (responseData.isSuccess() == false){
             log.error("Post request: " + response.body());
             throw new BadImportantRequestByFtxException(
                     String.format("Bad request. Status %d. Error: %s. Body: %s",
                             Integer.valueOf(response.statusCode()),
-                            ftxResponce.getError().get(),
+                            responseData.error().get(),
                             response.body()
                     )
             );
         }
         else {
-            return ftxResponce.getResult().get();
+            return responseData.result().get();
         }
     }
 }

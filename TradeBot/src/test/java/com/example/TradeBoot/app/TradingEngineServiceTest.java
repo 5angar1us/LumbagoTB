@@ -1,7 +1,7 @@
 package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.tradingEngine.MockTradingEngineService;
 import com.example.TradeBoot.ui.MockTradeSettingsService;
@@ -47,7 +47,7 @@ public class TradingEngineServiceTest {
 
         ordersService = TestServiceInstances.getOrdersService();
 
-        tradeStatusService = new TradeStatusService(mockTradeSettingsService, TestServiceInstances.getWalletService(), TestServiceInstances.getOrdersService());
+        tradeStatusService = new TradeStatusService(mockTradeSettingsService, TestServiceInstances.getWalletService(), TestServiceInstances.getOrdersService(), TestServiceInstances.getPositionsService());
 
     }
     @Test
