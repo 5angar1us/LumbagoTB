@@ -1,4 +1,4 @@
-package com.example.TradeBoot.api.services.implemetations;
+package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.account.Position;
 import com.example.TradeBoot.api.http.HttpClientWorker;

@@ -1,10 +1,7 @@
-package com.example.TradeBoot.api.services.implemetations;
+package com.example.TradeBoot.api.services;
 
-import com.example.TradeBoot.api.domain.orders.OpenOrder;
-import com.example.TradeBoot.api.domain.orders.OrderStatus;
-import com.example.TradeBoot.api.domain.orders.OrderToPlace;
-import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
+import com.example.TradeBoot.api.domain.orders.*;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
@@ -29,7 +26,7 @@ public class OrdersService {
         this.httpClient = httpClient;
     }
 
-    public List<OpenOrder> getOpenOrders(String marketName) {
+    public List<Order> getOpenOrders(String marketName) {
         if (Strings.isNullOrEmpty(marketName))
             throw new IllegalArgumentException("marketName");
 
@@ -40,23 +37,21 @@ public class OrdersService {
                 .toUriString();
 
         String json = this.httpClient.createGetRequest(uri);
-        return JsonModelConverter.convertJsonToListOfModels(OpenOrder.class, json);
+        return JsonModelConverter.convertJsonToListOfModels(Order.class, json);
     }
 
     private String placeOrderURI = UriComponentsBuilder.newInstance()
             .path(ORDERS_PATH)
             .toUriString();
 
-    public PlacedOrder placeOrder(OrderToPlace order) throws BadImportantRequestByFtxException {
-
-
+    public PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException {
         String placeOrderJson = JsonModelConverter.convertModelToJson(order);
         String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson);
         return JsonModelConverter.convertJsonToModel(PlacedOrder.class, placedOrderJson);
     }
 
 
-    public boolean cancelOrder(String orderId) throws BadImportantRequestByFtxException {
+    public boolean cancelOrder(String orderId) throws BadRequestByFtxException {
         if (Strings.isNullOrEmpty(orderId))
             throw new IllegalArgumentException("orderId");
 
@@ -68,7 +63,7 @@ public class OrdersService {
         return this.httpClient.createDeleteRequest(uri);
     }
 
-    public boolean cancelAllOrder() throws BadImportantRequestByFtxException {
+    public boolean cancelAllOrder() throws BadRequestByFtxException {
         String uri = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .toUriString();
@@ -76,7 +71,7 @@ public class OrdersService {
         return this.httpClient.createDeleteRequest(uri);
     }
 
-    public boolean cancelAllOrderBy(OrderCancellationBuilder builder) throws BadImportantRequestByFtxException {
+    public boolean cancelAllOrderBy(OrderCancellationBuilder builder) throws BadRequestByFtxException {
         String uri = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .toUriString();
@@ -86,7 +81,7 @@ public class OrdersService {
         return this.httpClient.createDelete(uri, body);
     }
 
-    public boolean cancelAllOrderByMarket(String marketName) throws BadImportantRequestByFtxException {
+    public boolean cancelAllOrderByMarket(String marketName) throws BadRequestByFtxException {
         if (Strings.isNullOrEmpty(marketName))
             throw new IllegalArgumentException("marketName");
 
@@ -96,17 +91,17 @@ public class OrdersService {
         return cancelAllOrderBy(builder);
     }
 
-    public OrderStatus getOrderStatus(String orderId) {
+    public Order getOrderStatus(String orderId) {
         String uri = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .path("/").path(orderId)
                 .toUriString();
 
         String json = this.httpClient.createGetRequest(uri);
-        return JsonModelConverter.convertJsonToModel(OrderStatus.class, json);
+        return JsonModelConverter.convertJsonToModel(Order.class, json);
     }
 
-    public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadImportantRequestByFtxException {
+    public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadRequestByFtxException {
         String uri = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .path("/").pathSegment(orderId)
@@ -117,7 +112,7 @@ public class OrdersService {
         String json = this.httpClient.createPostRequest(uri, body);
         return JsonModelConverter.convertJsonToModel(PlacedOrder.class, json);
     }
-    public PlacedOrder modifyOrderPrice(String orderID, BigDecimal price) throws BadImportantRequestByFtxException {
+    public PlacedOrder modifyOrderPrice(String orderID, BigDecimal price) throws BadRequestByFtxException {
 
         var builder = new ModifyOrderBuilder()
                 .TargetPrice(price);

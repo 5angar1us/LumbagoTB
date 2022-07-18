@@ -1,7 +1,7 @@
 package com.example.TradeBoot.app;
 
-import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
-import com.example.TradeBoot.api.services.implemetations.OrdersService;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.tradingEngine.MockTradingEngineService;
 import com.example.TradeBoot.ui.MockTradeSettingsService;
@@ -50,6 +50,7 @@ public class TradingEngineServiceTest {
         tradeStatusService = new TradeStatusService(mockTradeSettingsService, TestServiceInstances.getWalletService(), TestServiceInstances.getOrdersService(), TestServiceInstances.getPositionsService());
 
     }
+
     @Test
     public void isCurrentStop() throws InterruptedException {
         var marketName = "SOL/USD";
@@ -59,7 +60,7 @@ public class TradingEngineServiceTest {
         var tradeSettingsDetail = new TradeSettingsDetail(TradingStrategy.LONG, 1, new BigDecimal("5"));
 
 
-        var tradeSettings = new TradeSettings(marketName, maximumDefenition,tradeDelay );
+        var tradeSettings = new TradeSettings(marketName, maximumDefenition, tradeDelay);
         tradeSettings.getTradeSettingsDetails().add(tradeSettingsDetail);
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
@@ -70,16 +71,16 @@ public class TradingEngineServiceTest {
         Thread.sleep(2000);
 
 
-        var isAllTreadsStopped =  mockTradingEngineService.isDone(2, TimeUnit.SECONDS);
+        var isAllTreadsStopped = mockTradingEngineService.isDone(2, TimeUnit.SECONDS);
 
-        var openOrders =  tradeStatusService.getOpenOrdersByConfiguration();
+        var openOrders = tradeStatusService.getOpenOrdersByConfiguration();
         var openOrdersSize = openOrders.size();
 
-        if(openOrders.size() > 0){
+        if (openOrders.size() > 0) {
             openOrders.stream().forEach(openOrder -> {
                 try {
                     ordersService.cancelAllOrderByMarket(openOrder.marketName());
-                } catch (BadImportantRequestByFtxException e) {
+                } catch (BadRequestByFtxException e) {
                     fail(e.getMessage());
                 }
             });
@@ -98,7 +99,7 @@ public class TradingEngineServiceTest {
         var tradeSettingsDetail = new TradeSettingsDetail(TradingStrategy.LONG, 1, new BigDecimal("5"));
 
 
-        var tradeSettings = new TradeSettings(marketName, maximumDefenition,tradeDelay );
+        var tradeSettings = new TradeSettings(marketName, maximumDefenition, tradeDelay);
         tradeSettings.getTradeSettingsDetails().add(tradeSettingsDetail);
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
@@ -107,19 +108,19 @@ public class TradingEngineServiceTest {
 
         try {
             ordersService.cancelAllOrderByMarket(marketName);
-        } catch (BadImportantRequestByFtxException e) {
+        } catch (BadRequestByFtxException e) {
             fail(e.getMessage());
         }
         Thread.sleep(2000);
-        var isAllRunnableEnginesStopped =  mockTradingEngineService.runnableEnginesCount() == 0;
+        var isAllRunnableEnginesStopped = mockTradingEngineService.runnableEnginesCount() == 0;
 
-        var openOrders =  tradeStatusService.getOpenOrdersByConfiguration();
+        var openOrders = tradeStatusService.getOpenOrdersByConfiguration();
 
-        if(openOrders.size() > 0){
+        if (openOrders.size() > 0) {
             openOrders.stream().forEach(openOrder -> {
                 try {
                     ordersService.cancelAllOrderByMarket(openOrder.marketName());
-                } catch (BadImportantRequestByFtxException e) {
+                } catch (BadRequestByFtxException e) {
                     fail(e.getMessage());
                 }
             });

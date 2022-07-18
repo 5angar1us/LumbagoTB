@@ -2,7 +2,6 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.futures.Future;
 import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.services.implemetations.IFutureService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

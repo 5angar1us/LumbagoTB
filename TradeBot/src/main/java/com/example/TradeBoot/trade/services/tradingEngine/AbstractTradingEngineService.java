@@ -1,9 +1,9 @@
 package com.example.TradeBoot.trade.services.tradingEngine;
 
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
-import com.example.TradeBoot.api.services.implemetations.IWalletService;
+import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.services.implemetations.OrdersService;
+import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;

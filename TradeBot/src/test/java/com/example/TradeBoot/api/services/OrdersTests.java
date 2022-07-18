@@ -5,12 +5,10 @@ import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OpenOrder;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
-import com.example.TradeBoot.api.services.implemetations.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
@@ -43,8 +41,9 @@ public class OrdersTests {
             try {
                 PlacedOrder placedOrder = ordersService.placeOrder(orderToPlace);
                 System.out.println("PlacedOrder" + placedOrder.toString());
-            } catch (BadImportantRequestByFtxException ex) {
-                System.out.println(ex);
+
+            } catch (BadRequestByFtxException e) {
+                System.out.println(e);
             }
 
 
@@ -84,8 +83,9 @@ public class OrdersTests {
 
                 System.out.println(t);
 
-            } catch (BadImportantRequestByFtxException ex) {
-                System.out.println(ex);
+
+            } catch (BadRequestByFtxException e) {
+                System.out.println(e);
             }
         };
 
@@ -106,8 +106,8 @@ public class OrdersTests {
 
                 //pw.println("PlacedOrder" + placedOrder2.toString());
 
-            } catch (BadImportantRequestByFtxException ex) {
-                System.out.println(ex);
+            } catch (BadRequestByFtxException e) {
+                throw new RuntimeException(e);
             }
 
 
@@ -163,7 +163,7 @@ public class OrdersTests {
 
             try {
                 ordersService.cancelAllOrder();
-            } catch (BadImportantRequestByFtxException e2) {
+            } catch (BadRequestByFtxException ex) {
                 System.out.println("!!!!!!!!!!!!!!!!!!!Я не могу закрыть ордера!!!!!!!!!!!!!!!!!!!!");
             }
 
@@ -173,7 +173,6 @@ public class OrdersTests {
         }
         System.out.println("LOG END");
     }
-
 
 
     private void Separator() {

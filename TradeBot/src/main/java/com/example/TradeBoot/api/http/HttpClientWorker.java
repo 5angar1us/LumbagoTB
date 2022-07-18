@@ -1,7 +1,8 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
-import com.example.TradeBoot.api.extentions.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.SendRequestException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorSendRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
@@ -24,43 +25,43 @@ public class HttpClientWorker {
 
     public String createGetRequest(String uri) {
         HttpRequest request = httpRequestFactory.createGetRequest(uri);
-        HttpResponse<String> response = sendDefaultRequest(request);
+        HttpResponse<String> response = sendGetRequest(request);
         return httpResponseHandler.handleGetResponse(response);
     }
 
-    public String createPostRequest(String uri, String body) throws BadImportantRequestByFtxException {
+    public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
         HttpRequest request = httpRequestFactory.createPostRequest(uri, body);
-        HttpResponse<String> response = sendDefaultRequest(request);
+        HttpResponse<String> response = sendChangeRequest(request);
         return httpResponseHandler.handlePostResponse(response);
     }
 
 
-    public boolean createDeleteRequest(String uri) throws BadImportantRequestByFtxException {
+    public boolean createDeleteRequest(String uri) throws BadRequestByFtxException {
         HttpRequest request = httpRequestFactory.createDeleteRequest(uri);
-        HttpResponse<String> response = sendDeleteRequest(request);
+        HttpResponse<String> response = sendChangeRequest(request);
         return  httpResponseHandler.handleDeleteResponse(response);
     }
 
-    public boolean createDelete(String uri, String body) throws BadImportantRequestByFtxException {
+    public boolean createDelete(String uri, String body) throws BadRequestByFtxException {
         HttpRequest request = httpRequestFactory.createDeleteRequest(uri, body);
-        HttpResponse<String> response = sendDeleteRequest(request);
+        HttpResponse<String> response = sendChangeRequest(request);
         return  httpResponseHandler.handleDeleteResponse(response);
     }
 
-    private HttpResponse<String> sendDeleteRequest(HttpRequest httpRequest) throws BadImportantRequestByFtxException {
+    private HttpResponse<String> sendChangeRequest(HttpRequest httpRequest) throws SendRequestException {
         try {
             return defaultSend(httpRequest);
 
         } catch (IOException | InterruptedException e) {
-            throw new BadImportantRequestByFtxException("Delete request to '" + httpRequest.uri() + "' throws exception.", e);
+            throw new UnknownErrorSendRequestException(httpRequest.method() + " request to '" + httpRequest.uri() + "' throws exception.", e);
         }
     }
-    private HttpResponse<String> sendDefaultRequest(HttpRequest httpRequest){
+    private HttpResponse<String> sendGetRequest(HttpRequest httpRequest) {
         try {
             return defaultSend(httpRequest);
 
         } catch (IOException | InterruptedException e) {
-            throw new BadRequestByFtxException(httpRequest.method() + " request to '" + httpRequest.uri() + "' throws exception.", e);
+            throw new UnknownErrorSendRequestException(httpRequest.method() + " request to '" + httpRequest.uri() + "' throws exception.", e);
         }
     }
     private HttpResponse<String> defaultSend(HttpRequest httpRequest) throws IOException, InterruptedException {

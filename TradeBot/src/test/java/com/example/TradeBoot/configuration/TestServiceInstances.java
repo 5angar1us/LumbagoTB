@@ -3,15 +3,14 @@ package com.example.TradeBoot.configuration;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
-import com.example.TradeBoot.api.services.implemetations.IPositionsService;
-import com.example.TradeBoot.api.services.implemetations.*;
+import com.example.TradeBoot.api.services.*;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
 
 public class TestServiceInstances {
 
-    public static IFutureService getFutureService() {
+    public static com.example.TradeBoot.api.services.IFutureService getFutureService() {
         return IFutureService;
     }
 

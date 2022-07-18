@@ -32,8 +32,8 @@ public class HTTPWorkerTests {
         try {
             HttpClient client = HttpClient.newHttpClient();
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-            HttpFTXResponseHandler httpFTXResponseHandler = new HttpFTXResponseHandler();
-            var responceData = httpFTXResponseHandler.getResponseData(response);
+            HttpFTXResponseParser httpFTXResponseParser = new HttpFTXResponseParser();
+            var responceData = httpFTXResponseParser.getResponseData(response);
 
             assertEquals(true, responceData.isSuccess());
 

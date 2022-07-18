@@ -1,15 +1,15 @@
 package com.example.TradeBoot.trade.services;
 
+import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
-import com.example.TradeBoot.api.domain.orders.EStatus;
-import com.example.TradeBoot.api.domain.orders.OrderStatus;
-import com.example.TradeBoot.api.domain.orders.OrderToPlace;
-import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.BadImportantRequestByFtxException;
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
-import com.example.TradeBoot.api.services.implemetations.OrdersService;
-import com.example.TradeBoot.trade.model.*;
+import com.example.TradeBoot.api.domain.orders.*;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
+import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.model.*;
+import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -86,8 +86,18 @@ public class TradingService {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
-        } catch (BadImportantRequestByFtxException e) {
+        }
+        catch (OrderAlreadyClosedException e){
             log.error(e.getMessage());
+            try {
+                closeOrders(getOrdersBySide(marketInformation.getMarket(), tradeInformation.getBaseSide()));
+            }
+            catch (OrderAlreadyClosedException ex){ throw new RuntimeException(ex);}
+            catch (BadRequestByFtxException ex) {  throw new RuntimeException(ex);}
+
+        }
+        catch (BadRequestByFtxException e) {
+
             throw new RuntimeException(e);
         }
 
@@ -103,7 +113,7 @@ public class TradingService {
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
-            throws BadImportantRequestByFtxException {
+            throws BadRequestByFtxException {
         Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
@@ -113,33 +123,46 @@ public class TradingService {
         return placedOrders;
     }
 
-    private List<OrderStatus> notClosedOrders(Stream<OrderStatus> orderStatusStream) throws BadImportantRequestByFtxException {
+    private List<Order> notClosedOrders(Stream<Order> orderStatusStream){
         return orderStatusStream
                  .filter(orderStatus -> orderStatus.getStatus() != EStatus.CLOSED)
                  .collect(Collectors.toList());
     }
 
     private void closeOrders(Map<OrderInformation, PlacedOrder> placedOrders)
-            throws BadImportantRequestByFtxException {
+            throws BadRequestByFtxException {
         for (PlacedOrder placedOrder : placedOrders.values()) {
             ordersService.cancelOrder(placedOrder.getId());
         }
     }
 
-    private void closeOrders(List<OrderStatus> orders)
-            throws BadImportantRequestByFtxException {
-        for (OrderStatus placedOrder : orders) {
+    private void closeOrders(List<Order> orders)
+            throws BadRequestByFtxException {
+        for (Order placedOrder : orders) {
             ordersService.cancelOrder(placedOrder.getId());
         }
     }
 
-    private Stream<OrderStatus> getOrderStatuses(Map<OrderInformation, PlacedOrder> placedOrders) {
+//    private void closeOrders(List<OpenOrder> orders)
+//            throws BadRequestByFtxException {
+//        for (OpenOrder placedOrder : orders) {
+//            ordersService.cancelOrder(placedOrder.getId());
+//        }
+//    }
+
+    private Stream<Order> getOrderStatuses(Map<OrderInformation, PlacedOrder> placedOrders) {
         return placedOrders.values()
                 .stream()
                 .map(placedOrder -> ordersService.getOrderStatus(placedOrder.getId()));
     }
 
-    private boolean anyClosed(Stream<OrderStatus> orderStatusStream) {
+    private List<Order> getOrdersBySide(String marketName, ESide side){
+        return ordersService.getOpenOrders(marketName).stream()
+                .filter( openOrder -> openOrder.getSide() == side)
+                .collect(Collectors.toList());
+    }
+
+    private boolean anyClosed(Stream<Order> orderStatusStream) {
         return orderStatusStream.anyMatch(orderStatus -> orderStatus.getStatus() == EStatus.CLOSED);
     }
 

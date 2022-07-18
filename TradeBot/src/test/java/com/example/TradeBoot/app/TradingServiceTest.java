@@ -4,8 +4,8 @@ import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
-import com.example.TradeBoot.api.services.implemetations.OrdersService;
+import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestUtils;
 

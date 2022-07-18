@@ -1,7 +1,7 @@
 package com.example.TradeBoot.app;
 
 
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import org.junit.jupiter.api.BeforeAll;
 

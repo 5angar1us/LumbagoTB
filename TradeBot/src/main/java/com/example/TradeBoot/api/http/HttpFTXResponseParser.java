@@ -7,9 +7,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.net.http.HttpResponse;
 import java.util.Optional;
 
-public class HttpFTXResponseHandler {
+public class HttpFTXResponseParser {
 
-    public HttpFTXResponseHandler()
+    public HttpFTXResponseParser()
     {
 
     }
@@ -19,6 +19,7 @@ public class HttpFTXResponseHandler {
         var result = GetNode(node,"result");
         var error = GetNode(node,"error");
         var success = isSuccess(node);
+
 
         return new FTXResponceData(success, result, error);
     }
@@ -47,6 +48,6 @@ public class HttpFTXResponseHandler {
 
 
 }
-record FTXResponceData(boolean isSuccess,Optional<String> result, Optional<String> error){
+record FTXResponceData(boolean isSuccess, Optional<String> result, Optional<String> error){
 
 }

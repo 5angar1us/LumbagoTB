@@ -1,8 +1,8 @@
 package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.EInstrumentType;
-import com.example.TradeBoot.api.services.implemetations.IFutureService;
-import com.example.TradeBoot.api.services.implemetations.IMarketService;
+import com.example.TradeBoot.api.services.IFutureService;
+import com.example.TradeBoot.api.services.IMarketService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

@@ -2,8 +2,8 @@ package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.BigDecimalUtils;
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.services.implemetations.IWalletService;
-import com.example.TradeBoot.api.services.implemetations.IPositionsService;
+import com.example.TradeBoot.api.services.IWalletService;
+import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.utils.ESideChange;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
