@@ -1,10 +1,7 @@
 package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.domain.orders.EType;
-import com.example.TradeBoot.api.domain.orders.OpenOrder;
-import com.example.TradeBoot.api.domain.orders.OrderToPlace;
-import com.example.TradeBoot.api.domain.orders.PlacedOrder;
+import com.example.TradeBoot.api.domain.orders.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
@@ -149,7 +146,7 @@ public class OrdersTests {
             var openOrders = ordersService.getOpenOrders(marketName);
             TestUtils.printOpenOrdersId(openOrders);
 
-            for (OpenOrder openOrder : openOrders) {
+            for (Order openOrder : openOrders) {
                 var result = ordersService.cancelOrder(openOrder.getId());
                 System.out.println("Order with id:" + openOrder.getId() + " cancel " + result);
             }

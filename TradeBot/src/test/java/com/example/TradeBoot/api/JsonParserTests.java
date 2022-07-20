@@ -1,22 +1,9 @@
 package com.example.TradeBoot.api;
 
 import com.example.TradeBoot.api.domain.Market;
-import com.example.TradeBoot.api.domain.markets.Ask;
-import com.example.TradeBoot.api.domain.markets.Bid;
-import com.example.TradeBoot.api.domain.markets.OrderBook;
-import com.example.TradeBoot.api.utils.GsonJsonModelConverter;
-import com.example.TradeBoot.api.utils.JsonModelConverter;
-import com.example.TradeBoot.configuration.TestConfig;
-import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
-import org.springframework.web.util.UriComponentsBuilder;
-
-import java.math.BigDecimal;
-import java.util.List;
-import java.util.stream.Collectors;
 
 public class JsonParserTests {
 
@@ -29,72 +16,72 @@ public class JsonParserTests {
         System.out.println(market.getName());
     }
 
-    @Test
-    void canGsonParsingJsonToObject(){
-        var market = new Gson().fromJson(body, Market.class);
-        System.out.println(market.getName());
-    }
+//    @Test
+//    void canGsonParsingJsonToObject(){
+//        var market = new Gson().fromJson(body, Market.class);
+//        System.out.println(market.getName());
+//    }
 
-    @Test
-    void canParseOrderBook(){
+//    @Test
+//    void canParseOrderBook(){
+//
+//        String MARKETS_PATH = "/markets";
+//
+//        var marketName = TestConfig.MARKET_NAME;
+//        var depth = 5;
+//        var httpClient = TestServiceInstances.getHttpClient();
+//
+//        String uri = UriComponentsBuilder.newInstance()
+//                .path(MARKETS_PATH)
+//                .path("/").pathSegment(marketName)
+//                .path("/orderbook")
+//                .query("depth={keyword}")
+//                .buildAndExpand(String.valueOf(depth))
+//                .encode()
+//                .toUriString();
+//
+//        String json = httpClient.createGetRequest(uri);
+//        var orderBook = GsonJsonModelConverter.convertJsonToModel(GSoneOrderBook.class, json);
+//        System.out.println(new CurrectOrderBook(orderBook).getBestAsk());
+//        System.out.println(json);
+//    }
 
-        String MARKETS_PATH = "/markets";
+//    class GSoneOrderBook{
+//        private  List<List<BigDecimal>> asks;
+//        private  List<List<BigDecimal>> bids;
+//    }
 
-        var marketName = TestConfig.MARKET_NAME;
-        var depth = 5;
-        var httpClient = TestServiceInstances.getHttpClient();
-
-        String uri = UriComponentsBuilder.newInstance()
-                .path(MARKETS_PATH)
-                .path("/").pathSegment(marketName)
-                .path("/orderbook")
-                .query("depth={keyword}")
-                .buildAndExpand(String.valueOf(depth))
-                .encode()
-                .toUriString();
-
-        String json = httpClient.createGetRequest(uri);
-        var orderBook = GsonJsonModelConverter.convertJsonToModel(GSoneOrderBook.class, json);
-        System.out.println(new CurrectOrderBook(orderBook).getBestAsk());
-        System.out.println(json);
-    }
-
-    class GSoneOrderBook{
-        private  List<List<BigDecimal>> asks;
-        private  List<List<BigDecimal>> bids;
-    }
-
-    class CurrectOrderBook{
-        private List<Ask> currentAsk;
-        private List<Bid> currentBid;
-        public CurrectOrderBook(GSoneOrderBook gSoneOrderBook)
-        {
-            currentAsk = gSoneOrderBook.asks.stream().map(Ask::new).collect(Collectors.toList());
-            currentBid = gSoneOrderBook.bids.stream().map(Bid::new).collect(Collectors.toList());
-        }
-
-        public List<Ask> getAllAsks() {
-            return this.currentAsk;
-        }
-
-        public List<Bid> getAllBids() {
-            return this.currentBid;
-        }
-
-        public Ask getBestAsk() {
-            return this.currentAsk.get(0);
-        }
-
-        public Bid getBestBid() {
-            return this.currentBid.get(0);
-        }
-
-        public Ask getAsk(int number) {
-            return this.currentAsk.get(number);
-        }
-
-        public Bid getBid(int count) {
-            return this.currentBid.get(count);
-        }
-    }
+//    class CurrectOrderBook{
+//        private List<Ask> currentAsk;
+//        private List<Bid> currentBid;
+//        public CurrectOrderBook(GSoneOrderBook gSoneOrderBook)
+//        {
+//            currentAsk = gSoneOrderBook.asks.stream().map(Ask::new).collect(Collectors.toList());
+//            currentBid = gSoneOrderBook.bids.stream().map(Bid::new).collect(Collectors.toList());
+//        }
+//
+//        public List<Ask> getAllAsks() {
+//            return this.currentAsk;
+//        }
+//
+//        public List<Bid> getAllBids() {
+//            return this.currentBid;
+//        }
+//
+//        public Ask getBestAsk() {
+//            return this.currentAsk.get(0);
+//        }
+//
+//        public Bid getBestBid() {
+//            return this.currentBid.get(0);
+//        }
+//
+//        public Ask getAsk(int number) {
+//            return this.currentAsk.get(number);
+//        }
+//
+//        public Bid getBid(int count) {
+//            return this.currentBid.get(count);
+//        }
+//    }
 }

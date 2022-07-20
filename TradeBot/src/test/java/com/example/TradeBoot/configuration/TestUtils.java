@@ -3,6 +3,7 @@ package com.example.TradeBoot.configuration;
 
 import com.example.TradeBoot.api.domain.account.Position;
 import com.example.TradeBoot.api.domain.orders.OpenOrder;
+import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.wallet.Balance;
 
 import java.util.List;
@@ -98,15 +99,15 @@ public class TestUtils {
     public static void printOpenOrders(String market) {
         var orders = TestServiceInstances.getOrdersService().getOpenOrders(market);
         System.out.println("OpenOrders");
-        for (OpenOrder order : orders) {
+        for (Order order : orders) {
             System.out.println(TABULATION + order);
         }
         System.out.println("OpenOrders");
     }
 
-    public static void printOpenOrdersId(List<OpenOrder> openOrders) {
+    public static void printOpenOrdersId(List<Order> openOrders) {
         System.out.println("OpenOrdersId:");
-        for (OpenOrder openOrder : openOrders) {
+        for (Order openOrder : openOrders) {
 
             System.out.println(TABULATION + openOrder.getId());
         }
