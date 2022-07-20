@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -25,11 +26,10 @@ public class OrderPriceCalculator {
 
     public Map<OrderInformation, OrderToPlace> createOrdersToPlaceMap(
             OrderBook orderBook,
-            Set<OrderInformation> orderInformations,
+            List<OrderInformation> orderInformations,
             String market) {
 
         Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
-
         for (OrderInformation orderInformation : orderInformations) {
             BigDecimal price = calculateCorrectPrice(
                     orderBook,

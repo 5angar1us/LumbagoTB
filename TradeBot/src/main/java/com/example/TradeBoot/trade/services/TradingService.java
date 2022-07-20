@@ -120,7 +120,7 @@ public class TradingService {
     private Map<OrderInformation, OrderToPlace> getPlacedOrders(
             OrderBook orderBook,
             List<OrderInformation> orderInformations) {
-        return orderPriceCalculator.createOrdersToPlaceMap(orderBook, new HashSet<>(orderInformations), marketInformation.getMarket());
+        return orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.getMarket());
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
@@ -202,7 +202,7 @@ public class TradingService {
 
         if (isPriceInBoarding) return Optional.empty();
 
-        Set<OrderInformation> orderInformations = orderInformationPlacedOrderMap.keySet();
+        var orderInformations = orderInformationPlacedOrderMap.keySet().stream().collect(Collectors.toList());
 
         return Optional.of(
                 orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, market)
