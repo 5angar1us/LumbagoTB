@@ -78,12 +78,15 @@ public class TradingService {
                     log.debug("Place orders in market " + marketInformation.getMarket() + " as " + optionalOrderToPlaces.get());
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
                 }
+                else {
+                    log.debug("No need to change the price of orders in " + marketInformation.getMarket());
+                }
                 long workTime = (System.currentTimeMillis() - start);
                 long currentSlepTime = marketInformation.getTradingDelay() - workTime;
 
 
                 if (currentSlepTime > 0) {
-                    log.debug("Sleep" + currentSlepTime);
+                    log.debug("Sleep time :" + currentSlepTime);
                     Thread.sleep(currentSlepTime);
                 }
 
