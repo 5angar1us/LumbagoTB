@@ -27,7 +27,7 @@ public class OrderServicesTest {
         ordersService = TestServiceInstances.getOrdersService();
     }
 
-    
+
     public void t(){
         String marketName = "GMT/USD";
         var marketService = new IMarketService.Base(httpClient);

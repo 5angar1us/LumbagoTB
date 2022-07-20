@@ -9,7 +9,6 @@ import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
-import org.aspectj.weaver.ast.Or;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,11 +27,13 @@ public class TradingService {
 
         this.log = log;
     }
+
     public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus) {
         this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion);
 
         this.tradeStatus = tradeStatus;
     }
+
     public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
         this.ordersService = ordersService;
         this.marketService = marketService;
@@ -62,6 +63,7 @@ public class TradingService {
             log.debug("Place orders in market" + marketInformation.getMarket());
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
+            long start = System.currentTimeMillis();
             while (anyClosed(getOrderStatuses(placedOrders)) == false && tradeStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = optionalCreateCorrectOrderToPlace(
@@ -76,8 +78,16 @@ public class TradingService {
                     log.debug("Place orders in market " + marketInformation.getMarket() + " as " + optionalOrderToPlaces.get());
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
                 }
-                log.debug("Sleep");
-                Thread.sleep(marketInformation.getTradingDelay());
+                long workTime = (System.currentTimeMillis() - start);
+                long currentSlepTime = marketInformation.getTradingDelay() - workTime;
+
+
+                if (currentSlepTime > 0) {
+                    log.debug("Sleep" + currentSlepTime);
+                    Thread.sleep(currentSlepTime);
+                }
+
+                start = System.currentTimeMillis();
             }
 
             log.debug("Close trap orders in market " + marketInformation.getMarket());
@@ -86,23 +96,24 @@ public class TradingService {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
-        }
-        catch (OrderAlreadyClosedException e){
+        } catch (OrderAlreadyClosedException e) {
             log.error(e.getMessage());
             try {
                 closeOrders(getOrdersBySide(marketInformation.getMarket(), tradeInformation.getBaseSide()));
+            } catch (OrderAlreadyClosedException ex) {
+                throw new RuntimeException(ex);
+            } catch (BadRequestByFtxException ex) {
+                throw new RuntimeException(ex);
             }
-            catch (OrderAlreadyClosedException ex){ throw new RuntimeException(ex);}
-            catch (BadRequestByFtxException ex) {  throw new RuntimeException(ex);}
 
-        }
-        catch (BadRequestByFtxException e) {
+        } catch (BadRequestByFtxException e) {
 
             throw new RuntimeException(e);
         }
 
     }
-    private OrderBook getOrderBook(){
+
+    private OrderBook getOrderBook() {
         return marketService.getOrderBook(marketInformation.getMarket(), 5);
     }
 
@@ -123,10 +134,10 @@ public class TradingService {
         return placedOrders;
     }
 
-    private List<Order> notClosedOrders(Stream<Order> orderStatusStream){
+    private List<Order> notClosedOrders(Stream<Order> orderStatusStream) {
         return orderStatusStream
-                 .filter(orderStatus -> orderStatus.getStatus() != EStatus.CLOSED)
-                 .collect(Collectors.toList());
+                .filter(orderStatus -> orderStatus.getStatus() != EStatus.CLOSED)
+                .collect(Collectors.toList());
     }
 
     private void closeOrders(Map<OrderInformation, PlacedOrder> placedOrders)
@@ -156,9 +167,9 @@ public class TradingService {
                 .map(placedOrder -> ordersService.getOrderStatus(placedOrder.getId()));
     }
 
-    private List<Order> getOrdersBySide(String marketName, ESide side){
+    private List<Order> getOrdersBySide(String marketName, ESide side) {
         return ordersService.getOpenOrders(marketName).stream()
-                .filter( openOrder -> openOrder.getSide() == side)
+                .filter(openOrder -> openOrder.getSide() == side)
                 .collect(Collectors.toList());
     }
 
