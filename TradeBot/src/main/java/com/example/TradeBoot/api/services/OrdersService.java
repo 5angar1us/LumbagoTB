@@ -3,6 +3,7 @@ package com.example.TradeBoot.api.services;
 import com.example.TradeBoot.api.domain.orders.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
 import com.example.TradeBoot.api.utils.OrderCancellationBuilder;
@@ -17,12 +18,12 @@ import java.util.List;
 @Service
 public class OrdersService {
 
-    private final HttpClientWorker httpClient;
+    private final IHttpClientWorker httpClient;
 
     private static final String ORDERS_PATH = "/orders";
 
     @Autowired
-    public OrdersService(HttpClientWorker httpClient) {
+    public OrdersService(IHttpClientWorker httpClient) {
         this.httpClient = httpClient;
     }
 

@@ -1,8 +1,6 @@
 package com.example.TradeBoot.configs;
 
-import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.http.HttpRequestFactory;
-import com.example.TradeBoot.api.http.HttpResponseHandler;
+import com.example.TradeBoot.api.http.*;
 import com.example.TradeBoot.api.http.auntification.Auntification;
 import com.example.TradeBoot.api.http.auntification.Encoder;
 import com.example.TradeBoot.api.http.auntification.HashAlgorithm;
@@ -45,11 +43,11 @@ public class ApiAuthConfiguration {
     }
 
     @Bean
-    public HttpClientWorker httpClientHelper() {
+    public IHttpClientWorker httpClientHelper() {
 
         HttpRequestFactory httpRequestFactory = new HttpRequestFactory(getAuth());
         HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
 
-        return new HttpClientWorker(httpRequestFactory, httpResponseHandler);
+        return new HttpClientWorkerWithDelay(new HttpClientWorker(httpRequestFactory, httpResponseHandler));
     }
 }

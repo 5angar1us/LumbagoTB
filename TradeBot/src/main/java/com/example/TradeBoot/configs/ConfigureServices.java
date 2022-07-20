@@ -1,6 +1,9 @@
 package com.example.TradeBoot.configs;
 
 
+import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
+import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

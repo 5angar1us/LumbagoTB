@@ -13,7 +13,7 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
     public ExtendedExecutor(int nThreads) {
         super(nThreads, // core threads
                 nThreads, // max threads
-                1L, // timeout
+                5L, // timeout
                 TimeUnit.MINUTES, // timeout units
                 new LinkedBlockingQueue<Runnable>() // work queue
         );
@@ -36,7 +36,8 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
             }
         }
         if (throwable != null) {
-            log.info(throwable.toString());
+            log.error(throwable.toString());
+            throwable.printStackTrace();
         }
     }
 }
