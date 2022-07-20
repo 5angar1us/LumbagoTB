@@ -75,7 +75,8 @@ public class HttpResponseHandler {
                 responseData.error().get()
         ));
 
-        switch (responseData.error().get()){
+        var errorMessage = responseData.error().get();
+        switch (errorMessage){
             case "Order already closed" -> throw new OrderAlreadyClosedException();
             default -> throw new UnknownErrorRequestByFtxException(
                     String.format("%s request. Status %d. Error: %s.",
