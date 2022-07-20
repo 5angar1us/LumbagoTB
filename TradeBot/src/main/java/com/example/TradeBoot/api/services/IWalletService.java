@@ -2,7 +2,7 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.wallet.Balance;
 import com.example.TradeBoot.api.domain.wallet.Coin;
-import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,12 +47,12 @@ public interface IWalletService {
     @Service
     class Base extends Abstract {
 
-        private final HttpClientWorker worker;
+        private final IHttpClientWorker worker;
 
         private final String WALLET_PATH = "/wallet";
 
         @Autowired
-        public Base(HttpClientWorker worker) {
+        public Base(IHttpClientWorker worker) {
             this.worker = worker;
         }
 

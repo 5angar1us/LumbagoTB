@@ -1,7 +1,7 @@
 package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.futures.Future;
-import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.Strings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,12 +18,12 @@ public interface IFutureService {
     @Service
     class Base implements IFutureService {
 
-        private final HttpClientWorker httpClient;
+        private final IHttpClientWorker httpClient;
 
         private final String FUTURES_PATH = "/futures";
 
         @Autowired
-        public Base(HttpClientWorker httpClient) {
+        public Base(IHttpClientWorker httpClient) {
             this.httpClient = httpClient;
         }
 
