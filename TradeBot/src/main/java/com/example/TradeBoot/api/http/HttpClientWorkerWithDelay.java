@@ -21,21 +21,23 @@ public class HttpClientWorkerWithDelay implements IHttpClientWorker {
 
     @Override
     public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
-        try {
-            long currentTime = System.currentTimeMillis();
-            var delayBetweenLastRequest = currentTime - lastRequestTime;
-            if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
-                Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
+
+        synchronized (httpClientWorker) {
+            try {
+                long currentTime = System.currentTimeMillis();
+                var delayBetweenLastRequest = currentTime - lastRequestTime;
+                if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
+                    Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
+                }
+
+                var requestResult = httpClientWorker.createPostRequest(uri, body);
+                lastRequestTime = System.currentTimeMillis();
+                return requestResult;
+
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
             }
-
-            var requestResult = httpClientWorker.createPostRequest(uri, body);
-            lastRequestTime = System.currentTimeMillis();
-            return requestResult;
-
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
         }
-
     }
 
     @Override
