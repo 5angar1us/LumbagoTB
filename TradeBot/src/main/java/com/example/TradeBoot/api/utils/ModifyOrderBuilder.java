@@ -10,12 +10,12 @@ public class ModifyOrderBuilder extends AbstactParameterBuilder {
     }
 
     public ModifyOrderBuilder TargetSize(BigDecimal size) {
-        addParameter("size", String.valueOf(size));
+        addParameter("size", size);
         return this;
     }
 
     public ModifyOrderBuilder TargetPrice(BigDecimal price) {
-        addParameter("price", String.valueOf(price));
+        addParameter("price", price);
         return this;
     }
 }

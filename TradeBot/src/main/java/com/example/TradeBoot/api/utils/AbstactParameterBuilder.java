@@ -6,13 +6,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 
 public abstract class AbstactParameterBuilder {
-    protected HashMap<String, String> parameters;
+    protected HashMap<String, Object> parameters;
 
     public AbstactParameterBuilder(int parameterCount){
         parameters = new HashMap<>(parameterCount);
     }
 
-    protected void addParameter(String parameterName, String value) {
+    protected void addParameter(String parameterName, Object value) {
         parameters.put(parameterName, value);
     }
 
