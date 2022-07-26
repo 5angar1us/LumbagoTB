@@ -7,6 +7,7 @@ import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.TradingService;
 import com.example.TradeBoot.ui.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
@@ -47,6 +48,8 @@ public abstract class AbstractTradingEngineService {
     protected List<ITradingRunnableEngine> engines = new ArrayList<>();
     protected ExtendedExecutor executorService;
 
+    protected FinancialInstrumentPositionsService financialInstrumentPositionsService;
+
     @Autowired
     public AbstractTradingEngineService(
             OrdersService ordersService,
@@ -54,13 +57,16 @@ public abstract class AbstractTradingEngineService {
             IWalletService walletService,
             OrderPriceCalculator orderPriceCalculator,
             ClosePositionInformationService closePositionInformationService,
-            ITradeSettingsService tradeSettingsService) {
+            ITradeSettingsService tradeSettingsService,
+            FinancialInstrumentPositionsService financialInstrumentPositionsService
+            ) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.walletService = walletService;
         this.orderPriceCalculator = orderPriceCalculator;
         this.closePositionInformationService = closePositionInformationService;
         this.tradeSettingsService = tradeSettingsService;
+        this.financialInstrumentPositionsService = financialInstrumentPositionsService;
     }
 
 
@@ -177,6 +183,7 @@ public abstract class AbstractTradingEngineService {
                 orderPriceCalculator,
                 marketInformation,
                 maximumDivination,
+                financialInstrumentPositionsService,
                 tradeStatus
         );
     }

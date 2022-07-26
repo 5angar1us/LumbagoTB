@@ -13,6 +13,7 @@ import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.TradingService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -32,6 +33,8 @@ public class SellCoinServiceTests {
 
     private static IWalletService walletService;
 
+    private static FinancialInstrumentPositionsService financialInstrumentPositionsService;
+
     @BeforeAll
     static void init() {
         httpClient = TestServiceInstances.getHttpClient();
@@ -39,6 +42,7 @@ public class SellCoinServiceTests {
         ordersService = TestServiceInstances.getOrdersService();
         marketService = TestServiceInstances.getMarketService();
         walletService = TestServiceInstances.getWalletService();
+        financialInstrumentPositionsService = TestServiceInstances.getFinancialInstrumentPositionsService();
 
     }
     @Test
@@ -68,8 +72,8 @@ public class SellCoinServiceTests {
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),
-                marketInformation, new Persent(0.3)
-        );
+                marketInformation, new Persent(0.3),
+                financialInstrumentPositionsService);
         //PrintAccountInfo();
         //PrintPosition(marketName);
         //PrintPositions();

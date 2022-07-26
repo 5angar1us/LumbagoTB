@@ -79,7 +79,7 @@ public interface ITradingRunnableEngine extends Runnable {
             while (this.tradeStatus.isNeedStop() == false) {
 
                 tradingService.workWithOrders(openPositionTradeInformation);
-                log.debug("work with orders end");
+                log.debug("Work with orders end");
                 var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
                         openPositionTradeInformation.getBaseSide(),
                         market);

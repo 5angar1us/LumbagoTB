@@ -5,6 +5,7 @@ import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.ui.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.stereotype.Service;
@@ -22,7 +23,8 @@ public class BaseTradingEngineService extends AbstractTradingEngineService {
             IWalletService.Base walletService,
             OrderPriceCalculator orderPriceCalculator,
             ClosePositionInformationService closePositionInformationService,
-            ITradeSettingsService tradeSettingsService)
+            ITradeSettingsService tradeSettingsService,
+            FinancialInstrumentPositionsService financialInstrumentPositionsService)
     {
         super(
                 ordersService,
@@ -30,7 +32,8 @@ public class BaseTradingEngineService extends AbstractTradingEngineService {
                 walletService,
                 orderPriceCalculator,
                 closePositionInformationService,
-                tradeSettingsService);
+                tradeSettingsService,
+                financialInstrumentPositionsService);
     }
 
 

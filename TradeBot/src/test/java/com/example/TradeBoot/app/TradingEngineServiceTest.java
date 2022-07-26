@@ -42,12 +42,17 @@ public class TradingEngineServiceTest {
                 TestServiceInstances.getWalletService(),
                 TestServiceInstances.getOrderPriceCalculator(),
                 TestServiceInstances.getClosePositionInformationService(),
-                mockTradeSettingsService
+                mockTradeSettingsService,
+                TestServiceInstances.getFinancialInstrumentPositionsService()
         );
 
         ordersService = TestServiceInstances.getOrdersService();
 
-        tradeStatusService = new TradeStatusService(mockTradeSettingsService, TestServiceInstances.getWalletService(), TestServiceInstances.getOrdersService(), TestServiceInstances.getPositionsService());
+        tradeStatusService = new TradeStatusService(
+                mockTradeSettingsService,
+                TestServiceInstances.getWalletService(),
+                TestServiceInstances.getOrdersService(),
+                TestServiceInstances.getPositionsService());
 
     }
 

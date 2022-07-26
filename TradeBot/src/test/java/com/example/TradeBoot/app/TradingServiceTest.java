@@ -1,18 +1,17 @@
 package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.http.HttpRequestFactory;
-import com.example.TradeBoot.api.http.HttpResponseHandler;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
+import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
 
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.TradingService;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -25,20 +24,16 @@ import java.util.List;
 public class TradingServiceTest {
 
     private static OrdersService ordersService;
-    private static IMarketService.Base marketService;
-
-    private static HttpClientWorker httpClient;
+    private static IMarketService marketService;
+    public static FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
     @BeforeAll
     static void init() {
-        HttpRequestFactory httpRequestFactory = new HttpRequestFactory(TestConfig.getAuntification());
-        HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
 
-        httpClient = new HttpClientWorker(httpRequestFactory, httpResponseHandler);
+        ordersService = TestServiceInstances.getOrdersService();
+        marketService = TestServiceInstances.getMarketService();
 
-        ordersService = new OrdersService(httpClient);
-        marketService = new IMarketService.Base(httpClient);
-
+        financialInstrumentPositionsService = TestServiceInstances.getFinancialInstrumentPositionsService();
     }
 
 
@@ -68,8 +63,8 @@ public class TradingServiceTest {
                 marketService,
                 new OrderPriceCalculator(),
                 marketInformation,
-                new Persent(1)
-        );
+                new Persent(1),
+                financialInstrumentPositionsService);
 
         TestUtils.printOpenOrders(marketName);
         System.out.println("Start catching slip");

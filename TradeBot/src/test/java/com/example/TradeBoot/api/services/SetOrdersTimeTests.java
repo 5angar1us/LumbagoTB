@@ -3,10 +3,7 @@ package com.example.TradeBoot.api.services;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.orders.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
-import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.http.HttpRequestFactory;
-import com.example.TradeBoot.api.http.HttpResponseHandler;
-import com.example.TradeBoot.configuration.TestConfig;
+import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,18 +12,16 @@ import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-public class OrdersTests {
+public class SetOrdersTimeTests {
 
-    private static HttpClientWorker httpClient;
     private static OrdersService ordersService;
+
+    private static IMarketService marketService;
 
     @BeforeAll
     static void init() {
-        HttpRequestFactory httpRequestFactory = new HttpRequestFactory(TestConfig.getAuntification());
-        HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
-
-        httpClient = new HttpClientWorker(httpRequestFactory, httpResponseHandler);
-        ordersService = new OrdersService(httpClient);
+        marketService = TestServiceInstances.getMarketService();
+        ordersService = TestServiceInstances.getOrdersService();
     }
 
     public void canSetOrder() {
@@ -116,10 +111,6 @@ public class OrdersTests {
     }
 
     public void defaultSetOrders(IPlaceOrders placeOrders, String marketName) {
-
-
-        var marketService = new IMarketService.Base(httpClient);
-
         TestUtils.printAccountInfo();
         TestUtils.printOpenOrders(marketName);
         Separator();

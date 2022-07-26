@@ -21,23 +21,22 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ExceptionTests {
 
-    private static HttpClientWorker httpClient;
     private static OrdersService ordersService;
+
+    private static IMarketService marketService;
 
     private static OrderPriceCalculator orderPriceCalculator;
 
-
     @BeforeAll
     static void init() {
-        httpClient = TestServiceInstances.getHttpClient();
         ordersService = TestServiceInstances.getOrdersService();
         orderPriceCalculator = TestServiceInstances.getOrderPriceCalculator();
+        marketService = TestServiceInstances.getMarketService();
     }
 
     @Test
     void orderAlreadyClosed() throws BadRequestByFtxException {
         String marketName = "GMT/USD";
-        var marketService = new IMarketService.Base(httpClient);
 
         var orderBook = marketService.getOrderBook(marketName, 20);
         var bestBid = orderBook.getBestBid().getPrice();
@@ -47,9 +46,9 @@ public class ExceptionTests {
         List<OrderInformation> orderInformations = new ArrayList<>();
         orderInformations.add(new OrderInformation(BigDecimal.valueOf(size), ESide.BUY, persentDistance));
 
-        var t = orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, marketName);
+        var ordersToPlaceMap = orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, marketName);
 
-        for (OrderToPlace value : t.values()) {
+        for (OrderToPlace value : ordersToPlaceMap.values()) {
             //System.out.println("OrderToPlace " + value.toString());
         }
 
@@ -57,7 +56,7 @@ public class ExceptionTests {
                 () -> {
                     try {
                         List<Order> placed = new ArrayList<>();
-                        for (OrderToPlace value : t.values()) {
+                        for (OrderToPlace value : ordersToPlaceMap.values()) {
                             placed.add(ordersService.placeOrder(value));
                         }
 

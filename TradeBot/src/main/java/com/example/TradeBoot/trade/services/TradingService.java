@@ -22,24 +22,25 @@ public class TradingService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradingService.class);
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log) {
-        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, tradeStatus);
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService, tradeStatus);
 
         this.log = log;
     }
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus) {
-        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion);
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
+        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
 
         this.tradeStatus = tradeStatus;
     }
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion) {
+    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceCalculator = orderPriceCalculator;
         this.marketInformation = marketInformation;
         this.maximumDiviantion = maximumDiviantion;
+        this.financialInstrumentPositionsService = financialInstrumentPositionsService;
 
         this.log = defaultLog;
         this.tradeStatus = new TradeStatus(false);
@@ -54,6 +55,8 @@ public class TradingService {
     private MarketInformation marketInformation;
 
     private Persent maximumDiviantion;
+
+    private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private TradeStatus tradeStatus;
 
     public void workWithOrders(TradeInformation tradeInformation) {
@@ -64,7 +67,9 @@ public class TradingService {
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
             long start = System.currentTimeMillis();
-            while (anyClosed(getOrderStatuses(placedOrders)) == false && tradeStatus.isNeedStop() == false) {
+            while (financialInstrumentPositionsService.isPositionOpen(marketInformation.getMarket()) == false
+                    && anyClosed(getOrderStatuses(placedOrders)) == false
+                    && tradeStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = optionalCreateCorrectOrderToPlace(
                         placedOrders,
@@ -205,7 +210,7 @@ public class TradingService {
 
         if (isPriceInBoarding) return Optional.empty();
 
-        var orderInformations = orderInformationPlacedOrderMap.keySet().stream().collect(Collectors.toList());
+        var orderInformations = new ArrayList<>(orderInformationPlacedOrderMap.keySet());
 
         return Optional.of(
                 orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, market)
