@@ -9,5 +9,5 @@ public interface IHttpClientWorker {
 
     boolean createDeleteRequest(String uri) throws BadRequestByFtxException;
 
-    boolean createDelete(String uri, String body) throws BadRequestByFtxException;
+    boolean createDeleteRequest(String uri, String body) throws BadRequestByFtxException;
 }

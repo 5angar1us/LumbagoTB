@@ -1,6 +1,7 @@
 package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.account.Position;
+import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +38,10 @@ public interface IPositionsService {
     @Service
     class Base extends Abstract {
 
-        private IHttpClientWorker httpClient;
+        private HttpClientWorkerWithDelay httpClient;
 
         @Autowired
-        public Base(IHttpClientWorker httpClient) {
+        public Base(HttpClientWorkerWithDelay httpClient) {
             this.httpClient = httpClient;
         }
 

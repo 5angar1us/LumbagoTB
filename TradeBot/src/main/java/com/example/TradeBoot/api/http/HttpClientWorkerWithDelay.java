@@ -2,11 +2,14 @@ package com.example.TradeBoot.api.http;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 
-public class HttpClientWorkerWithDelay implements IHttpClientWorker {
+import java.util.HashMap;
+import java.util.Map;
 
-    private long lastRequestTime = System.currentTimeMillis();
+public class HttpClientWorkerWithDelay {
 
     private final long MINIMUM_DELAY_MS = 100;
+
+    private Map<String, Long> lastRequestToMarketTime = new HashMap<>();
 
     private IHttpClientWorker httpClientWorker;
 
@@ -14,24 +17,29 @@ public class HttpClientWorkerWithDelay implements IHttpClientWorker {
         this.httpClientWorker = httpClientWorker;
     }
 
-    @Override
+
     public String createGetRequest(String uri) {
         return httpClientWorker.createGetRequest(uri);
     }
 
-    @Override
-    public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
+
+    public String createPostRequest(String uri, String body, String market) throws BadRequestByFtxException {
 
         synchronized (httpClientWorker) {
             try {
-                long currentTime = System.currentTimeMillis();
-                var delayBetweenLastRequest = currentTime - lastRequestTime;
-                if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
-                    Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
-                }
 
+
+                Long lastRequestTime = lastRequestToMarketTime.get(market);
+                if(lastRequestTime != null){
+                    long currentTime = System.currentTimeMillis();
+                    var delayBetweenLastRequest = currentTime - lastRequestTime;
+                    if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
+                        Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
+                    }
+                }
                 var requestResult = httpClientWorker.createPostRequest(uri, body);
-                lastRequestTime = System.currentTimeMillis();
+                lastRequestToMarketTime.put(market, System.currentTimeMillis());
+
                 return requestResult;
 
             } catch (InterruptedException e) {
@@ -40,13 +48,13 @@ public class HttpClientWorkerWithDelay implements IHttpClientWorker {
         }
     }
 
-    @Override
+
     public boolean createDeleteRequest(String uri) throws BadRequestByFtxException {
         return httpClientWorker.createDeleteRequest(uri);
     }
 
-    @Override
-    public boolean createDelete(String uri, String body) throws BadRequestByFtxException {
-        return httpClientWorker.createDelete(uri, body);
+
+    public boolean createDeleteRequest(String uri, String body) throws BadRequestByFtxException {
+        return httpClientWorker.createDeleteRequest(uri, body);
     }
 }

@@ -44,7 +44,7 @@ public class HttpClientWorker implements IHttpClientWorker {
     }
 
     @Override
-    public boolean createDelete(String uri, String body) throws BadRequestByFtxException {
+    public boolean createDeleteRequest(String uri, String body) throws BadRequestByFtxException {
         HttpRequest request = httpRequestFactory.createDeleteRequest(uri, body);
         HttpResponse<String> response = sendRequest(request);
         return httpResponseHandler.handleDeleteResponse(response);

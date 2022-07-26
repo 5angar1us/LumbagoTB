@@ -1,6 +1,7 @@
 package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.futures.Future;
+import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.Strings;
@@ -18,12 +19,12 @@ public interface IFutureService {
     @Service
     class Base implements IFutureService {
 
-        private final IHttpClientWorker httpClient;
+        private final HttpClientWorkerWithDelay httpClient;
 
         private final String FUTURES_PATH = "/futures";
 
         @Autowired
-        public Base(IHttpClientWorker httpClient) {
+        public Base(HttpClientWorkerWithDelay httpClient) {
             this.httpClient = httpClient;
         }
 

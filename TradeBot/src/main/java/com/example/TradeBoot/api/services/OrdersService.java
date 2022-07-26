@@ -2,7 +2,7 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.orders.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
-import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
@@ -18,12 +18,12 @@ import java.util.List;
 @Service
 public class OrdersService {
 
-    private final IHttpClientWorker httpClient;
+    private final HttpClientWorkerWithDelay httpClient;
 
     private static final String ORDERS_PATH = "/orders";
 
     @Autowired
-    public OrdersService(IHttpClientWorker httpClient) {
+    public OrdersService(HttpClientWorkerWithDelay httpClient) {
         this.httpClient = httpClient;
     }
 
@@ -47,7 +47,7 @@ public class OrdersService {
 
     public PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException {
         String placeOrderJson = JsonModelConverter.convertModelToJson(order);
-        String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson);
+        String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson, order.getMarket());
         return JsonModelConverter.convertJsonToModel(PlacedOrder.class, placedOrderJson);
     }
 
@@ -79,7 +79,7 @@ public class OrdersService {
 
         String body = builder.toString();
 
-        return this.httpClient.createDelete(uri, body);
+        return this.httpClient.createDeleteRequest(uri, body);
     }
 
     public boolean cancelAllOrderByMarket(String marketName) throws BadRequestByFtxException {
@@ -102,7 +102,7 @@ public class OrdersService {
         return JsonModelConverter.convertJsonToModel(Order.class, json);
     }
 
-    public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadRequestByFtxException {
+    public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId, String market) throws BadRequestByFtxException {
         String uri = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .path("/").pathSegment(orderId)
@@ -110,15 +110,16 @@ public class OrdersService {
                 .toUriString();
 
         String body = builder.toString();
-        String json = this.httpClient.createPostRequest(uri, body);
+        String json = this.httpClient.createPostRequest(uri, body, market);
         return JsonModelConverter.convertJsonToModel(PlacedOrder.class, json);
     }
-    public PlacedOrder modifyOrderPrice(String orderID, BigDecimal price) throws BadRequestByFtxException {
+    public PlacedOrder modifyOrderPrice(PlacedOrder placedOrder, BigDecimal price) throws BadRequestByFtxException {
 
         var builder = new ModifyOrderBuilder()
                 .TargetPrice(price);
+                //.TargetSize(placedOrder.getSize());
 
-        return modifyOrderBy(builder, orderID);
+        return modifyOrderBy(builder, placedOrder.getId(), placedOrder.getMarket());
 
     }
 }
