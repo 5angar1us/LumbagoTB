@@ -24,49 +24,45 @@ public class ClosePositionInformationService {
 
     private IPositionsService IPositionsService;
 
+    private CoinHandler coinHandler;
+
+    private FutureHandler futureHandler;
+
     @Autowired
-    public ClosePositionInformationService(IWalletService walletService, FinancialInstrumentService financialInstrumentService, IPositionsService IPositionsService) {
+    public ClosePositionInformationService(
+            IWalletService walletService,
+            FinancialInstrumentService financialInstrumentService,
+            IPositionsService IPositionsService,
+            CoinHandler coinHandler,
+            FutureHandler futureHandler) {
         this.walletService = walletService;
         this.financialInstrumentService = financialInstrumentService;
         this.IPositionsService = IPositionsService;
+        this.coinHandler = coinHandler;
+        this.futureHandler = futureHandler;
     }
 
 
-    public Optional<TradeInformation> createTradeInformation(ESide baseSide, String marketName) {
+    public Optional<TradeInformation> createTradeInformation(String marketName) {
 
         var instrumentType = financialInstrumentService.getInstrumentType(marketName);
         return switch (instrumentType) {
-            case COIN -> handleAsCoin(baseSide, marketName);
-            case FUTURE -> handleAsFuture(baseSide, marketName);
+            case COIN -> handle(coinHandler.handle(marketName));
+            case FUTURE -> handle(futureHandler.handle(marketName));
             case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
         };
     }
 
-    private Optional<TradeInformation> handleAsCoin(ESide baseSide, String marketName) {
-        var balance = walletService.getBalanceByMarketOrTrow(marketName);
-        var totalCost = balance.getTotal().abs();
-        var volume = balance.getTotal();
 
-        return handle(baseSide, volume, totalCost);
-    }
+    private Optional<TradeInformation> handle(BigDecimal volume) {
 
-    private Optional<TradeInformation> handleAsFuture(ESide baseSide, String marketName) {
-        var position = IPositionsService.getPositionByMarketOrTrow(marketName);
-        var volume = position.getNetSize();
-        var totalCost = position.getCost();
-
-        return handle(baseSide, volume, totalCost);
-    }
-
-    private Optional<TradeInformation> handle(ESide baseSide, BigDecimal volume, BigDecimal totalCost) {
-
-        var isTotalBalanceIsZero = BigDecimalUtils.check(
-                totalCost,
+        var isTotalVolumeIsZero = BigDecimalUtils.check(
+                volume,
                 BigDecimalUtils.EOperator.EQUALS,
                 BigDecimal.ZERO
         );
 
-        var newSide = ESideChange.change(baseSide);
+        var newSide = createNewSide(volume);
 
         var isNeedSell = newSide == ESide.SELL
                 && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO);
@@ -74,7 +70,7 @@ public class ClosePositionInformationService {
         var isNeedBuy = newSide == ESide.BUY
                 && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO);
 
-        if (isTotalBalanceIsZero || (isNeedBuy == false & isNeedSell == false))
+        if (isTotalVolumeIsZero || (newSide == ESide.EMPTY))
             return Optional.empty();
 
         List<OrderInformation> orderInformations = new ArrayList<>();
@@ -87,6 +83,17 @@ public class ClosePositionInformationService {
 
         return Optional.of(
                 new TradeInformation(orderInformations));
+    }
+
+    private ESide createNewSide(BigDecimal volume){
+        var newSide = ESide.EMPTY;
+        if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO)) {
+            newSide = ESide.SELL;
+        } else if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO)) {
+            newSide = ESide.BUY;
+        }
+
+        return newSide;
     }
 }
 

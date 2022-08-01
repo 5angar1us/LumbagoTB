@@ -9,6 +9,8 @@ import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.CoinHandler;
+import com.example.TradeBoot.trade.services.FutureHandler;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -30,10 +32,13 @@ public class TestClosePosition {
         mockWalletService = new IWalletService.Mock();
         mockPositionsService = new IPositionsService.Mock();
 
+        var coinHandler = new CoinHandler(TestServiceInstances.getWalletService());
+        var futureHandler = new FutureHandler(TestServiceInstances.getPositionsService());
+
         closePositionInformationService = new ClosePositionInformationService(
                 mockWalletService,
                 TestServiceInstances.getFinancialInstrumentService(),
-                mockPositionsService);
+                mockPositionsService, coinHandler, futureHandler);
     }
 
     @Test
@@ -41,13 +46,12 @@ public class TestClosePosition {
 
         var defaultPosition = TestDefaultObject.getBuyPosition();
 
-        var baseSide = ESide.BUY;
         var marketName = defaultPosition.getFuture();
 
         mockPositionsService.setPositions(List.of(defaultPosition));
 
 
-        var tradeInformation = closePositionInformationService.createTradeInformation(baseSide, marketName)
+        var tradeInformation = closePositionInformationService.createTradeInformation(marketName)
                 .get();
 
 
@@ -62,13 +66,12 @@ public class TestClosePosition {
     {
         var defaultBalance = TestDefaultObject.getBalance();
 
-        var baseSide = ESide.BUY;
         var marketName = defaultBalance.getCoin() + "/USD";
 
         mockWalletService.setBalances(List.of(defaultBalance));
 
 
-        var tradeInformation = closePositionInformationService.createTradeInformation(baseSide, marketName)
+        var tradeInformation = closePositionInformationService.createTradeInformation(marketName)
                 .get();
 
 

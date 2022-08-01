@@ -1,32 +1,23 @@
 package com.example.TradeBoot.trade.model;
 
-import com.example.TradeBoot.api.domain.markets.ESide;
-
 import java.util.List;
 import java.util.Objects;
 
 public class TradeInformation {
-    public void setOrderInformations(List<OrderInformation> orderInformations) {
-        Objects.requireNonNull(orderInformations);
-        if (orderInformations.size() == 0) throw new IllegalArgumentException("orderInformation size 0");
 
-        ESide defaultSide = orderInformations.get(0).getSide();
-        var allInOneSide = orderInformations.stream()
-                .allMatch( orderInformation -> orderInformation.getSide().equals(defaultSide));
-
-        if(allInOneSide == false) throw new IllegalArgumentException("orderInformation not all in one side");
-
-        this.orderInformations = orderInformations;
-    }
-
-    public TradeInformation(List<OrderInformation> orderInformations) {
-        setOrderInformations(orderInformations);
-    }
-
-    public ESide getBaseSide() {
-        return orderInformations.get(0).getSide();
-    }
     private  List<OrderInformation> orderInformations;
+
+    public void setOrderInformation(List<OrderInformation> orderInformation) {
+        Objects.requireNonNull(orderInformation);
+        if (orderInformation.size() == 0) throw new IllegalArgumentException("orderInformation size 0");
+
+        this.orderInformations = orderInformation;
+    }
+
+    public TradeInformation(List<OrderInformation> orderInformation) {
+        setOrderInformation(orderInformation);
+    }
+
     public List<OrderInformation> getOrderInformations() {
         return orderInformations;
     }

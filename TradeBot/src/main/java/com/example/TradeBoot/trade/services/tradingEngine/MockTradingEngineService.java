@@ -5,6 +5,7 @@ import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.ui.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.stereotype.Service;
@@ -21,7 +22,8 @@ public class MockTradingEngineService extends AbstractTradingEngineService {
             IWalletService walletService,
             OrderPriceCalculator orderPriceCalculator,
             ClosePositionInformationService closePositionInformationService,
-            ITradeSettingsService tradeSettingsService)
+            ITradeSettingsService tradeSettingsService,
+            FinancialInstrumentPositionsService financialInstrumentPositionsService)
     {
         super(
                 ordersService,
@@ -29,7 +31,8 @@ public class MockTradingEngineService extends AbstractTradingEngineService {
                 walletService,
                 orderPriceCalculator,
                 closePositionInformationService,
-                tradeSettingsService);
+                tradeSettingsService,
+                financialInstrumentPositionsService);
     }
 
 
@@ -54,7 +57,9 @@ public class MockTradingEngineService extends AbstractTradingEngineService {
                             closePositionInformationService,
                             tradingOrderInfoPair.tradeInformation(),
                             tradingOrderInfoPair.market(),
-                            tradeStatus);
+                            tradeStatus,
+                            new IPositionStatus.OpenPositionStatus(financialInstrumentPositionsService),
+                            new IPositionStatus.ClosePositionStatus(financialInstrumentPositionsService));
                 })
                 .collect(Collectors.toList());
 

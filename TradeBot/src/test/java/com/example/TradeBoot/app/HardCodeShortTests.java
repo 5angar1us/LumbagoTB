@@ -14,8 +14,8 @@ import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
-import com.example.TradeBoot.trade.services.ClosePositionInformationService;
-import com.example.TradeBoot.trade.services.TradingService;
+import com.example.TradeBoot.trade.services.*;
+import com.example.TradeBoot.trade.services.tradingEngine.IPositionStatus;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -33,6 +33,7 @@ public class HardCodeShortTests {
     private static IMarketService marketService;
     private static ClosePositionInformationService closePositionInformationService;
     private static IWalletService walletService;
+    private static FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
     @BeforeAll
     static void init() {
@@ -42,7 +43,14 @@ public class HardCodeShortTests {
         marketService = TestServiceInstances.getMarketService();
         walletService = TestServiceInstances.getWalletService();
 
-        closePositionInformationService = new ClosePositionInformationService(walletService, TestServiceInstances.getFinancialInstrumentService() , positionsService);
+        var coinHandler = new CoinHandler(walletService);
+        var futureHandler = new FutureHandler(positionsService);
+
+        closePositionInformationService = new ClosePositionInformationService(
+                walletService,
+                TestServiceInstances.getFinancialInstrumentService(), positionsService, coinHandler, futureHandler);
+
+        financialInstrumentPositionsService = TestServiceInstances.getFinancialInstrumentPositionsService();
     }
 
 
@@ -78,9 +86,8 @@ public class HardCodeShortTests {
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 
 
-        var closePostionMarketTradeInformation = closePositionInformationService.createTradeInformation(
-                tradeInformation.getBaseSide(),
-                marketInformation.getMarket());
+        var closePostionMarketTradeInformation = closePositionInformationService
+                .createTradeInformation(marketInformation.getMarket());
 
         if (closePostionMarketTradeInformation.isPresent()) {
             System.out.println("Need to close position");
@@ -140,8 +147,8 @@ public class HardCodeShortTests {
                 marketService,
                 new OrderPriceCalculator(),
                 marketInformation,
-                new Persent(1)
-        );
+                new Persent(1),
+                financialInstrumentPositionsService);
 
     }
 
@@ -169,12 +176,20 @@ public class HardCodeShortTests {
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),
-                marketInformation, new Persent(0.5)
-        );
+                marketInformation, new Persent(0.5),
+                financialInstrumentPositionsService);
 
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 
-        tradingService.workWithOrders(tradeInformation);
+        var positionStatus = new IPositionStatus() {
+
+            @Override
+            public boolean getPositionStatus(String marketName) {
+                return false;
+            }
+        };
+
+        tradingService.workWithOrders(positionStatus, tradeInformation);
     }
 
 
