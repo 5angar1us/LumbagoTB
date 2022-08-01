@@ -3,6 +3,8 @@ package com.example.TradeBoot.trade.services;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.IPositionsService;
 
+import java.math.BigDecimal;
+
 public class FutureHandler implements Ihandler{
 
     IPositionsService positionsService;
@@ -12,11 +14,9 @@ public class FutureHandler implements Ihandler{
     }
 
     @Override
-    public OpenPositionInfo handle(ESide baseSide, String marketName) {
+    public BigDecimal handle(String marketName) {
         var position = positionsService.getPositionByMarketOrTrow(marketName);
         var volume = position.getNetSize();
-        var totalCost = position.getCost();
-
-        return new OpenPositionInfo(baseSide, volume, totalCost);
+        return volume;
     }
 }

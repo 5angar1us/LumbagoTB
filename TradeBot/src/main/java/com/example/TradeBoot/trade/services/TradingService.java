@@ -1,14 +1,15 @@
 package com.example.TradeBoot.trade.services;
 
-import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
 import com.example.TradeBoot.api.domain.orders.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
+import com.example.TradeBoot.trade.services.tradingEngine.IPositionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,15 +60,20 @@ public class TradingService {
     private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private TradeStatus tradeStatus;
 
-    public void workWithOrders(TradeInformation tradeInformation) {
+    public void workWithOrders(IPositionStatus positionStatus, TradeInformation tradeInformation) {
+
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
-        log.debug("Start place orders as ", ordersToPlace.values());
+
+        log.debug("Start place orders as ", ordersToPlace.values().stream().collect(Collectors.toList()));
+
         try {
-            log.debug("Place orders in market" + marketInformation.getMarket());
+            log.debug("Place orders");
+
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
             long start = System.currentTimeMillis();
-            while (financialInstrumentPositionsService.isPositionOpen(marketInformation.getMarket()) == false
+
+            while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
                     && anyClosed(getOrderStatuses(placedOrders)) == false
                     && tradeStatus.isNeedStop() == false) {
 
@@ -78,47 +84,59 @@ public class TradingService {
 
                 if (optionalOrderToPlaces.isPresent()) {
 
-                    log.debug("Close orders to change price in " + marketInformation.getMarket());
-                    closeOrders(placedOrders);
-                    log.debug("Place orders in market " + marketInformation.getMarket() + " as " + optionalOrderToPlaces.get());
+                    log.debug("Close orders to change price");
+
+                    closeOrdersOnMarket(marketInformation.getMarket());
+
+                    log.debug("Place orders in market as " + optionalOrderToPlaces.get());
+
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
-                }
-                else {
-                    log.debug("No need to change the price of orders in " + marketInformation.getMarket());
+                } else {
+                    log.debug("No need to change the price of orders");
                 }
                 long workTime = (System.currentTimeMillis() - start);
-                long currentSlepTime = marketInformation.getTradingDelay() - workTime;
+                long currentSleepTime = marketInformation.getTradingDelay() - workTime;
 
-
-                if (currentSlepTime > 0) {
-                    log.debug("Sleep time :" + currentSlepTime);
-                    Thread.sleep(currentSlepTime);
+                if (currentSleepTime > 0) {
+                    log.debug("Sleep time : " + currentSleepTime);
+                    Thread.sleep(currentSleepTime);
                 }
 
                 start = System.currentTimeMillis();
             }
 
-            log.debug("Close trap orders in market " + marketInformation.getMarket());
-            closeOrders(notClosedOrders(getOrderStatuses(placedOrders)));
+            log.debug("Close trap orders");
+
+            closeOrdersOnMarket(marketInformation.getMarket());
 
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
         } catch (OrderAlreadyClosedException e) {
-            log.error(e.getMessage());
-            try {
-                closeOrders(getOrdersBySide(marketInformation.getMarket(), tradeInformation.getBaseSide()));
-            } catch (OrderAlreadyClosedException ex) {
-                throw new RuntimeException(ex);
-            } catch (BadRequestByFtxException ex) {
-                throw new RuntimeException(ex);
-            }
+            CloseOrdersInCatch(e);
 
         } catch (BadRequestByFtxException e) {
 
             throw new RuntimeException(e);
+        } catch (UnceckedIOException e){
+            CloseOrdersInCatch(e);
         }
 
+
+    }
+
+    private void CloseOrdersInCatch(Exception e){
+        try {
+            Thread.sleep(200);
+            log.error(e.getMessage());
+            closeOrdersOnMarket(marketInformation.getMarket());
+        }
+        catch (InterruptedException interruptedException){
+            throw new RuntimeException(interruptedException);
+        }
+        catch (BadRequestByFtxException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private OrderBook getOrderBook() {
@@ -162,12 +180,9 @@ public class TradingService {
         }
     }
 
-//    private void closeOrders(List<OpenOrder> orders)
-//            throws BadRequestByFtxException {
-//        for (OpenOrder placedOrder : orders) {
-//            ordersService.cancelOrder(placedOrder.getId());
-//        }
-//    }
+    private void closeOrdersOnMarket(String marketName) throws BadRequestByFtxException {
+        ordersService.cancelAllOrderByMarket(marketName);
+    }
 
     private Stream<Order> getOrderStatuses(Map<OrderInformation, PlacedOrder> placedOrders) {
         return placedOrders.values()
@@ -175,9 +190,9 @@ public class TradingService {
                 .map(placedOrder -> ordersService.getOrderStatus(placedOrder.getId()));
     }
 
-    private List<Order> getOrdersBySide(String marketName, ESide side) {
+    private List<Order> getOrders(String marketName) {
         return ordersService.getOpenOrders(marketName).stream()
-                .filter(openOrder -> openOrder.getSide() == side)
+                .filter(openOrder -> openOrder.getStatus() != EStatus.CLOSED)
                 .collect(Collectors.toList());
     }
 

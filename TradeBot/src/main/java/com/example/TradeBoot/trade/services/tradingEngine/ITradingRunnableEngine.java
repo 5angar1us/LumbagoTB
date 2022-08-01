@@ -3,6 +3,7 @@ package com.example.TradeBoot.trade.services.tradingEngine;
 import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.model.TradeStatus;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.TradingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,17 +27,25 @@ public interface ITradingRunnableEngine extends Runnable {
 
         protected String market;
 
+        protected IPositionStatus openPositionStatus;
+
+        protected IPositionStatus closePositionStatus;
+
         public Abstract(
                 TradingService tradingService,
                 ClosePositionInformationService closePositionInformationService,
                 TradeInformation openPositionTradeInformation,
                 String market,
-                TradeStatus tradeStatus) {
+                TradeStatus tradeStatus,
+                IPositionStatus openPositionStatus,
+                IPositionStatus closePositionStatus) {
             this.tradingService = tradingService;
             this.closePositionInformationService = closePositionInformationService;
             this.openPositionTradeInformation = openPositionTradeInformation;
             this.market = market;
             this.tradeStatus = tradeStatus;
+            this.openPositionStatus = openPositionStatus;
+            this.closePositionStatus = closePositionStatus;
         }
 
         @Override
@@ -57,14 +66,18 @@ public interface ITradingRunnableEngine extends Runnable {
                 ClosePositionInformationService closePositionInformationService,
                 TradeInformation openPositionTradeInformation,
                 String market,
-                TradeStatus tradeStatus) {
+                TradeStatus tradeStatus,
+                IPositionStatus openPositionStatus,
+                IPositionStatus closePositionStatus) {
 
             super(
                     tradingService,
                     closePositionInformationService,
                     openPositionTradeInformation,
                     market,
-                    tradeStatus);
+                    tradeStatus,
+                    openPositionStatus,
+                    closePositionStatus);
         }
 
         @Override
@@ -72,24 +85,26 @@ public interface ITradingRunnableEngine extends Runnable {
             final Thread currentThread = Thread.currentThread();
             final String defaultName = currentThread.getName();
 
-            currentThread.setName(market + " " + openPositionTradeInformation.getBaseSide());
-            log.debug("Start Engine " + market + " " + openPositionTradeInformation.getBaseSide());
+
+            currentThread.setName(market);
+            log.debug("Start Engine " + market);
             isStopped = false;
 
             while (this.tradeStatus.isNeedStop() == false) {
 
-                tradingService.workWithOrders(openPositionTradeInformation);
+                tradingService.workWithOrders(openPositionStatus, openPositionTradeInformation);
                 log.debug("Work with orders end");
-                var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
-                        openPositionTradeInformation.getBaseSide(),
-                        market);
+                var closePositionTradeInformation = closePositionInformationService
+                        .createTradeInformation(market);
 
 
                 if (closePositionTradeInformation.isPresent()) {
-                    tradingService.workWithOrders(closePositionTradeInformation.get());
+                    tradingService.workWithOrders(closePositionStatus, closePositionTradeInformation.get());
+                    log.debug("Position closed");
                 }
+                log.debug("Trade cycle ended");
             }
-            log.debug("Stop Engine " + market + " " + openPositionTradeInformation.getBaseSide());
+            log.debug("Stop Engine " + market);
             currentThread.setName(defaultName);
 
             isStopped = true;
@@ -108,14 +123,18 @@ public interface ITradingRunnableEngine extends Runnable {
                 ClosePositionInformationService closePositionInformationService,
                 TradeInformation openPositionTradeInformation,
                 String market,
-                TradeStatus tradeStatus) {
+                TradeStatus tradeStatus,
+                IPositionStatus openPositionStatus,
+                IPositionStatus closePositionStatus) {
 
             super(
                     tradingService,
                     closePositionInformationService,
                     openPositionTradeInformation,
                     market,
-                    tradeStatus);
+                    tradeStatus,
+                    openPositionStatus,
+                    closePositionStatus);
         }
 
         @Override
@@ -123,17 +142,16 @@ public interface ITradingRunnableEngine extends Runnable {
 
             final Thread currentThread = Thread.currentThread();
             final String defaultName = currentThread.getName();
-            currentThread.setName("Trade in market " + market + " " + openPositionTradeInformation.getBaseSide());
+            currentThread.setName("Trade in market " + market);
             isStopped = false;
 
-            tradingService.workWithOrders(openPositionTradeInformation);
+            tradingService.workWithOrders(openPositionStatus, openPositionTradeInformation);
 
-            var closePositionTradeInformation = closePositionInformationService.createTradeInformation(
-                    openPositionTradeInformation.getBaseSide(),
-                    market);
+            var closePositionTradeInformation = closePositionInformationService
+                    .createTradeInformation(market);
 
             if (closePositionTradeInformation.isPresent()) {
-                tradingService.workWithOrders(closePositionTradeInformation.get());
+                tradingService.workWithOrders(closePositionStatus, closePositionTradeInformation.get());
             }
 
             currentThread.setName(defaultName);

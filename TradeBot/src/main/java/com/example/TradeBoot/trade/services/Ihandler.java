@@ -1,11 +1,13 @@
 package com.example.TradeBoot.trade.services;
 
+import com.example.TradeBoot.BigDecimalUtils;
 import com.example.TradeBoot.api.domain.markets.ESide;
 
 import java.math.BigDecimal;
 
 public interface Ihandler {
-    OpenPositionInfo handle(ESide baseSide, String marketName);
+    BigDecimal handle(String marketName);
+
 }
 
-record OpenPositionInfo(ESide baseSide, BigDecimal volume, BigDecimal totalCost) {}
+record OpenPositionInfo(ESide newSide, BigDecimal volume, BigDecimal totalCost) {}

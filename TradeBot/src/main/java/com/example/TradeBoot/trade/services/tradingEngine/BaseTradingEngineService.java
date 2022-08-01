@@ -59,7 +59,9 @@ public class BaseTradingEngineService extends AbstractTradingEngineService {
                             closePositionInformationService,
                             tradingOrderInfoPair.tradeInformation(),
                             tradingOrderInfoPair.market(),
-                            tradeStatus);
+                            tradeStatus,
+                            new IPositionStatus.OpenPositionStatus(financialInstrumentPositionsService),
+                            new IPositionStatus.ClosePositionStatus(financialInstrumentPositionsService));
                 })
                 .collect(Collectors.toList());
 

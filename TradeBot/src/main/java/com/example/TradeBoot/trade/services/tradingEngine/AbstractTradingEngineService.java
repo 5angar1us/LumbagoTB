@@ -140,31 +140,12 @@ public abstract class AbstractTradingEngineService {
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
-        var tradeInformationsLong = tradeInformations.stream()
-                .filter(tradeInfo -> tradeInfo.getSide() == ESide.BUY)
-                .collect(Collectors.toList());
-
-        var tradeInformationsShort = tradeInformations.stream()
-                .filter(tradeInfo -> tradeInfo.getSide() == ESide.SELL)
-                .collect(Collectors.toList());
-
-        if(tradeInformationsLong.size() > 0){
-            tradingOrderInfoPairPairs.add(
-                    new TradingOrderInfoPair(
-                            createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
-                            new TradeInformation(tradeInformationsLong),
-                            marketInformation.getMarket()
-                    ));
-        }
-
-        if(tradeInformationsShort.size() > 0){
-            tradingOrderInfoPairPairs.add(
-                    new TradingOrderInfoPair(
-                            createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
-                            new TradeInformation(tradeInformationsShort),
-                            marketInformation.getMarket()
-                    ));
-        }
+        tradingOrderInfoPairPairs.add(
+                new TradingOrderInfoPair(
+                        createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
+                        new TradeInformation(tradeInformations),
+                        marketInformation.getMarket()
+                ));
 
         return tradingOrderInfoPairPairs;
     }

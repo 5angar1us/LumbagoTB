@@ -43,46 +43,57 @@ public class ClosePositionInformationService {
     }
 
 
-    public Optional<TradeInformation> createTradeInformation(ESide baseSide, String marketName) {
+    public Optional<TradeInformation> createTradeInformation(String marketName) {
 
         var instrumentType = financialInstrumentService.getInstrumentType(marketName);
         return switch (instrumentType) {
-            case COIN -> handle(coinHandler.handle(baseSide,marketName));
-            case FUTURE -> handle(futureHandler.handle(baseSide, marketName));
+            case COIN -> handle(coinHandler.handle(marketName));
+            case FUTURE -> handle(futureHandler.handle(marketName));
             case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
         };
     }
 
 
-    private Optional<TradeInformation> handle(OpenPositionInfo openPositionInfo) {
+    private Optional<TradeInformation> handle(BigDecimal volume) {
 
-        var isTotalBalanceIsZero = BigDecimalUtils.check(
-                openPositionInfo.totalCost(),
+        var isTotalVolumeIsZero = BigDecimalUtils.check(
+                volume,
                 BigDecimalUtils.EOperator.EQUALS,
                 BigDecimal.ZERO
         );
 
-        var newSide = ESideChange.change(openPositionInfo.baseSide());
+        var newSide = createNewSide(volume);
 
         var isNeedSell = newSide == ESide.SELL
-                && BigDecimalUtils.check(openPositionInfo.volume(), BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO);
+                && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO);
 
         var isNeedBuy = newSide == ESide.BUY
-                && BigDecimalUtils.check(openPositionInfo.volume(), BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO);
+                && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO);
 
-        if (isTotalBalanceIsZero || (isNeedBuy == false & isNeedSell == false))
+        if (isTotalVolumeIsZero || (newSide == ESide.EMPTY))
             return Optional.empty();
 
         List<OrderInformation> orderInformations = new ArrayList<>();
         orderInformations.add(
                 new OrderInformation(
-                        openPositionInfo.volume().abs(),
+                        volume.abs(),
                         newSide,
                         new Persent(0))
         );
 
         return Optional.of(
                 new TradeInformation(orderInformations));
+    }
+
+    private ESide createNewSide(BigDecimal volume){
+        var newSide = ESide.EMPTY;
+        if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO)) {
+            newSide = ESide.SELL;
+        } else if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO)) {
+            newSide = ESide.BUY;
+        }
+
+        return newSide;
     }
 }
 

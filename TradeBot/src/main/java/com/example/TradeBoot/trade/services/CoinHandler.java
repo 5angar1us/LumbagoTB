@@ -1,9 +1,12 @@
 package com.example.TradeBoot.trade.services;
 
+import com.example.TradeBoot.BigDecimalUtils;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.IWalletService;
 
-public class CoinHandler implements Ihandler{
+import java.math.BigDecimal;
+
+public class CoinHandler implements Ihandler {
 
     private IWalletService walletService;
 
@@ -12,11 +15,9 @@ public class CoinHandler implements Ihandler{
     }
 
     @Override
-    public OpenPositionInfo handle(ESide baseSide, String marketName) {
+    public BigDecimal handle(String marketName) {
         var balance = walletService.getBalanceByMarketOrTrow(marketName);
-        var totalCost = balance.getTotal().abs();
         var volume = balance.getTotal();
-
-        return new OpenPositionInfo(baseSide, volume, totalCost);
+        return volume;
     }
 }

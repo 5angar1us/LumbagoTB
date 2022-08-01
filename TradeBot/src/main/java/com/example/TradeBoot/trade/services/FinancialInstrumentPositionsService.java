@@ -21,7 +21,7 @@ public class FinancialInstrumentPositionsService {
     }
 
 
-    boolean isPositionOpen(String marketName) {
+    public boolean isPositionOpen(String marketName) {
         var instrumentType = financialInstrumentService.getInstrumentType(marketName);
         return switch (instrumentType) {
             case COIN -> isTotalBalanceIsNotZero(getTotalCostAsCoin(marketName));
