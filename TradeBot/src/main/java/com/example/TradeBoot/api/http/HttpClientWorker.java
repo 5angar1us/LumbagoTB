@@ -1,6 +1,7 @@
 package com.example.TradeBoot.api.http;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorSendRequestException;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -54,7 +55,14 @@ public class HttpClientWorker implements IHttpClientWorker {
         try {
             return this.client.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
-        } catch (IOException | InterruptedException e) {
+        }
+        catch (IOException e){
+            var message = httpRequest.method() + " request to '" + httpRequest.uri() + "' throws exception." +
+                    " Error name " + e.getClass().getSimpleName() + ". Error message " + e.getMessage() + ".";
+            throw new UnceckedIOException(message, e);
+        }
+
+        catch (InterruptedException e) {
             var message = httpRequest.method() + " request to '" + httpRequest.uri() + "' throws exception." +
                     " Error name " + e.getClass().getSimpleName() + ". Error message " + e.getMessage() + ".";
             throw new UnknownErrorSendRequestException(message, e);
