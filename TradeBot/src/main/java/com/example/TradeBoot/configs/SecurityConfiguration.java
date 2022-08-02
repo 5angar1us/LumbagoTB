@@ -29,25 +29,28 @@ public class SecurityConfiguration {
         switch (activeProfile){
             case "dev" ->{
                 http
-                        .authorizeRequests()
+                    .requiresChannel(channel ->
+                            channel.anyRequest().requiresSecure())
+                    .authorizeRequests()
                         .antMatchers("/").permitAll();
                 http.csrf().disable();
                 log.debug("Active endpoints dev");
             }
             case "production" ->{
                 http
-                .authorizeRequests()
-                    .antMatchers("/static/js/**", "/static/css/**").permitAll()
-                .and()
+                    .requiresChannel(channel -> channel.anyRequest().requiresSecure())
+                    .authorizeRequests()
+                        .antMatchers("/static/js/**", "/static/css/**").permitAll()
+                    .and()
                         .authorizeRequests()
-                    .anyRequest().authenticated()
-                .and()
-                    .formLogin()
-                    .loginPage("/login")
-                    .permitAll()
-                .and()
-                    .logout()
-                    .permitAll();
+                        .anyRequest().authenticated()
+                    .and()
+                        .formLogin()
+                        .loginPage("/login")
+                        .permitAll()
+                    .and()
+                        .logout()
+                        .permitAll();
                 log.debug("Active endpoints production");
             }
             default -> throw new IllegalArgumentException("activeProfile");

@@ -51,7 +51,6 @@ public class ControlPanelController {
     @PostMapping("control_panel/stop")
     public String stop(Model model) {
         log.info("Trading engine service save stop");
-        log.debug("Trading engine service save stop");
         tradingEngineService.saveStop();
         return "redirect:/control_panel";
     }
