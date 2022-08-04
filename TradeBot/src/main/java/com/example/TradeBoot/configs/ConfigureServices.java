@@ -4,10 +4,9 @@ package com.example.TradeBoot.configs;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
-import com.example.TradeBoot.trade.services.CoinHandler;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
-import com.example.TradeBoot.trade.services.FutureHandler;
+import com.example.TradeBoot.trade.services.VolumeVisitor;
 import com.example.TradeBoot.ui.repoositories.TradeSettingsRepository;
 import com.example.TradeBoot.ui.service.BaseTradeSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,14 +24,14 @@ public class ConfigureServices {
 
     @Autowired
     @Bean
-    public CoinHandler coinHandler(IWalletService walletService) {
-        return new CoinHandler(walletService);
+    public VolumeVisitor.CoinVolumeVisitor coinHandler(IWalletService walletService) {
+        return new VolumeVisitor.CoinVolumeVisitor(walletService);
     }
 
     @Autowired
     @Bean
-    public FutureHandler futureHandler(IPositionsService iPositionsService) {
-        return new FutureHandler(iPositionsService);
+    public VolumeVisitor.FutureVolumeVisitor futureHandler(IPositionsService iPositionsService) {
+        return new VolumeVisitor.FutureVolumeVisitor(iPositionsService);
     }
 
     @Autowired

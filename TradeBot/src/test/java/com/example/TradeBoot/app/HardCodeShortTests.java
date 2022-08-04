@@ -43,8 +43,8 @@ public class HardCodeShortTests {
         marketService = TestServiceInstances.getMarketService();
         walletService = TestServiceInstances.getWalletService();
 
-        var coinHandler = new CoinHandler(walletService);
-        var futureHandler = new FutureHandler(positionsService);
+        var coinHandler = new VolumeVisitor.CoinVolumeVisitor(walletService);
+        var futureHandler = new VolumeVisitor.FutureVolumeVisitor(positionsService);
 
         closePositionInformationService = new ClosePositionInformationService(
                 walletService,

@@ -29,7 +29,7 @@ public interface IPositionStatus {
 
         @Override
         public boolean getPositionStatus(String marketName) {
-            return !financialInstrumentPositionsService.isPositionOpen(marketName);
+            return financialInstrumentPositionsService.isPositionOpen(marketName) == false;
         }
     }
 }

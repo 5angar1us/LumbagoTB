@@ -102,8 +102,8 @@ public class TestServiceInstances {
 
 
         //Trade
-        var coinHandler = new CoinHandler(walletService);
-        var futureHandler = new FutureHandler(iPositionsService);
+        var coinHandler = new VolumeVisitor.CoinVolumeVisitor(walletService);
+        var futureHandler = new VolumeVisitor.FutureVolumeVisitor(iPositionsService);
 
         financialInstrumentService = new FinancialInstrumentService(iMarketService, iFutureService);
         orderPriceCalculator = new OrderPriceCalculator();

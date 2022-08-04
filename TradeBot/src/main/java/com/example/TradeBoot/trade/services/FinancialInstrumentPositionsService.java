@@ -23,29 +23,27 @@ public class FinancialInstrumentPositionsService {
 
     public boolean isPositionOpen(String marketName) {
         var instrumentType = financialInstrumentService.getInstrumentType(marketName);
-        return switch (instrumentType) {
-            case COIN -> isTotalBalanceIsNotZero(getTotalCostAsCoin(marketName));
-            case FUTURE -> isTotalBalanceIsNotZero(getTotalCostAsFuture(marketName));
+        var balanceSize = switch (instrumentType) {
+            case COIN -> CoinBalanceSizeVisitor(marketName);
+            case FUTURE -> FutureBalanceSizeVisitor(marketName);
             case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
         };
-
+        return isNotZero(balanceSize);
     }
 
-    private BigDecimal getTotalCostAsCoin(String marketName){
+    private BigDecimal CoinBalanceSizeVisitor(String marketName){
         var balance = walletService.getBalanceByMarketOrTrow(marketName);
         return balance.getTotal().abs();
     }
 
-    private BigDecimal getTotalCostAsFuture(String marketName){
+    private BigDecimal FutureBalanceSizeVisitor(String marketName){
         var position = positionsService.getPositionByMarketOrTrow(marketName);
        return position.getNetSize();
     }
 
-
-
-    private boolean isTotalBalanceIsNotZero(BigDecimal totalCost) {
+    private boolean isNotZero(BigDecimal balanceValue) {
         return !BigDecimalUtils.check(
-                totalCost,
+                balanceValue,
                 BigDecimalUtils.EOperator.EQUALS,
                 BigDecimal.ZERO
         );

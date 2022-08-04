@@ -9,8 +9,7 @@ import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
-import com.example.TradeBoot.trade.services.CoinHandler;
-import com.example.TradeBoot.trade.services.FutureHandler;
+import com.example.TradeBoot.trade.services.VolumeVisitor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +31,8 @@ public class TestClosePosition {
         mockWalletService = new IWalletService.Mock();
         mockPositionsService = new IPositionsService.Mock();
 
-        var coinHandler = new CoinHandler(TestServiceInstances.getWalletService());
-        var futureHandler = new FutureHandler(TestServiceInstances.getPositionsService());
+        var coinHandler = new VolumeVisitor.CoinVolumeVisitor(TestServiceInstances.getWalletService());
+        var futureHandler = new VolumeVisitor.FutureVolumeVisitor(TestServiceInstances.getPositionsService());
 
         closePositionInformationService = new ClosePositionInformationService(
                 mockWalletService,

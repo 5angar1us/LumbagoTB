@@ -1,5 +1,6 @@
 package com.example.TradeBoot.trade.services;
 
+import com.example.TradeBoot.api.domain.EInstrumentType;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.IWalletService;
@@ -23,37 +24,31 @@ public class ClosePositionInformationService {
 
     private IPositionsService IPositionsService;
 
-    private CoinHandler coinHandler;
+    private VolumeVisitor.CoinVolumeVisitor coinVolumeVisitor;
 
-    private FutureHandler futureHandler;
+    private VolumeVisitor.FutureVolumeVisitor futureVolumeVisitor;
 
     @Autowired
     public ClosePositionInformationService(
             IWalletService walletService,
             FinancialInstrumentService financialInstrumentService,
             IPositionsService IPositionsService,
-            CoinHandler coinHandler,
-            FutureHandler futureHandler) {
+            VolumeVisitor.CoinVolumeVisitor coinVolumeVisitor,
+            VolumeVisitor.FutureVolumeVisitor futureVolumeVisitor) {
         this.walletService = walletService;
         this.financialInstrumentService = financialInstrumentService;
         this.IPositionsService = IPositionsService;
-        this.coinHandler = coinHandler;
-        this.futureHandler = futureHandler;
+        this.coinVolumeVisitor = coinVolumeVisitor;
+        this.futureVolumeVisitor = futureVolumeVisitor;
     }
 
 
     public Optional<TradeInformation> createTradeInformation(String marketName) {
 
         var instrumentType = financialInstrumentService.getInstrumentType(marketName);
-        return switch (instrumentType) {
-            case COIN -> handle(coinHandler.handle(marketName));
-            case FUTURE -> handle(futureHandler.handle(marketName));
-            case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
-        };
-    }
+        var volume = getVolume(marketName, instrumentType);
 
-
-    private Optional<TradeInformation> handle(BigDecimal volume) {
+        var newSide = createNewSideBy(volume);
 
         var isTotalVolumeIsZero = BigDecimalUtils.check(
                 volume,
@@ -61,30 +56,34 @@ public class ClosePositionInformationService {
                 BigDecimal.ZERO
         );
 
-        var newSide = createNewSide(volume);
-
-        var isNeedSell = newSide == ESide.SELL
-                && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO);
-
-        var isNeedBuy = newSide == ESide.BUY
-                && BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.LESS_THAN, BigDecimal.ZERO);
-
         if (isTotalVolumeIsZero || (newSide == ESide.EMPTY))
             return Optional.empty();
 
-        List<OrderInformation> orderInformations = new ArrayList<>();
-        orderInformations.add(
-                new OrderInformation(
-                        volume.abs(),
-                        newSide,
-                        new Persent(0))
-        );
+        var orderInformation = createOrderinformation(volume, newSide);
 
         return Optional.of(
-                new TradeInformation(orderInformations));
+                new TradeInformation(orderInformation));
     }
 
-    private ESide createNewSide(BigDecimal volume){
+    private BigDecimal getVolume(String marketName, EInstrumentType instrumentType) {
+        return switch (instrumentType) {
+            case COIN -> coinVolumeVisitor.getVolume(marketName);
+            case FUTURE -> futureVolumeVisitor.getVolume(marketName);
+            case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
+        };
+    }
+
+
+    private List<OrderInformation> createOrderinformation(BigDecimal volume, ESide newSide) {
+        List<OrderInformation> orderInformation = new ArrayList<>();
+        orderInformation.add(
+                new OrderInformation(volume.abs(), newSide, new Persent(0))
+        );
+
+        return orderInformation;
+    }
+
+    private ESide createNewSideBy(BigDecimal volume) {
         var newSide = ESide.EMPTY;
         if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO)) {
             newSide = ESide.SELL;
