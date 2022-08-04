@@ -4,12 +4,13 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequest
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class HttpClientWorkerWithDelay {
 
     private final long MINIMUM_DELAY_MS = 100;
 
-    private Map<String, Long> lastRequestToMarketTime = new HashMap<>();
+    private Map<String, Long> lastRequestToMarketTime = new ConcurrentHashMap<>();
 
     private IHttpClientWorker httpClientWorker;
 
@@ -25,26 +26,22 @@ public class HttpClientWorkerWithDelay {
 
     public String createPostRequest(String uri, String body, String market) throws BadRequestByFtxException {
 
-        synchronized (httpClientWorker) {
-            try {
-
-
-                Long lastRequestTime = lastRequestToMarketTime.get(market);
-                if(lastRequestTime != null){
-                    long currentTime = System.currentTimeMillis();
-                    var delayBetweenLastRequest = currentTime - lastRequestTime;
-                    if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
-                        Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
-                    }
+        try {
+            Long lastRequestTime = lastRequestToMarketTime.get(market);
+            if (lastRequestTime != null) {
+                long currentTime = System.currentTimeMillis();
+                var delayBetweenLastRequest = currentTime - lastRequestTime;
+                if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
+                    Thread.sleep(MINIMUM_DELAY_MS - delayBetweenLastRequest);
                 }
-                var requestResult = httpClientWorker.createPostRequest(uri, body);
-                lastRequestToMarketTime.put(market, System.currentTimeMillis());
-
-                return requestResult;
-
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
             }
+            var requestResult = httpClientWorker.createPostRequest(uri, body);
+            lastRequestToMarketTime.put(market, System.currentTimeMillis());
+
+            return requestResult;
+
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
         }
     }
 
