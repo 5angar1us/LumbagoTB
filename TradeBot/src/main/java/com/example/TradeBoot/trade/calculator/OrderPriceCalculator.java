@@ -77,7 +77,7 @@ public class OrderPriceCalculator {
                         orderBook.getBestBid().getPrice(),
                         distance);
 
-                log.debug("bestBid" + orderBook.getBestBid().getPrice());
+                log.debug("bestBid " + orderBook.getBestBid().getPrice());
             }
 
             case SELL -> {
@@ -85,7 +85,7 @@ public class OrderPriceCalculator {
                         orderBook.getBestAsk().getPrice(),
                         distance);
 
-                log.debug("bestAsk" + orderBook.getBestAsk().getPrice());
+                log.debug("bestAsk " + orderBook.getBestAsk().getPrice());
             }
 
             default -> throw new IllegalArgumentException("side");
