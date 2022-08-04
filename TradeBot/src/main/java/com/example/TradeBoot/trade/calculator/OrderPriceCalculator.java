@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 public class OrderPriceCalculator {
 
@@ -48,27 +47,6 @@ public class OrderPriceCalculator {
         }
         return orderToPlaces;
     }
-
-    public Map.Entry<OrderInformation, OrderToPlace> createOtherToPlacePair(OrderBook orderBook, OrderInformation orderInformation, String market) {
-        BigDecimal price = calculateCorrectPrice(
-                orderBook,
-                orderInformation.getDistanceInPercent(),
-                orderInformation.getSide());
-        var map = new HashMap<OrderInformation, OrderToPlace>();
-        map.put(
-                orderInformation,
-                new OrderToPlace(
-                        market,
-                        orderInformation.getSide(),
-                        price,
-                        EType.LIMIT,
-                        orderInformation.getVolume()
-                )
-        );
-
-        return map.entrySet().stream().findFirst().orElseThrow();
-    }
-
 
     public boolean isPriceInBoarding(BigDecimal currentPrice, BigDecimal placedPrice, Persent maximumDeviation) {
         var topBoarding = targetPriceHigher(currentPrice, maximumDeviation);
