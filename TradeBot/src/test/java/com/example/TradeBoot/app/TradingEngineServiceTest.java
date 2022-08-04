@@ -70,7 +70,7 @@ public class TradingEngineServiceTest {
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
 
-        mockTradingEngineService.currectStart();
+        mockTradingEngineService.correctStart();
         Thread.sleep(2000);
         mockTradingEngineService.saveStop();
         Thread.sleep(2000);
@@ -109,7 +109,7 @@ public class TradingEngineServiceTest {
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
 
-        mockTradingEngineService.currectStart();
+        mockTradingEngineService.correctStart();
 
         try {
             ordersService.cancelAllOrderByMarket(marketName);

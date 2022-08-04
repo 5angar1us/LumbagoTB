@@ -99,7 +99,7 @@ public abstract class AbstractTradingEngineService {
     }
 
 
-    public void currectStart() {
+    public void correctStart() {
         saveStop();
         launch(tradeSettingsService.findAll());
     }
@@ -108,20 +108,20 @@ public abstract class AbstractTradingEngineService {
     abstract void launch(List<TradeSettings> marketTradeSettings);
 
 
-    protected List<OrderInformation> createOrderInformtaion(TradeSettingsDetail tradeSettingsDetail) {
+    protected List<OrderInformation> createOrderInformation(TradeSettingsDetail tradeSettingsDetail) {
         List<OrderInformation> result = new ArrayList<OrderInformation>();
         var volume = new BigDecimal(tradeSettingsDetail.getVolume());
-        var distanceInPersent = new Persent(tradeSettingsDetail.getPriceOffset());
+        var distanceInPercent = new Persent(tradeSettingsDetail.getPriceOffset());
         switch (tradeSettingsDetail.getTradingStrategy()) {
             case ALL -> {
-                result.add(new OrderInformation(volume, ESide.SELL, distanceInPersent));
-                result.add(new OrderInformation(volume, ESide.BUY, distanceInPersent));
+                result.add(new OrderInformation(volume, ESide.SELL, distanceInPercent));
+                result.add(new OrderInformation(volume, ESide.BUY, distanceInPercent));
             }
             case LONG -> {
-                result.add(new OrderInformation(volume, ESide.BUY, distanceInPersent));
+                result.add(new OrderInformation(volume, ESide.BUY, distanceInPercent));
             }
             case SHORT -> {
-                result.add(new OrderInformation(volume, ESide.SELL, distanceInPersent));
+                result.add(new OrderInformation(volume, ESide.SELL, distanceInPercent));
             }
             default -> throw new RuntimeException("incorrect tradingStrategyValue" + tradeSettingsDetail);
         }
@@ -134,16 +134,16 @@ public abstract class AbstractTradingEngineService {
 
         var marketInformation = createMarketInformation(tradeSettings);
 
-        var tradeInformations = tradeSettings.getTradeSettingsDetails()
+        var tradeInformation = tradeSettings.getTradeSettingsDetails()
                 .stream()
-                .map(this::createOrderInformtaion)
+                .map(this::createOrderInformation)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
 
         tradingOrderInfoPairPairs.add(
                 new TradingOrderInfoPair(
                         createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
-                        new TradeInformation(tradeInformations),
+                        new TradeInformation(tradeInformation),
                         marketInformation.getMarket()
                 ));
 

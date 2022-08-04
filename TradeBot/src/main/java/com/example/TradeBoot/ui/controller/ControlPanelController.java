@@ -44,7 +44,7 @@ public class ControlPanelController {
 
 
         log.info("Trading engine service launch");
-        tradingEngineService.currectStart();
+        tradingEngineService.correctStart();
         return "redirect:/control_panel";
     }
 
