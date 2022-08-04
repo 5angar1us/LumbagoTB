@@ -64,7 +64,7 @@ public class TradingService {
 
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
 
-        log.debug("Start place orders as ", ordersToPlace.values().stream().collect(Collectors.toList()));
+        log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
 
         try {
             log.debug("Place orders");
