@@ -3,11 +3,11 @@ package com.example.TradeBoot.app;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
-import com.example.TradeBoot.trade.services.tradingEngine.MockTradingEngineService;
-import com.example.TradeBoot.ui.service.MockTradeSettingsService;
+import com.example.TradeBoot.trade.services.TradingEngineService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.models.TradingStrategy;
+import com.example.TradeBoot.ui.service.MockTradeSettingsService;
 import com.example.TradeBoot.ui.service.TradeStatusService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -22,9 +22,11 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 
 public class TradingEngineServiceTest {
 
-    private static MockTradingEngineService mockTradingEngineService;
+
 
     private static MockTradeSettingsService mockTradeSettingsService;
+
+    private static TradingEngineService tradeEngineService;
 
     private static TradeStatusService tradeStatusService;
 
@@ -35,8 +37,12 @@ public class TradingEngineServiceTest {
 
         mockTradeSettingsService = new MockTradeSettingsService();
 
+        ordersService = TestServiceInstances.getOrdersService();
 
-        mockTradingEngineService = new MockTradingEngineService(
+
+
+
+        tradeEngineService = new TradingEngineService(
                 TestServiceInstances.getOrdersService(),
                 TestServiceInstances.getMarketService(),
                 TestServiceInstances.getWalletService(),
@@ -46,7 +52,6 @@ public class TradingEngineServiceTest {
                 TestServiceInstances.getFinancialInstrumentPositionsService()
         );
 
-        ordersService = TestServiceInstances.getOrdersService();
 
         tradeStatusService = new TradeStatusService(
                 mockTradeSettingsService,
@@ -70,13 +75,13 @@ public class TradingEngineServiceTest {
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
 
-        mockTradingEngineService.correctStart();
+        tradeEngineService.correctStart();
         Thread.sleep(2000);
-        mockTradingEngineService.saveStop();
+        tradeEngineService.saveStop();
         Thread.sleep(2000);
 
 
-        var isAllTreadsStopped = mockTradingEngineService.isDone(2, TimeUnit.SECONDS);
+        var isAllTreadsStopped = tradeEngineService.isDone(2, TimeUnit.SECONDS);
 
         var openOrders = tradeStatusService.getOpenOrdersByConfiguration();
         var openOrdersSize = openOrders.size();
@@ -109,7 +114,7 @@ public class TradingEngineServiceTest {
 
         mockTradeSettingsService.setTradeSettings(List.of(tradeSettings));
 
-        mockTradingEngineService.correctStart();
+        tradeEngineService.correctStart();
 
         try {
             ordersService.cancelAllOrderByMarket(marketName);
@@ -117,7 +122,7 @@ public class TradingEngineServiceTest {
             fail(e.getMessage());
         }
         Thread.sleep(2000);
-        var isAllRunnableEnginesStopped = mockTradingEngineService.runnableEnginesCount() == 0;
+        var isAllRunnableEnginesStopped = tradeEngineService.runnableEnginesCount() == 0;
 
         var openOrders = tradeStatusService.getOpenOrdersByConfiguration();
 
@@ -130,7 +135,7 @@ public class TradingEngineServiceTest {
                 }
             });
         }
-        mockTradingEngineService.saveStop();
+        tradeEngineService.saveStop();
         assertTrue("Is all RunnableEngines stopped", isAllRunnableEnginesStopped);
     }
 }

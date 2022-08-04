@@ -1,15 +1,13 @@
-package com.example.TradeBoot.trade.services.tradingEngine;
+package com.example.TradeBoot.trade.services;
 
-import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
-
-public interface IPositionStatus {
+public interface IPositionStatusService {
 
     boolean getPositionStatus(String marketName);
 
-    class OpenPositionStatus implements IPositionStatus{
+    class OpenPositionStatusService implements IPositionStatusService {
         private FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
-        public OpenPositionStatus(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        public OpenPositionStatusService(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
             this.financialInstrumentPositionsService = financialInstrumentPositionsService;
         }
 
@@ -18,12 +16,12 @@ public interface IPositionStatus {
             return financialInstrumentPositionsService.isPositionOpen(marketName);
         }
     }
-    class ClosePositionStatus implements IPositionStatus{
+    class ClosePositionStatusService implements IPositionStatusService {
 
 
         private FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
-        public ClosePositionStatus(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        public ClosePositionStatusService(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
             this.financialInstrumentPositionsService = financialInstrumentPositionsService;
         }
 

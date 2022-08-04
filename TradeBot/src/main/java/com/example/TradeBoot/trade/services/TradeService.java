@@ -1,7 +1,10 @@
 package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.markets.OrderBook;
-import com.example.TradeBoot.api.domain.orders.*;
+import com.example.TradeBoot.api.domain.orders.EStatus;
+import com.example.TradeBoot.api.domain.orders.Order;
+import com.example.TradeBoot.api.domain.orders.OrderToPlace;
+import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
@@ -9,7 +12,6 @@ import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
-import com.example.TradeBoot.trade.services.tradingEngine.IPositionStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,25 +19,24 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
-public class TradingService {
+public class TradeService {
 
     static final Logger defaultLog =
-            LoggerFactory.getLogger(TradingService.class);
+            LoggerFactory.getLogger(TradeService.class);
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
         this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService, tradeStatus);
 
         this.log = log;
     }
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
         this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
 
         this.tradeStatus = tradeStatus;
     }
 
-    public TradingService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceCalculator = orderPriceCalculator;
@@ -60,7 +61,7 @@ public class TradingService {
     private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private TradeStatus tradeStatus;
 
-    public void workWithOrders(IPositionStatus positionStatus, TradeInformation tradeInformation) {
+    public void trade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
 
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
 
@@ -74,10 +75,9 @@ public class TradingService {
             long start = System.currentTimeMillis();
 
             while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
-                    && anyClosed(getOrderStatuses(placedOrders)) == false
                     && tradeStatus.isNeedStop() == false) {
 
-                Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = optionalCreateCorrectOrderToPlace(
+                Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
                         placedOrders,
                         getOrderBook(),
                         marketInformation.getMarket());
@@ -91,9 +91,11 @@ public class TradingService {
                     log.debug("Place orders in market as " + optionalOrderToPlaces.get());
 
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
+
                 } else {
                     log.debug("No need to change the price of orders");
                 }
+
                 long workTime = (System.currentTimeMillis() - start);
                 long currentSleepTime = marketInformation.getTradingDelay() - workTime;
 
@@ -118,23 +120,21 @@ public class TradingService {
         } catch (BadRequestByFtxException e) {
 
             throw new RuntimeException(e);
-        } catch (UnceckedIOException e){
+        } catch (UnceckedIOException e) {
             CloseOrdersInCatch(e);
         }
 
 
     }
 
-    private void CloseOrdersInCatch(Exception e){
+    private void CloseOrdersInCatch(Exception e) {
         try {
             Thread.sleep(200);
             log.error(e.getMessage());
             closeOrdersOnMarket(marketInformation.getMarket());
-        }
-        catch (InterruptedException interruptedException){
+        } catch (InterruptedException interruptedException) {
             throw new RuntimeException(interruptedException);
-        }
-        catch (BadRequestByFtxException ex) {
+        } catch (BadRequestByFtxException ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -200,7 +200,7 @@ public class TradingService {
         return orderStatusStream.anyMatch(orderStatus -> orderStatus.getStatus() == EStatus.CLOSED);
     }
 
-    private Optional<Map<OrderInformation, OrderToPlace>> optionalCreateCorrectOrderToPlace(
+    private Optional<Map<OrderInformation, OrderToPlace>> createCorrectOrderToPlace(
             Map<OrderInformation, PlacedOrder> orderInformationPlacedOrderMap,
             OrderBook orderBook,
             String market) {

@@ -1,6 +1,6 @@
 package com.example.TradeBoot.ui.controller;
 
-import com.example.TradeBoot.trade.services.tradingEngine.BaseTradingEngineService;
+import com.example.TradeBoot.trade.services.TradingEngineService;
 import com.example.TradeBoot.ui.service.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.service.TradeStatusService;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ public class ControlPanelController {
     static final Logger log =
             LoggerFactory.getLogger(ControlPanelController.class);
     @Autowired
-    private BaseTradingEngineService tradingEngineService;
+    private TradingEngineService tradingEngineService;
 
     @Autowired
     private BaseTradeSettingsService baseTradeSettingsService;

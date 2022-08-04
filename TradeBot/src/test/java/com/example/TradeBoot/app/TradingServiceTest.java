@@ -7,12 +7,12 @@ import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
 
+import com.example.TradeBoot.trade.services.TradeService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
-import com.example.TradeBoot.trade.services.TradingService;
 import org.junit.jupiter.api.BeforeAll;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -58,7 +58,7 @@ public class TradingServiceTest {
                 tradeDelay
         );
 
-        TradingService tradingService = new TradingService(
+        TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),

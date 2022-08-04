@@ -1,15 +1,13 @@
-package com.example.TradeBoot.trade.services.tradingEngine;
+package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.ExtendedExecutor;
+import com.example.TradeBoot.trade.TradingRunnableEngine;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
-import com.example.TradeBoot.trade.services.ClosePositionInformationService;
-import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
-import com.example.TradeBoot.trade.services.TradingService;
 import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
@@ -20,13 +18,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public abstract class AbstractTradingEngineService {
+public class TradingEngineService {
 
     static final Logger log =
-            LoggerFactory.getLogger(AbstractTradingEngineService.class);
+            LoggerFactory.getLogger(TradingEngineService.class);
     protected final OrdersService ordersService;
     protected final IMarketService marketService;
 
@@ -46,13 +45,13 @@ public abstract class AbstractTradingEngineService {
     protected ITradeSettingsService tradeSettingsService;
 
 
-    protected List<ITradingRunnableEngine> engines = new ArrayList<>();
+    protected List<TradingRunnableEngine> engines = new ArrayList<>();
     protected ExtendedExecutor executorService;
 
     protected FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
     @Autowired
-    public AbstractTradingEngineService(
+    public TradingEngineService(
             OrdersService ordersService,
             IMarketService marketService,
             IWalletService walletService,
@@ -60,7 +59,7 @@ public abstract class AbstractTradingEngineService {
             ClosePositionInformationService closePositionInformationService,
             ITradeSettingsService tradeSettingsService,
             FinancialInstrumentPositionsService financialInstrumentPositionsService
-            ) {
+    ) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.walletService = walletService;
@@ -73,7 +72,7 @@ public abstract class AbstractTradingEngineService {
 
     public long runnableEnginesCount() {
 
-        if(engines.size() == 0) return 0;
+        if (engines.size() == 0) return 0;
 
         return engines.stream()
                 .filter(engine -> engine.isStopped() == false)
@@ -90,7 +89,7 @@ public abstract class AbstractTradingEngineService {
     }
 
     public boolean isDone(long timeout, TimeUnit timeUnit) throws InterruptedException {
-        if(executorService == null) return true;
+        if (executorService == null) return true;
 
         return executorService.awaitTermination(timeout, timeUnit);
     }
@@ -105,8 +104,44 @@ public abstract class AbstractTradingEngineService {
         launch(tradeSettingsService.findAll());
     }
 
+    void launch(List<TradeSettings> marketTradeSettings) {
+        this.engines.clear();
 
-    abstract void launch(List<TradeSettings> marketTradeSettings);
+        tradeStatus.setNeedStop(false);
+
+        this.trapLimitPositionPairs = marketTradeSettings.stream()
+                .map(this::createTrapLimitPositionPairs)
+                .flatMap(List::stream)
+                .collect(Collectors.toList());
+
+        this.executorService = new ExtendedExecutor(trapLimitPositionPairs.size());
+
+        var openPositionStatus = new IPositionStatusService.OpenPositionStatusService(financialInstrumentPositionsService);
+        var closePositionStatus = new IPositionStatusService.ClosePositionStatusService(financialInstrumentPositionsService);
+
+        this.engines = trapLimitPositionPairs.stream()
+                .map(tradingOrderInfoPair -> {
+
+                    var tradeService = new TradeLoopService(tradingOrderInfoPair.tradeService(),
+                            tradeStatus,
+                            openPositionStatus,
+                            closePositionStatus,
+                            closePositionInformationService,
+                            tradingOrderInfoPair.tradeInformation(),
+                            tradingOrderInfoPair.market()
+                    );
+
+                    return new TradingRunnableEngine(
+                            tradingOrderInfoPair.market(),
+                            tradeService
+                    );
+                })
+                .collect(Collectors.toList());
+
+        Objects.requireNonNull(this.executorService);
+
+        engines.forEach(executorService::submit);
+    }
 
 
     protected List<OrderInformation> createOrderInformation(TradeSettingsDetail tradeSettingsDetail) {
@@ -157,9 +192,9 @@ public abstract class AbstractTradingEngineService {
                 tradeSettings.getTradeDelay());
     }
 
-    protected TradingService createTrapLimitOrdersService(
+    protected TradeService createTrapLimitOrdersService(
             MarketInformation marketInformation, Persent maximumDivination) {
-        return new TradingService(
+        return new TradeService(
                 ordersService,
                 marketService,
                 orderPriceCalculator,
@@ -171,6 +206,8 @@ public abstract class AbstractTradingEngineService {
     }
 
 
+    public static record TradingOrderInfoPair(TradeService tradeService, TradeInformation tradeInformation, String market) {
+    }
 }
 
 

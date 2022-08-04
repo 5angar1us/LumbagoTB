@@ -9,13 +9,14 @@ import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
+import com.example.TradeBoot.trade.services.TradeService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.services.*;
-import com.example.TradeBoot.trade.services.tradingEngine.IPositionStatus;
+import com.example.TradeBoot.trade.services.IPositionStatusService;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
@@ -142,7 +143,7 @@ public class HardCodeShortTests {
                 tradeDelay
         );
 
-        TradingService tradingService = new TradingService(
+        TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),
@@ -172,7 +173,7 @@ public class HardCodeShortTests {
                 tradeDelay
         );
 
-        TradingService tradingService = new TradingService(
+        TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceCalculator(),
@@ -181,7 +182,7 @@ public class HardCodeShortTests {
 
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 
-        var positionStatus = new IPositionStatus() {
+        var positionStatus = new IPositionStatusService() {
 
             @Override
             public boolean getPositionStatus(String marketName) {
@@ -189,7 +190,7 @@ public class HardCodeShortTests {
             }
         };
 
-        tradingService.workWithOrders(positionStatus, tradeInformation);
+        tradeService.trade(positionStatus, tradeInformation);
     }
 
 

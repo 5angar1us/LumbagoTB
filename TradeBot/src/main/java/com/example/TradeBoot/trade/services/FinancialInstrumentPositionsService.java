@@ -3,9 +3,11 @@ package com.example.TradeBoot.trade.services;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 
+@Service
 public class FinancialInstrumentPositionsService {
 
     private FinancialInstrumentService financialInstrumentService;
