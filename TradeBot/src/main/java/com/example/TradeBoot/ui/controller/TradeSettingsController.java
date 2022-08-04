@@ -1,7 +1,7 @@
 package com.example.TradeBoot.ui.controller;
 
-import com.example.TradeBoot.BigDecimalUtils;
-import com.example.TradeBoot.ui.BaseTradeSettingsService;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
+import com.example.TradeBoot.ui.service.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.models.TradingStrategy;

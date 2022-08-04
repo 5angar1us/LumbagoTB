@@ -1,13 +1,13 @@
-package com.example.TradeBoot.ui;
+package com.example.TradeBoot.ui.service;
 
 import com.example.TradeBoot.ui.models.TradeSettings;
+import com.example.TradeBoot.ui.service.ITradeSettingsService;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MockTradeSettingsService implements ITradeSettingsService{
+public class MockTradeSettingsService implements ITradeSettingsService {
 
     public void setTradeSettings(List<TradeSettings> tradeSettings) {
         this.tradeSettings = tradeSettings;

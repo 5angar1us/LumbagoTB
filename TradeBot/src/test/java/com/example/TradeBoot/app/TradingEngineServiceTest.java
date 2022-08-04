@@ -4,7 +4,7 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequest
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.tradingEngine.MockTradingEngineService;
-import com.example.TradeBoot.ui.MockTradeSettingsService;
+import com.example.TradeBoot.ui.service.MockTradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.models.TradingStrategy;

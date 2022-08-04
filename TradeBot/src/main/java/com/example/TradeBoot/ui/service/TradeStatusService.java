@@ -1,10 +1,9 @@
 package com.example.TradeBoot.ui.service;
 
-import com.example.TradeBoot.BigDecimalUtils;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.ui.ITradeSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

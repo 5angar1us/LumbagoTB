@@ -1,4 +1,4 @@
-package com.example.TradeBoot;
+package com.example.TradeBoot.api.utils;
 
 import java.math.BigDecimal;
 

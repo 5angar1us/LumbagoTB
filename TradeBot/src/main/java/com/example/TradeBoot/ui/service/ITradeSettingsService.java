@@ -1,4 +1,4 @@
-package com.example.TradeBoot.ui;
+package com.example.TradeBoot.ui.service;
 
 import com.example.TradeBoot.ui.models.TradeSettings;
 

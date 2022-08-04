@@ -1,7 +1,5 @@
 package com.example.TradeBoot.trade.services;
 
-import com.example.TradeBoot.BigDecimalUtils;
-import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.IWalletService;
 
 import java.math.BigDecimal;

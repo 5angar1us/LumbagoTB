@@ -1,6 +1,6 @@
 package com.example.TradeBoot.trade.model;
 
-import com.example.TradeBoot.BigDecimalUtils;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.domain.markets.ESide;
 
 import java.math.BigDecimal;

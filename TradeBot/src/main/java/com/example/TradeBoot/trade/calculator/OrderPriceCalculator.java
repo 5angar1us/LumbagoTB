@@ -4,10 +4,9 @@ import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
 import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
-import com.example.TradeBoot.BigDecimalUtils;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
-import com.example.TradeBoot.trade.services.TradingService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

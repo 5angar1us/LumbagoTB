@@ -1,7 +1,7 @@
 package com.example.TradeBoot.ui.controller;
 
 import com.example.TradeBoot.trade.services.tradingEngine.BaseTradingEngineService;
-import com.example.TradeBoot.ui.BaseTradeSettingsService;
+import com.example.TradeBoot.ui.service.BaseTradeSettingsService;
 import com.example.TradeBoot.ui.service.TradeStatusService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

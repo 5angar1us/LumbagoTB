@@ -9,7 +9,7 @@ import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.TradingService;
-import com.example.TradeBoot.ui.ITradeSettingsService;
+import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import org.slf4j.Logger;

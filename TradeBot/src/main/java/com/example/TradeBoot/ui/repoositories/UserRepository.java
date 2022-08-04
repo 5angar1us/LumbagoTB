@@ -1,4 +1,4 @@
-package com.example.TradeBoot.ui;
+package com.example.TradeBoot.ui.repoositories;
 
 import com.example.TradeBoot.ui.models.User;
 import org.springframework.data.jpa.repository.JpaRepository;

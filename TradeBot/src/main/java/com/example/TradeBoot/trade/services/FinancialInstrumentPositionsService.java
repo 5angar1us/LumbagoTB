@@ -1,6 +1,6 @@
 package com.example.TradeBoot.trade.services;
 
-import com.example.TradeBoot.BigDecimalUtils;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
 

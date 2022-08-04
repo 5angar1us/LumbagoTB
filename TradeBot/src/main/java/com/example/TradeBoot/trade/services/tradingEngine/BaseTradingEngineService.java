@@ -6,7 +6,7 @@ import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
-import com.example.TradeBoot.ui.ITradeSettingsService;
+import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.stereotype.Service;
 
