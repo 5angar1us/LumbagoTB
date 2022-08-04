@@ -52,6 +52,9 @@ public class BaseTradingEngineService extends AbstractTradingEngineService {
 
         this.executorService = new ExtendedExecutor(trapLimitPositionPairs.size());
 
+        var openPositionStatus = new IPositionStatus.OpenPositionStatus(financialInstrumentPositionsService);
+        var closePositionStatus = new IPositionStatus.ClosePositionStatus(financialInstrumentPositionsService);
+
         this.engines = trapLimitPositionPairs.stream()
                 .map(tradingOrderInfoPair -> {
                     return new ITradingRunnableEngine.Base(
@@ -60,8 +63,8 @@ public class BaseTradingEngineService extends AbstractTradingEngineService {
                             tradingOrderInfoPair.tradeInformation(),
                             tradingOrderInfoPair.market(),
                             tradeStatus,
-                            new IPositionStatus.OpenPositionStatus(financialInstrumentPositionsService),
-                            new IPositionStatus.ClosePositionStatus(financialInstrumentPositionsService));
+                            openPositionStatus,
+                            closePositionStatus);
                 })
                 .collect(Collectors.toList());
 
