@@ -1,20 +1,18 @@
 package com.example.TradeBoot.configs;
 
 
-import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
-import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
-import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.services.CoinHandler;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
 import com.example.TradeBoot.trade.services.FutureHandler;
+import com.example.TradeBoot.ui.repoositories.TradeSettingsRepository;
+import com.example.TradeBoot.ui.service.BaseTradeSettingsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.PropertySource;
 
 @Configuration
 public class ConfigureServices {
@@ -48,4 +46,8 @@ public class ConfigureServices {
                 iPositionsService);
     }
 
+    @Autowired
+    @Bean
+    public BaseTradeSettingsService baseTradeSettingsService(TradeSettingsRepository tradeSettingsRepository)
+    { return  new BaseTradeSettingsService(tradeSettingsRepository);}
 }
