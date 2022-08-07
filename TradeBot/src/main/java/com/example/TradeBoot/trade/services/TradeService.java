@@ -45,6 +45,8 @@ public class TradeService {
 
         this.log = defaultLog;
         this.tradeStatus = new TradeStatus(false);
+
+        lastRequestTime = System.currentTimeMillis();
     }
     //generall
 
@@ -59,6 +61,10 @@ public class TradeService {
 
     private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private TradeStatus tradeStatus;
+
+    private long lastRequestTime;
+
+    private final long MINIMUM_DELAY_MS = 105;
 
     public void trade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
 
@@ -154,10 +160,32 @@ public class TradeService {
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
             placedOrders.put(entryOrderToPlace.getKey(), ordersService.placeOrder(entryOrderToPlace.getValue()));
+            placedOrders.put(entryOrderToPlace.getKey(), placeOrder(entryOrderToPlace.getValue()));
+
         }
 
         return placedOrders;
     }
+
+    private PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException, InterruptedException {
+
+        var currentTime = System.currentTimeMillis();
+        var delayBetweenLastRequest = currentTime - lastRequestTime;
+
+        if (delayBetweenLastRequest < MINIMUM_DELAY_MS) {
+
+            var sleepTime = MINIMUM_DELAY_MS - delayBetweenLastRequest;
+
+            Thread.sleep(sleepTime);
+        }
+
+        var placedOrder = ordersService.placeOrder(order);
+
+        lastRequestTime = System.currentTimeMillis();
+
+        return placedOrder;
+    }
+
 
     private List<Order> notClosedOrders(Stream<Order> orderStatusStream) {
         return orderStatusStream
