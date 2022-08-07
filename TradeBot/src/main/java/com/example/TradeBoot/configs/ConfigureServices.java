@@ -36,17 +36,6 @@ public class ConfigureServices {
 
     @Autowired
     @Bean
-    public FinancialInstrumentPositionsService financialInstrumentPositionsService(
-            FinancialInstrumentService financialInstrumentService,
-            IWalletService walletService,
-            IPositionsService iPositionsService) {
-        return new FinancialInstrumentPositionsService(financialInstrumentService,
-                walletService,
-                iPositionsService);
-    }
-
-    @Autowired
-    @Bean
     public BaseTradeSettingsService baseTradeSettingsService(TradeSettingsRepository tradeSettingsRepository)
     { return  new BaseTradeSettingsService(tradeSettingsRepository);}
 }
