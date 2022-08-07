@@ -38,7 +38,7 @@
                 </th:block>
                 <div th:replace="form-input :: input('Market name', 'marketName')"/>
                 <!--                <span th:if="${#fields.hasErrors('marketName')}" th:errors="*{marketName}"></span>-->
-                <div th:replace="form-input :: input('Максимальное отклонение от указанной цены', 'maximumDefinition')"/>
+                <div th:replace="form-input :: input('Максимальное отклонение от указанной цены (%)', 'maximumDefinition')"/>
                 <div th:replace="form-input :: input('Trade delay(ms)', 'tradeDelay')"/>
 
                 <div class="form-group mt-4 mb-4">
