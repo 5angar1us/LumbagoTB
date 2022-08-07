@@ -1,6 +1,6 @@
-package com.example.TradeBoot.api.extentions.RequestExcpetions.Checked;
+package com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 
 public class OrderAlreadyClosedException extends BadRequestByFtxException {
 

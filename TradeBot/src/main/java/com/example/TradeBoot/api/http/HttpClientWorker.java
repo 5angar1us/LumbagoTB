@@ -1,6 +1,6 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorSendRequestException;
 import org.springframework.beans.factory.annotation.Autowired;

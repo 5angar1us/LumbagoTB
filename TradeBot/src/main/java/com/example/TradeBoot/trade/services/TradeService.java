@@ -5,8 +5,7 @@ import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
@@ -70,10 +69,9 @@ public class TradeService {
 
         Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
 
-        log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
+            log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
 
         try {
-            log.debug("Place orders");
 
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
@@ -89,23 +87,18 @@ public class TradeService {
 
                 if (optionalOrderToPlaces.isPresent()) {
 
-                    log.debug("Close orders to change price");
 
                     closeOrdersOnMarket(marketInformation.getMarket());
 
-                    log.debug("Place orders in market as " + optionalOrderToPlaces.get());
 
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
 
-                } else {
-                    log.debug("No need to change the price of orders");
                 }
 
                 long workTime = (System.currentTimeMillis() - start);
                 long currentSleepTime = marketInformation.getTradingDelay() - workTime;
 
                 if (currentSleepTime > 0) {
-                    log.debug("Sleep time : " + currentSleepTime);
                     Thread.sleep(currentSleepTime);
                 }
 

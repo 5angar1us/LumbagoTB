@@ -1,6 +1,6 @@
 package com.example.TradeBoot.app;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.TradingEngineService;

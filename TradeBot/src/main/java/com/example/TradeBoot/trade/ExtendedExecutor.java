@@ -1,5 +1,6 @@
 package com.example.TradeBoot.trade;
 
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,8 +37,7 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
             }
         }
         if (throwable != null) {
-            log.error(throwable.toString());
-            throwable.printStackTrace();
+            log.error(ExceptionUtils.getStackTrace(throwable));
         }
     }
 

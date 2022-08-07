@@ -38,7 +38,7 @@ public class TradeLoopService {
         while (this.tradeStatus.isNeedStop() == false) {
 
             tradeService.trade(openPositionStatus, openPositionTradeInformation);
-            log.debug("P");
+            log.debug("Position opened");
             var closePositionTradeInformation = closePositionInformationService
                     .createTradeInformation(market);
 

@@ -29,12 +29,7 @@ public class TradingRunnableEngine implements Runnable {
         log.debug("Start Engine " + marketName);
         isStopped = false;
 
-        try {
-            tradeLoopService.run();
-        } catch (Exception e) {
-            isStopped = true;
-            throw e;
-        }
+        tradeLoopService.run();
 
 
         log.debug("Stop Engine " + marketName);

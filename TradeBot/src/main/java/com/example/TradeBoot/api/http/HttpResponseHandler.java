@@ -1,8 +1,6 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,46 +46,47 @@ public class HttpResponseHandler {
         var methodName = response.request().method();
         var statusCode = response.statusCode();
 
-        log.error(String.format("%s request. Status %d. Error: %s.",
+        var message = String.format("%s request. Status %d. Error: %s.",
                 methodName,
                 Integer.valueOf(statusCode),
                 responseData.error().get()
-        ));
+        );
+
+        log.error(message);
 
         switch (responseData.error().get()){
-            default -> throw new UnknownErrorRequestByFtxException(
-                    String.format("%s request. Status %d. Error: %s.",
-                            methodName,
-                            Integer.valueOf(statusCode),
-                            responseData.error().get()
-                    )
-            );
+            case "Please retry request" -> throw new RetryRequestException();
+            default -> throw new UnknownErrorRequestByFtxException(message);
         }
+
     }
     
-    public void handleChangeRequestException(HttpResponse<String> response, FTXResponceData responseData) throws BadRequestByFtxException {
+    public void handleChangeRequestException(HttpResponse<String> response, FTXResponceData responseData){
         var methodName = response.request().method();
         var statusCode = response.statusCode();
-        
-        log.error(String.format("%s request. Status %d. Error: %s.",
+
+        var errorMessage = String.format("%s request. Status %d. Error: %s.",
                 methodName,
                 Integer.valueOf(statusCode),
                 responseData.error().get()
-        ));
+        );
 
-        var errorMessage = responseData.error().get();
-        switch (errorMessage){
+        log.error(errorMessage);
+
+        var apiErrorMessage = responseData.error().get();
+        switch (apiErrorMessage){
             case "Order already closed" -> throw new OrderAlreadyClosedException();
-            default -> throw new UnknownErrorRequestByFtxException(
-                    String.format("%s request. Status %d. Error: %s.",
-                            methodName,
-                            Integer.valueOf(statusCode),
-                            responseData.error().get()
-                    )
-            );
+            default -> defaultHandleRequestException(apiErrorMessage, errorMessage);
         }
 
 
+    }
+
+    public void defaultHandleRequestException(String apiErrorMessage, String errorMessage){
+        switch (apiErrorMessage){
+            case " Not logged in: Invalid signature" -> throw new InvalidSignatureException(errorMessage);
+            default -> throw new UnknownErrorRequestByFtxException(errorMessage);
+        }
     }
 
 

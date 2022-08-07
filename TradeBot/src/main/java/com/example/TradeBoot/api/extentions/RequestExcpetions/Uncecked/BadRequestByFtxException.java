@@ -1,6 +1,6 @@
-package com.example.TradeBoot.api.extentions.RequestExcpetions.Checked;
+package com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked;
 
-public class BadRequestByFtxException extends Exception {
+public class BadRequestByFtxException extends RuntimeException {
     public BadRequestByFtxException(String s, Exception e) {
         super(s, e);
     }

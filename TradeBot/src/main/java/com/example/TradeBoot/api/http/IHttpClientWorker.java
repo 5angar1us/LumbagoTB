@@ -1,6 +1,6 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 
 public interface IHttpClientWorker {
     String createGetRequest(String uri);

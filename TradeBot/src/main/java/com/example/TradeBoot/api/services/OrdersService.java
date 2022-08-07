@@ -1,9 +1,8 @@
 package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.orders.*;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
-import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
 import com.example.TradeBoot.api.utils.OrderCancellationBuilder;

@@ -2,7 +2,7 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.orders.*;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
 import org.junit.jupiter.api.BeforeAll;
