@@ -5,7 +5,7 @@ import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.HttpRequestFactory;
 import com.example.TradeBoot.api.http.HttpResponseHandler;
 import com.example.TradeBoot.api.services.*;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.services.*;
 
 public class TestServiceInstances {
@@ -44,8 +44,8 @@ public class TestServiceInstances {
         return financialInstrumentService;
     }
 
-    public static OrderPriceCalculator getOrderPriceCalculator() {
-        return orderPriceCalculator;
+    public static OrderPriceService getOrderPriceCalculator() {
+        return orderPriceService;
     }
 
     public static ClosePositionInformationService getClosePositionInformationService() {
@@ -73,7 +73,7 @@ public class TestServiceInstances {
     //Trade
     private static FinancialInstrumentService financialInstrumentService;
 
-    private static OrderPriceCalculator orderPriceCalculator;
+    private static OrderPriceService orderPriceService;
 
     private static ClosePositionInformationService closePositionInformationService;
 
@@ -106,7 +106,7 @@ public class TestServiceInstances {
         var futureHandler = new VolumeVisitor.FutureVolumeVisitor(iPositionsService);
 
         financialInstrumentService = new FinancialInstrumentService(iMarketService, iFutureService);
-        orderPriceCalculator = new OrderPriceCalculator();
+        orderPriceService = new OrderPriceService();
         closePositionInformationService = new ClosePositionInformationService(
                 walletService,
                 financialInstrumentService ,

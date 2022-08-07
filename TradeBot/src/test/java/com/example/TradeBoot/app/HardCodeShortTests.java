@@ -10,7 +10,7 @@ import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.configuration.TestUtils;
 import com.example.TradeBoot.trade.services.TradeService;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
@@ -146,7 +146,7 @@ public class HardCodeShortTests {
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
-                new OrderPriceCalculator(),
+                new OrderPriceService(),
                 marketInformation,
                 new Persent(1),
                 financialInstrumentPositionsService);
@@ -176,7 +176,7 @@ public class HardCodeShortTests {
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
-                new OrderPriceCalculator(),
+                new OrderPriceService(),
                 marketInformation, new Persent(0.5),
                 financialInstrumentPositionsService);
 

@@ -10,7 +10,6 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlrea
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,22 +23,22 @@ public class TradeService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradeService.class);
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
-        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService, tradeStatus);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService, tradeStatus);
 
         this.log = log;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
-        this(ordersService, marketService, orderPriceCalculator, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
+        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
 
         this.tradeStatus = tradeStatus;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceCalculator orderPriceCalculator, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
         this.ordersService = ordersService;
         this.marketService = marketService;
-        this.orderPriceCalculator = orderPriceCalculator;
+        this.orderPriceService = orderPriceService;
         this.marketInformation = marketInformation;
         this.maximumDiviantion = maximumDiviantion;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
@@ -52,7 +51,7 @@ public class TradeService {
     private Logger log;
     private OrdersService ordersService;
     private IMarketService marketService;
-    private OrderPriceCalculator orderPriceCalculator;
+    private OrderPriceService orderPriceService;
 
     private MarketInformation marketInformation;
 
@@ -146,7 +145,7 @@ public class TradeService {
     private Map<OrderInformation, OrderToPlace> getPlacedOrders(
             OrderBook orderBook,
             List<OrderInformation> orderInformations) {
-        return orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.getMarket());
+        return orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.getMarket());
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
@@ -228,7 +227,7 @@ public class TradeService {
         var orderInformations = new ArrayList<>(orderInformationPlacedOrderMap.keySet());
 
         return Optional.of(
-                orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, market)
+                orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, market)
         );
     }
 

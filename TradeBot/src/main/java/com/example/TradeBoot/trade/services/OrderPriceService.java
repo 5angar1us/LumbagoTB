@@ -1,4 +1,4 @@
-package com.example.TradeBoot.trade.calculator;
+package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
@@ -9,18 +9,20 @@ import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class OrderPriceCalculator {
+@Service
+public class OrderPriceService {
 
 
     static final Logger log =
-            LoggerFactory.getLogger(OrderPriceCalculator.class);
-    public OrderPriceCalculator() {}
+            LoggerFactory.getLogger(OrderPriceService.class);
+    public OrderPriceService() {}
 
     public Map<OrderInformation, OrderToPlace> createOrdersToPlaceMap(
             OrderBook orderBook,

@@ -6,7 +6,6 @@ import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.ExtendedExecutor;
 import com.example.TradeBoot.trade.TradingRunnableEngine;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
@@ -31,7 +30,7 @@ public class TradingEngineService {
 
     protected final IWalletService walletService;
 
-    protected final OrderPriceCalculator orderPriceCalculator;
+    protected final OrderPriceService orderPriceService;
 
     protected final ClosePositionInformationService closePositionInformationService;
 
@@ -55,7 +54,7 @@ public class TradingEngineService {
             OrdersService ordersService,
             IMarketService marketService,
             IWalletService walletService,
-            OrderPriceCalculator orderPriceCalculator,
+            OrderPriceService orderPriceService,
             ClosePositionInformationService closePositionInformationService,
             ITradeSettingsService tradeSettingsService,
             FinancialInstrumentPositionsService financialInstrumentPositionsService
@@ -63,7 +62,7 @@ public class TradingEngineService {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.walletService = walletService;
-        this.orderPriceCalculator = orderPriceCalculator;
+        this.orderPriceService = orderPriceService;
         this.closePositionInformationService = closePositionInformationService;
         this.tradeSettingsService = tradeSettingsService;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
@@ -197,7 +196,7 @@ public class TradingEngineService {
         return new TradeService(
                 ordersService,
                 marketService,
-                orderPriceCalculator,
+                orderPriceService,
                 marketInformation,
                 maximumDivination,
                 financialInstrumentPositionsService,

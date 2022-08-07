@@ -3,7 +3,7 @@ package com.example.TradeBoot.configs;
 
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
 import com.example.TradeBoot.trade.services.VolumeVisitor;
@@ -18,8 +18,8 @@ public class ConfigureServices {
 
     @Autowired
     @Bean
-    public OrderPriceCalculator orderPriceCalculator() {
-        return new OrderPriceCalculator();
+    public OrderPriceService orderPriceCalculator() {
+        return new OrderPriceService();
     }
 
     @Autowired

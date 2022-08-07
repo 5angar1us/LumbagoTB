@@ -7,7 +7,7 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.BadRequest
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Checked.OrderAlreadyClosedException;
 import com.example.TradeBoot.api.http.HttpClientWorker;
 import com.example.TradeBoot.configuration.TestServiceInstances;
-import com.example.TradeBoot.trade.calculator.OrderPriceCalculator;
+import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,12 +25,12 @@ public class ExceptionTests {
 
     private static IMarketService marketService;
 
-    private static OrderPriceCalculator orderPriceCalculator;
+    private static OrderPriceService orderPriceService;
 
     @BeforeAll
     static void init() {
         ordersService = TestServiceInstances.getOrdersService();
-        orderPriceCalculator = TestServiceInstances.getOrderPriceCalculator();
+        orderPriceService = TestServiceInstances.getOrderPriceCalculator();
         marketService = TestServiceInstances.getMarketService();
     }
 
@@ -46,7 +46,7 @@ public class ExceptionTests {
         List<OrderInformation> orderInformations = new ArrayList<>();
         orderInformations.add(new OrderInformation(BigDecimal.valueOf(size), ESide.BUY, persentDistance));
 
-        var ordersToPlaceMap = orderPriceCalculator.createOrdersToPlaceMap(orderBook, orderInformations, marketName);
+        var ordersToPlaceMap = orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketName);
 
         for (OrderToPlace value : ordersToPlaceMap.values()) {
             //System.out.println("OrderToPlace " + value.toString());
