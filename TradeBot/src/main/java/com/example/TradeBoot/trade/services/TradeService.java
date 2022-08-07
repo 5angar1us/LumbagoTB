@@ -224,20 +224,20 @@ public class TradeService {
             OrderBook orderBook,
             String market) {
 
-        var pair = orderInformationPlacedOrderMap.entrySet()
+        var firstPair = orderInformationPlacedOrderMap.entrySet()
                 .stream()
                 .findFirst()
                 .orElseThrow();
 
-        var placedOrder = pair.getValue();
-        var orderInformation = pair.getKey();
+        var placedOrder = firstPair.getValue();
+        var orderInformation = firstPair.getKey();
 
-        var currentPrice = orderPriceCalculator.calculateCorrectPrice(
+        var currentPrice = orderPriceService.calculateCorrectPrice(
                 orderBook,
                 orderInformation.getDistanceInPercent(),
                 placedOrder.getSide());
 
-        var isPriceInBoarding = orderPriceCalculator.isPriceInBoarding(
+        var isPriceInBoarding = orderPriceService.isPriceInBoarding(
                 currentPrice,
                 placedOrder.getPrice(),
                 maximumDiviantion);
