@@ -148,11 +148,10 @@ public class TradeService {
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
-            throws BadRequestByFtxException {
+            throws BadRequestByFtxException, InterruptedException {
         Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
-            placedOrders.put(entryOrderToPlace.getKey(), ordersService.placeOrder(entryOrderToPlace.getValue()));
             placedOrders.put(entryOrderToPlace.getKey(), placeOrder(entryOrderToPlace.getValue()));
 
         }
