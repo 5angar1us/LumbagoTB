@@ -66,18 +66,20 @@ public class TradeService {
     private final long MINIMUM_DELAY_MS = 105;
 
     public void trade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
+        try {
+            var orderBook = getOrderBook();
 
-        Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(getOrderBook(), tradeInformation.getOrderInformations());
+            Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(orderBook, tradeInformation.getOrderInformations());
 
             log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
 
-        try {
 
             Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
             long start = System.currentTimeMillis();
 
             while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
+                    && isFirstOrderClosed(placedOrders) == false
                     && tradeStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
@@ -88,8 +90,9 @@ public class TradeService {
                 if (optionalOrderToPlaces.isPresent()) {
 
 
-                    closeOrdersOnMarket(marketInformation.getMarket());
+                    closeAllOrdersOnMarket(marketInformation.getMarket());
 
+                    Thread.sleep(160);
 
                     placedOrders = placeOrders(optionalOrderToPlaces.get());
 
@@ -107,34 +110,40 @@ public class TradeService {
 
             log.debug("Close trap orders");
 
-            closeOrdersOnMarket(marketInformation.getMarket());
+            closeAllOrdersOnMarket(marketInformation.getMarket());
 
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
-        } catch (OrderAlreadyClosedException e) {
-            CloseOrdersInCatch(e);
+        } catch (UnceckedIOException e) {
 
         } catch (BadRequestByFtxException e) {
+            log.error(e.getMessage());
 
-            throw new RuntimeException(e);
-        } catch (UnceckedIOException e) {
-            CloseOrdersInCatch(e);
+        } finally {
+            for (var i = 0; tryCloseAllOrdersInMarket() == false || i > 5; i++) { }
         }
-
-
     }
 
-    private void CloseOrdersInCatch(Exception e) {
+    private boolean isFirstOrderClosed(Map<OrderInformation, PlacedOrder> placedOrders) {
+        var firstOrder = placedOrders.values().stream().findFirst().orElseThrow();
+        var order = ordersService.getOrderStatus(firstOrder.getId());
+        return order.getStatus() == EStatus.CLOSED;
+    }
+
+    private boolean tryCloseAllOrdersInMarket() {
+        boolean isSuccess = true;
+
         try {
-            Thread.sleep(200);
+            Thread.sleep(150);
+            closeAllOrdersOnMarket(marketInformation.getMarket());
+            Thread.sleep(150);
+
+        } catch (InterruptedException | BadRequestByFtxException e) {
             log.error(e.getMessage());
-            closeOrdersOnMarket(marketInformation.getMarket());
-        } catch (InterruptedException interruptedException) {
-            throw new RuntimeException(interruptedException);
-        } catch (BadRequestByFtxException ex) {
-            throw new RuntimeException(ex);
+            isSuccess = false;
         }
+        return isSuccess;
     }
 
     private OrderBook getOrderBook() {
@@ -199,7 +208,7 @@ public class TradeService {
         }
     }
 
-    private void closeOrdersOnMarket(String marketName) throws BadRequestByFtxException {
+    private void closeAllOrdersOnMarket(String marketName) throws BadRequestByFtxException {
         ordersService.cancelAllOrderByMarket(marketName);
     }
 
