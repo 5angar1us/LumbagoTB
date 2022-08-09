@@ -39,7 +39,7 @@ public class TradeStatusService {
     public List<MarketOpenOrderSize> getOpenOrdersByConfiguration() {
         var openOrdersMap = StreamSupport.stream(tradeSettingsService.findAll().spliterator(), false)
                 .map(tradeSettings -> tradeSettings.getMarketName())
-                .map(ordersService::getOpenOrders)
+                .map(ordersService::getOpenOrdersBy)
                 .filter(openOrders -> openOrders.size() > 0)
                 .map(openOrders -> {
                     var firstOrder = openOrders.stream().findFirst().orElseThrow();

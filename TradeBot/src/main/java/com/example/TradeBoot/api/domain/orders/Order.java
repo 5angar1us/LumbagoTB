@@ -4,6 +4,7 @@ import com.example.TradeBoot.api.domain.markets.ESide;
 
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.Objects;
 
 public class Order {
 
@@ -207,5 +208,16 @@ public class Order {
         this.clientId = clientId;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Order order = (Order) o;
+        return isReduceOnly() == order.isReduceOnly() && isLiquidation() == order.isLiquidation() && isIoc() == order.isIoc() && isPostOnly() == order.isPostOnly() && Objects.equals(getCreatedAt(), order.getCreatedAt()) && Objects.equals(getFilledSize(), order.getFilledSize()) && Objects.equals(getFuture(), order.getFuture()) && Objects.equals(getId(), order.getId()) && Objects.equals(getMarket(), order.getMarket()) && Objects.equals(getPrice(), order.getPrice()) && Objects.equals(getAvgFillPrice(), order.getAvgFillPrice()) && Objects.equals(getRemainingSize(), order.getRemainingSize()) && getSide() == order.getSide() && Objects.equals(getSize(), order.getSize()) && getStatus() == order.getStatus() && getType() == order.getType() && Objects.equals(getClientId(), order.getClientId());
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hash(getCreatedAt(), getFilledSize(), getFuture(), getId(), getMarket(), getPrice(), getAvgFillPrice(), getRemainingSize(), getSide(), getSize(), getStatus(), getType(), isReduceOnly(), isLiquidation(), isIoc(), isPostOnly(), getClientId());
+    }
 }

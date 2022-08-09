@@ -134,7 +134,7 @@ public class SetOrdersTimeTests {
 
             TestUtils.printOpenOrders(marketName);
 
-            var openOrders = ordersService.getOpenOrders(marketName);
+            var openOrders = ordersService.getOpenOrdersBy(marketName);
             TestUtils.printOpenOrdersId(openOrders);
 
             for (Order openOrder : openOrders) {

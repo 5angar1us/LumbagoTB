@@ -219,7 +219,7 @@ public class TradeService {
     }
 
     private List<Order> getOrders(String marketName) {
-        return ordersService.getOpenOrders(marketName).stream()
+        return ordersService.getOpenOrdersBy(marketName).stream()
                 .filter(openOrder -> openOrder.getStatus() != EStatus.CLOSED)
                 .collect(Collectors.toList());
     }

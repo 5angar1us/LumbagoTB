@@ -89,7 +89,7 @@ public class TradingEngineServiceTest {
         if (openOrders.size() > 0) {
             openOrders.stream().forEach(openOrder -> {
                 try {
-                    ordersService.cancelAllOrderByMarket(openOrder.marketName());
+                    ordersService.cancelAllOrderByMarketByOne(openOrder.marketName());
                 } catch (BadRequestByFtxException e) {
                     fail(e.getMessage());
                 }
@@ -117,7 +117,7 @@ public class TradingEngineServiceTest {
         tradeEngineService.correctStart();
 
         try {
-            ordersService.cancelAllOrderByMarket(marketName);
+            ordersService.cancelAllOrderByMarketByOne(marketName);
         } catch (BadRequestByFtxException e) {
             fail(e.getMessage());
         }
@@ -129,7 +129,7 @@ public class TradingEngineServiceTest {
         if (openOrders.size() > 0) {
             openOrders.stream().forEach(openOrder -> {
                 try {
-                    ordersService.cancelAllOrderByMarket(openOrder.marketName());
+                    ordersService.cancelAllOrderByMarketByOne(openOrder.marketName());
                 } catch (BadRequestByFtxException e) {
                     fail(e.getMessage());
                 }

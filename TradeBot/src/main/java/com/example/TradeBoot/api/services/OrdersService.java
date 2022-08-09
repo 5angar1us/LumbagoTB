@@ -26,7 +26,7 @@ public class OrdersService {
         this.httpClient = httpClient;
     }
 
-    public List<Order> getOpenOrders(String marketName) {
+    public List<Order> getOpenOrdersBy(String marketName) {
         if (Strings.isNullOrEmpty(marketName))
             throw new IllegalArgumentException("marketName");
 
@@ -79,6 +79,13 @@ public class OrdersService {
         String body = builder.toString();
 
         return this.httpClient.createDeleteRequest(uri, body);
+    }
+
+    public void cancelAllOrderByMarketByOne(String marketName) throws BadRequestByFtxException{
+        var orders = getOpenOrdersBy(marketName);
+        for (Order order : orders) {
+            cancelOrder(order.getId());
+        }
     }
 
     public boolean cancelAllOrderByMarket(String marketName) throws BadRequestByFtxException {

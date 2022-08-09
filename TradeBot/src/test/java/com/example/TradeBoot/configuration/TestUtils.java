@@ -2,7 +2,6 @@ package com.example.TradeBoot.configuration;
 
 
 import com.example.TradeBoot.api.domain.account.Position;
-import com.example.TradeBoot.api.domain.orders.OpenOrder;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.wallet.Balance;
 
@@ -97,7 +96,7 @@ public class TestUtils {
     }
 
     public static void printOpenOrders(String market) {
-        var orders = TestServiceInstances.getOrdersService().getOpenOrders(market);
+        var orders = TestServiceInstances.getOrdersService().getOpenOrdersBy(market);
         System.out.println("OpenOrders");
         for (Order order : orders) {
             System.out.println(TABULATION + order);

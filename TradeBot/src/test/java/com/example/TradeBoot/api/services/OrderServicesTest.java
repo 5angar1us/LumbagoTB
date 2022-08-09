@@ -61,7 +61,7 @@ public class OrderServicesTest {
                 System.out.println(ordersService.placeOrder(orderToPlace));
             }
 
-            var openOrders = ordersService.getOpenOrders(marketName);
+            var openOrders = ordersService.getOpenOrdersBy(marketName);
 
             ordersService.cancelAllOrder();
 
@@ -124,7 +124,7 @@ public class OrderServicesTest {
             //modifyOrderPrice2(placedOrder, newPrice, clientId);
 
 
-            var openOrders = ordersService.getOpenOrders(marketName);
+            var openOrders = ordersService.getOpenOrdersBy(marketName);
             ordersService.cancelAllOrder();
 
         } catch (BadRequestByFtxException e) {
