@@ -44,6 +44,12 @@ public class TradeLoopService {
 
 
             if (closePositionTradeInformation.isPresent()) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
+                
                 tradeService.trade(closePositionStatus, closePositionTradeInformation.get());
                 log.debug("Position closed");
             }

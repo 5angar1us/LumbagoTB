@@ -7,6 +7,7 @@ import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorRequestByFtxException;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.model.*;
@@ -79,7 +80,7 @@ public class TradeService {
             long start = System.currentTimeMillis();
 
             while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
-                    && isFirstOrderClosed(placedOrders) == false
+                    && isRandomOrderClosed(placedOrders) == false
                     && tradeStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
@@ -89,12 +90,7 @@ public class TradeService {
 
                 if (optionalOrderToPlaces.isPresent()) {
 
-
-                    closeAllOrdersOnMarket(marketInformation.getMarket());
-
-                    Thread.sleep(160);
-
-                    placedOrders = placeOrders(optionalOrderToPlaces.get());
+                    placedOrders = replaceOrder(placedOrders, optionalOrderToPlaces.get());
 
                 }
 
@@ -110,24 +106,37 @@ public class TradeService {
 
             log.debug("Close trap orders");
 
-            closeAllOrdersOnMarket(marketInformation.getMarket());
 
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
         } catch (UnceckedIOException e) {
-
+            log.error(e.getMessage());
         } catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
 
         } finally {
-            for (var i = 0; tryCloseAllOrdersInMarket() == false || i > 5; i++) { }
+            final int closeAttempsCount = 3;
+
+            var i = 0;
+
+            boolean isSuccessCloseAllOrdersInMarket = false;
+
+            do {
+                isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket();
+                i++;
+            } while (isSuccessCloseAllOrdersInMarket == false || i < closeAttempsCount);
+
+            if (isSuccessCloseAllOrdersInMarket == false) {
+                throw new UnknownErrorRequestByFtxException(closeAttempsCount + " attempts to close orders ended in failure");
+            }
         }
     }
 
-    private boolean isFirstOrderClosed(Map<OrderInformation, PlacedOrder> placedOrders) {
-        var firstOrder = placedOrders.values().stream().findFirst().orElseThrow();
-        var order = ordersService.getOrderStatus(firstOrder.getId());
+    private boolean isRandomOrderClosed(Map<OrderInformation, PlacedOrder> placedOrders) {
+        var checkedIndex = new Random().nextInt(placedOrders.values().size());
+        var orderToCheck = placedOrders.values().stream().skip(checkedIndex).findFirst().orElseThrow();
+        var order = ordersService.getOrderStatus(orderToCheck.getId());
         return order.getStatus() == EStatus.CLOSED;
     }
 
@@ -135,12 +144,19 @@ public class TradeService {
         boolean isSuccess = true;
 
         try {
-            Thread.sleep(150);
-            closeAllOrdersOnMarket(marketInformation.getMarket());
-            Thread.sleep(150);
 
-        } catch (InterruptedException | BadRequestByFtxException e) {
+            ordersService.cancelAllOrderByMarketByOne(marketInformation.getMarket());
+
+        } catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
+
+            try {
+                Thread.sleep(150);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
+
+
             isSuccess = false;
         }
         return isSuccess;
@@ -154,6 +170,26 @@ public class TradeService {
             OrderBook orderBook,
             List<OrderInformation> orderInformations) {
         return orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.getMarket());
+    }
+
+    private Map<OrderInformation, PlacedOrder> replaceOrder(
+            Map<OrderInformation, PlacedOrder> placedOrders,
+            Map<OrderInformation, OrderToPlace> ordersToPlace) {
+
+        Map<OrderInformation, PlacedOrder> newPlacedOrders = new HashMap<>();
+
+        for (Map.Entry<OrderInformation, PlacedOrder> orderInformationPlacedOrderEntry : placedOrders.entrySet()) {
+            var orderInformation = orderInformationPlacedOrderEntry.getKey();
+            var placedOrder = orderInformationPlacedOrderEntry.getValue();
+
+            ordersService.cancelOrder(placedOrder.getId());
+            var orderToPlace = ordersToPlace.get(orderInformation);
+            var newPlacedOrder = ordersService.placeOrder(orderToPlace);
+
+            newPlacedOrders.put(orderInformation, newPlacedOrder);
+        }
+
+        return newPlacedOrders;
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
@@ -206,10 +242,6 @@ public class TradeService {
         for (Order placedOrder : orders) {
             ordersService.cancelOrder(placedOrder.getId());
         }
-    }
-
-    private void closeAllOrdersOnMarket(String marketName) throws BadRequestByFtxException {
-        ordersService.cancelAllOrderByMarket(marketName);
     }
 
     private Stream<Order> getOrderStatuses(Map<OrderInformation, PlacedOrder> placedOrders) {
