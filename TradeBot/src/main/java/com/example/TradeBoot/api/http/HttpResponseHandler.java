@@ -84,7 +84,7 @@ public class HttpResponseHandler {
 
     public void defaultHandleRequestException(String apiErrorMessage, String errorMessage){
         switch (apiErrorMessage){
-            case " Not logged in: Invalid signature" -> throw new InvalidSignatureException(errorMessage);
+            case "Not logged in: Invalid signature" -> throw new InvalidSignatureException(errorMessage);
             default -> throw new UnknownErrorRequestByFtxException(errorMessage);
         }
     }
