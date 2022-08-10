@@ -89,11 +89,10 @@ public class TradeService {
                         marketInformation.getMarket());
 
                 if (optionalOrderToPlaces.isPresent()) {
-                    log.debug("Start replacing orders");
+                    log.debug("Replacing orders");
                     placedOrders = replaceOrder(placedOrders, optionalOrderToPlaces.get());
-                    log.debug("End replacing orders");
-                }
 
+                }
                 long workTime = (System.currentTimeMillis() - start);
                 long currentSleepTime = marketInformation.getTradingDelay() - workTime;
 
@@ -131,16 +130,17 @@ public class TradeService {
     }
 
     private void closeOrdersOrThrow() {
-        final int closeAttemptsCount = 3;
+        final int closeAttemptsCount = 4;
 
         var i = 0;
 
         boolean isSuccessCloseAllOrdersInMarket = false;
 
         do {
-            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket();
             i++;
             log.debug("Close attempts " + i);
+            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(150 * i);
+
         } while (isSuccessCloseAllOrdersInMarket == false && i < closeAttemptsCount);
 
         if (isSuccessCloseAllOrdersInMarket == false) {
@@ -155,7 +155,7 @@ public class TradeService {
         return order.getStatus() == EStatus.CLOSED;
     }
 
-    private boolean tryCloseAllOrdersInMarket() {
+    private boolean tryCloseAllOrdersInMarket(int delayBetweenBadRequest) {
         boolean isSuccess = true;
 
         try {
@@ -166,7 +166,7 @@ public class TradeService {
             log.error(e.getMessage());
 
             try {
-                Thread.sleep(150);
+                Thread.sleep(delayBetweenBadRequest);
             } catch (InterruptedException ex) {
                 throw new RuntimeException(ex);
             }
