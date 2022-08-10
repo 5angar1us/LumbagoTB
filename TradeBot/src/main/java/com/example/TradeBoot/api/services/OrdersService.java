@@ -82,10 +82,10 @@ public class OrdersService {
     }
 
     public void cancelAllOrderByMarketByOne(String marketName) throws BadRequestByFtxException{
-        var orders = getOpenOrdersBy(marketName);
-        for (Order order : orders) {
-            cancelOrder(order.getId());
-        }
+         getOpenOrdersBy(marketName).stream()
+                .filter(order -> order.getStatus() != EStatus.CLOSED)
+                .forEach(order -> cancelOrder(order.getId()));
+
     }
 
     public boolean cancelAllOrderByMarket(String marketName) throws BadRequestByFtxException {
