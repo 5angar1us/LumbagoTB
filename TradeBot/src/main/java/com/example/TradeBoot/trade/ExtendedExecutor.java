@@ -37,7 +37,7 @@ public final class ExtendedExecutor extends ThreadPoolExecutor {
             }
         }
         if (throwable != null) {
-            log.error(ExceptionUtils.getStackTrace(throwable));
+            log.error(throwable.getMessage(), throwable);
         }
     }
 

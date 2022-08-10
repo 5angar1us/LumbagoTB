@@ -89,9 +89,9 @@ public class TradeService {
                         marketInformation.getMarket());
 
                 if (optionalOrderToPlaces.isPresent()) {
-
+                    log.debug("Start replacing orders");
                     placedOrders = replaceOrder(placedOrders, optionalOrderToPlaces.get());
-
+                    log.debug("End replacing orders");
                 }
 
                 long workTime = (System.currentTimeMillis() - start);
@@ -114,22 +114,37 @@ public class TradeService {
             log.error(e.getMessage());
         } catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
+        } catch (UnknownErrorRequestByFtxException e) {
+            log.error("Caught unknown error");
+            log.error(e.getMessage(), e);
+            tradeStatus.setNeedStop(true);
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                throw new RuntimeException(ex);
+            }
 
         } finally {
-            final int closeAttempsCount = 3;
+            closeOrdersOrThrow();
+        }
+    }
 
-            var i = 0;
+    private void closeOrdersOrThrow() {
+        final int closeAttemptsCount = 3;
 
-            boolean isSuccessCloseAllOrdersInMarket = false;
+        var i = 0;
 
-            do {
-                isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket();
-                i++;
-            } while (isSuccessCloseAllOrdersInMarket == false || i < closeAttempsCount);
+        boolean isSuccessCloseAllOrdersInMarket = false;
 
-            if (isSuccessCloseAllOrdersInMarket == false) {
-                throw new UnknownErrorRequestByFtxException(closeAttempsCount + " attempts to close orders ended in failure");
-            }
+        do {
+            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket();
+            i++;
+            log.debug("Close attempts " + i);
+        } while (isSuccessCloseAllOrdersInMarket == false && i < closeAttemptsCount);
+
+        if (isSuccessCloseAllOrdersInMarket == false) {
+            throw new UnknownErrorRequestByFtxException(closeAttemptsCount + " attempts to close orders ended in failure");
         }
     }
 
@@ -174,7 +189,7 @@ public class TradeService {
 
     private Map<OrderInformation, PlacedOrder> replaceOrder(
             Map<OrderInformation, PlacedOrder> placedOrders,
-            Map<OrderInformation, OrderToPlace> ordersToPlace) {
+            Map<OrderInformation, OrderToPlace> ordersToPlace) throws InterruptedException {
 
         Map<OrderInformation, PlacedOrder> newPlacedOrders = new HashMap<>();
 
@@ -184,7 +199,7 @@ public class TradeService {
 
             ordersService.cancelOrder(placedOrder.getId());
             var orderToPlace = ordersToPlace.get(orderInformation);
-            var newPlacedOrder = ordersService.placeOrder(orderToPlace);
+            var newPlacedOrder = placeOrder(orderToPlace);
 
             newPlacedOrders.put(orderInformation, newPlacedOrder);
         }

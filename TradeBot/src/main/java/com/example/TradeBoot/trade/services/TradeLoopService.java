@@ -49,7 +49,7 @@ public class TradeLoopService {
                 } catch (InterruptedException e) {
                     throw new RuntimeException(e);
                 }
-                
+
                 tradeService.trade(closePositionStatus, closePositionTradeInformation.get());
                 log.debug("Position closed");
             }
