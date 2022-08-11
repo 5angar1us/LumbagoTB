@@ -1,7 +1,7 @@
 package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.trade.model.TradeInformation;
-import com.example.TradeBoot.trade.model.TradeStatus;
+import com.example.TradeBoot.trade.model.WorkStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +11,7 @@ public class TradeLoopService {
             LoggerFactory.getLogger(TradeLoopService.class);
 
     private TradeService tradeService;
-    private TradeStatus tradeStatus;
+    private WorkStatus workStatus;
 
     private IPositionStatusService openPositionStatus;
 
@@ -23,9 +23,9 @@ public class TradeLoopService {
 
     private String market;
 
-    public TradeLoopService(TradeService tradeService, TradeStatus tradeStatus, IPositionStatusService openPositionStatus, IPositionStatusService closePositionStatus, ClosePositionInformationService closePositionInformationService, TradeInformation openPositionTradeInformation, String market) {
+    public TradeLoopService(TradeService tradeService, WorkStatus workStatus, IPositionStatusService openPositionStatus, IPositionStatusService closePositionStatus, ClosePositionInformationService closePositionInformationService, TradeInformation openPositionTradeInformation, String market) {
         this.tradeService = tradeService;
-        this.tradeStatus = tradeStatus;
+        this.workStatus = workStatus;
         this.openPositionStatus = openPositionStatus;
         this.closePositionStatus = closePositionStatus;
         this.closePositionInformationService = closePositionInformationService;
@@ -35,7 +35,7 @@ public class TradeLoopService {
 
     public void run() {
         log.debug("Run trade loop");
-        while (this.tradeStatus.isNeedStop() == false) {
+        while (this.workStatus.isNeedStop() == false) {
 
             tradeService.trade(openPositionStatus, openPositionTradeInformation);
             log.debug("Position opened");
@@ -57,4 +57,5 @@ public class TradeLoopService {
         }
         log.debug("Trade loop ended");
     }
+
 }

@@ -41,7 +41,7 @@ public class TradingEngineService {
 
     protected List<TradingOrderInfoPair> trapLimitPositionPairs;
 
-    protected TradeStatus tradeStatus = new TradeStatus(true);
+    protected WorkStatus workStatus = new WorkStatus(true);
 
     protected ITradeSettingsService tradeSettingsService;
 
@@ -81,7 +81,7 @@ public class TradingEngineService {
     }
 
     public void saveStop() {
-        tradeStatus.setNeedStop(true);
+        workStatus.setNeedStop(true);
 
         if (this.executorService == null)
             return;
@@ -96,7 +96,7 @@ public class TradingEngineService {
     }
 
     public boolean isStop() {
-        return tradeStatus.isNeedStop();
+        return workStatus.isNeedStop();
     }
 
 
@@ -108,7 +108,7 @@ public class TradingEngineService {
     void launch(List<TradeSettings> marketTradeSettings) {
         this.engines.clear();
 
-        tradeStatus.setNeedStop(false);
+        workStatus.setDefaultState();
 
         this.trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
@@ -124,7 +124,7 @@ public class TradingEngineService {
                 .map(tradingOrderInfoPair -> {
 
                     var tradeService = new TradeLoopService(tradingOrderInfoPair.tradeService(),
-                            tradeStatus,
+                            workStatus,
                             openPositionStatus,
                             closePositionStatus,
                             closePositionInformationService,
@@ -202,7 +202,7 @@ public class TradingEngineService {
                 marketInformation,
                 maximumDivination,
                 financialInstrumentPositionsService,
-                tradeStatus
+                workStatus
         );
     }
 

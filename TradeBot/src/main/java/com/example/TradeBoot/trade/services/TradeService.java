@@ -23,16 +23,16 @@ public class TradeService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradeService.class);
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, TradeStatus tradeStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
-        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService, tradeStatus);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, WorkStatus workStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService, workStatus);
 
         this.log = log;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, TradeStatus tradeStatus) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, WorkStatus workStatus) {
         this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
 
-        this.tradeStatus = tradeStatus;
+        this.workStatus = workStatus;
     }
 
     public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
@@ -44,7 +44,7 @@ public class TradeService {
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
 
         this.log = defaultLog;
-        this.tradeStatus = new TradeStatus(false);
+        this.workStatus = new WorkStatus(false);
 
         lastRequestTime = System.currentTimeMillis();
     }
@@ -60,7 +60,7 @@ public class TradeService {
     private Persent maximumDiviantion;
 
     private FinancialInstrumentPositionsService financialInstrumentPositionsService;
-    private TradeStatus tradeStatus;
+    private WorkStatus workStatus;
 
     private long lastRequestTime;
 
@@ -81,7 +81,7 @@ public class TradeService {
 
             while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
                     && isRandomOrderClosed(placedOrders) == false
-                    && tradeStatus.isNeedStop() == false) {
+                    && workStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
                         placedOrders,
@@ -116,7 +116,7 @@ public class TradeService {
         } catch (UnknownErrorRequestByFtxException e) {
             log.error("Caught unknown error");
             log.error(e.getMessage(), e);
-            tradeStatus.setNeedStop(true);
+            workStatus.setNeedStop(true);
 
             try {
                 Thread.sleep(1000);

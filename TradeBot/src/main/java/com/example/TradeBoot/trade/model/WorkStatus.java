@@ -1,8 +1,8 @@
 package com.example.TradeBoot.trade.model;
 
-public class TradeStatus {
+public class WorkStatus {
 
-    public TradeStatus(boolean isNeedStop) {
+    public WorkStatus(boolean isNeedStop) {
         this.isNeedStop = isNeedStop;
     }
 
