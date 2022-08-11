@@ -19,6 +19,7 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -65,14 +66,14 @@ public class SellCoinServiceTests {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradingDelay
-        );
+                tradingDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation, new Persent(0.3),
+                marketInformation,
                 financialInstrumentPositionsService);
         //PrintAccountInfo();
         //PrintPosition(marketName);

@@ -108,7 +108,7 @@ public class TradingEngineService {
     void launch(List<TradeSettings> marketTradeSettings) {
         this.engines.clear();
 
-        workStatus.setDefaultState();
+        workStatus.setNeedStop(false);
 
         this.trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
@@ -179,9 +179,9 @@ public class TradingEngineService {
 
         tradingOrderInfoPairPairs.add(
                 new TradingOrderInfoPair(
-                        createTrapLimitOrdersService(marketInformation, new Persent(tradeSettings.getMaximumDefinition())),
+                        createTrapLimitOrdersService(marketInformation),
                         new TradeInformation(tradeInformation),
-                        marketInformation.getMarket()
+                        marketInformation.market()
                 ));
 
         return tradingOrderInfoPairPairs;
@@ -190,17 +190,17 @@ public class TradingEngineService {
     protected MarketInformation createMarketInformation(TradeSettings tradeSettings) {
         return new MarketInformation(
                 tradeSettings.getMarketName(),
-                tradeSettings.getTradeDelay());
+                tradeSettings.getTradeDelay(),
+                new Persent(tradeSettings.getMaximumDefinition()));
     }
 
     protected TradeService createTrapLimitOrdersService(
-            MarketInformation marketInformation, Persent maximumDivination) {
+            MarketInformation marketInformation) {
         return new TradeService(
                 ordersService,
                 marketService,
                 orderPriceService,
                 marketInformation,
-                maximumDivination,
                 financialInstrumentPositionsService,
                 workStatus
         );

@@ -55,15 +55,14 @@ public class TradingServiceTest {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradeDelay
-        );
+                tradeDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
                 marketInformation,
-                new Persent(1),
                 financialInstrumentPositionsService);
 
         TestUtils.printOpenOrders(marketName);

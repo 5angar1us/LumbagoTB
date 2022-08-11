@@ -81,14 +81,14 @@ public class HardCodeShortTests {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradeDelay
-        );
+                tradeDelay,
+                new Persent(0.3));
 
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 
 
         var closePostionMarketTradeInformation = closePositionInformationService
-                .createTradeInformation(marketInformation.getMarket());
+                .createTradeInformation(marketInformation.market());
 
         if (closePostionMarketTradeInformation.isPresent()) {
             System.out.println("Need to close position");
@@ -140,15 +140,14 @@ public class HardCodeShortTests {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradeDelay
-        );
+                tradeDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
                 marketInformation,
-                new Persent(1),
                 financialInstrumentPositionsService);
 
     }
@@ -170,14 +169,14 @@ public class HardCodeShortTests {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradeDelay
-        );
+                tradeDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation, new Persent(0.5),
+                marketInformation,
                 financialInstrumentPositionsService);
 
         TradeInformation tradeInformation = new TradeInformation(orderInformations);

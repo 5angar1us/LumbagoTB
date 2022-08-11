@@ -23,24 +23,23 @@ public class TradeService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradeService.class);
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, WorkStatus workStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
-        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService, workStatus);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+        this(ordersService, marketService, orderPriceService, marketInformation, financialInstrumentPositionsService, workStatus);
 
         this.log = log;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService, WorkStatus workStatus) {
-        this(ordersService, marketService, orderPriceService, marketInformation, maximumDiviantion, financialInstrumentPositionsService);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, FinancialInstrumentPositionsService financialInstrumentPositionsService, WorkStatus workStatus) {
+        this(ordersService, marketService, orderPriceService, marketInformation,  financialInstrumentPositionsService);
 
         this.workStatus = workStatus;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, Persent maximumDiviantion, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceService = orderPriceService;
         this.marketInformation = marketInformation;
-        this.maximumDiviantion = maximumDiviantion;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
 
         this.log = defaultLog;
@@ -56,8 +55,6 @@ public class TradeService {
     private OrderPriceService orderPriceService;
 
     private MarketInformation marketInformation;
-
-    private Persent maximumDiviantion;
 
     private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private WorkStatus workStatus;
@@ -79,14 +76,16 @@ public class TradeService {
 
             long start = System.currentTimeMillis();
 
-            while (positionStatus.getPositionStatus(marketInformation.getMarket()) == false
+            while (positionStatus.getPositionStatus(marketInformation.market()) == false
                     && isRandomOrderClosed(placedOrders) == false
                     && workStatus.isNeedStop() == false) {
 
                 Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
                         placedOrders,
                         getOrderBook(),
-                        marketInformation.getMarket());
+                        marketInformation.market(),
+                        marketInformation.maximumDivination()
+                );
 
                 if (optionalOrderToPlaces.isPresent()) {
                     log.debug("Replacing orders");
@@ -94,7 +93,7 @@ public class TradeService {
 
                 }
                 long workTime = (System.currentTimeMillis() - start);
-                long currentSleepTime = marketInformation.getTradingDelay() - workTime;
+                long currentSleepTime = marketInformation.tradingDelay() - workTime;
 
                 if (currentSleepTime > 0) {
                     Thread.sleep(currentSleepTime);
@@ -160,7 +159,7 @@ public class TradeService {
 
         try {
 
-            ordersService.cancelAllOrderByMarketByOne(marketInformation.getMarket());
+            ordersService.cancelAllOrderByMarketByOne(marketInformation.market());
 
         } catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
@@ -178,13 +177,13 @@ public class TradeService {
     }
 
     private OrderBook getOrderBook() {
-        return marketService.getOrderBook(marketInformation.getMarket(), 5);
+        return marketService.getOrderBook(marketInformation.market(), 5);
     }
 
     private Map<OrderInformation, OrderToPlace> getPlacedOrders(
             OrderBook orderBook,
             List<OrderInformation> orderInformations) {
-        return orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.getMarket());
+        return orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.market());
     }
 
     private Map<OrderInformation, PlacedOrder> replaceOrder(
@@ -278,7 +277,8 @@ public class TradeService {
     private Optional<Map<OrderInformation, OrderToPlace>> createCorrectOrderToPlace(
             Map<OrderInformation, PlacedOrder> orderInformationPlacedOrderMap,
             OrderBook orderBook,
-            String market) {
+            String market,
+            Persent maximumDiviantion) {
 
         var firstPair = orderInformationPlacedOrderMap.entrySet()
                 .stream()
