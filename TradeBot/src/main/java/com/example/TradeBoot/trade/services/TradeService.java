@@ -6,6 +6,7 @@ import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.OrderAlreadyQueuedForCancellationException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorRequestByFtxException;
 import com.example.TradeBoot.api.services.IMarketService;
@@ -109,20 +110,22 @@ public class TradeService {
         } catch (InterruptedException e) {
             log.error(e.getMessage());
             throw new RuntimeException(e);
+
         } catch (UnceckedIOException e) {
             log.error(e.getMessage());
+            sleep(200);
+
+        } catch (OrderAlreadyQueuedForCancellationException e) {
+            log.error(e.getMessage(), e);
+            sleep(500);
+
         } catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
-        } catch (UnknownErrorRequestByFtxException e) {
-            log.error("Caught unknown error");
-            log.error(e.getMessage(), e);
-            workStatus.setNeedStop(true);
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
+        } catch (UnknownErrorRequestByFtxException e) {
+            log.error("Caught unknown error: " + e.getMessage(), e);
+            workStatus.setNeedStop(true);
+            sleep(1000);
 
         } finally {
             closeOrdersOrThrow();
@@ -130,21 +133,21 @@ public class TradeService {
     }
 
     private void closeOrdersOrThrow() {
-        final int closeAttemptsCount = 4;
+        final int maxCloseAttemptsCount = 4;
 
-        var i = 0;
+        var closeAttemptsCount = 0;
 
         boolean isSuccessCloseAllOrdersInMarket = false;
 
         do {
-            i++;
-            log.debug("Close attempts " + i);
-            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(150 * i);
+            closeAttemptsCount++;
+            log.debug("Close attempts " + closeAttemptsCount);
+            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(150 * closeAttemptsCount);
 
-        } while (isSuccessCloseAllOrdersInMarket == false && i < closeAttemptsCount);
+        } while (isSuccessCloseAllOrdersInMarket == false && closeAttemptsCount < maxCloseAttemptsCount);
 
         if (isSuccessCloseAllOrdersInMarket == false) {
-            throw new UnknownErrorRequestByFtxException(closeAttemptsCount + " attempts to close orders ended in failure");
+            throw new UnknownErrorRequestByFtxException(maxCloseAttemptsCount + " attempts to close orders ended in failure");
         }
     }
 
@@ -162,19 +165,25 @@ public class TradeService {
 
             ordersService.cancelAllOrderByMarketByOne(marketInformation.getMarket());
 
-        } catch (BadRequestByFtxException e) {
+        } catch (BadRequestByFtxException | UnceckedIOException e) {
             log.error(e.getMessage());
-
-            try {
-                Thread.sleep(delayBetweenBadRequest);
-            } catch (InterruptedException ex) {
-                throw new RuntimeException(ex);
-            }
-
-
+            sleep(delayBetweenBadRequest);
+            isSuccess = false;
+        } catch (UnknownErrorRequestByFtxException e) {
+            log.error("Caught unknown error: " + e.getMessage(), e);
+            workStatus.setNeedStop(true);
+            sleep(1000);
             isSuccess = false;
         }
         return isSuccess;
+    }
+
+    private void sleep(long millis) {
+        try {
+            Thread.sleep(millis);
+        } catch (InterruptedException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 
     private OrderBook getOrderBook() {
