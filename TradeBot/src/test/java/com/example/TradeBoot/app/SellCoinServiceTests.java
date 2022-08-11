@@ -19,7 +19,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -73,8 +72,8 @@ public class SellCoinServiceTests {
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation,
-                financialInstrumentPositionsService);
+                marketInformation
+        );
         //PrintAccountInfo();
         //PrintPosition(marketName);
         //PrintPositions();

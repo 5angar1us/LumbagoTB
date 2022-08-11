@@ -201,7 +201,6 @@ public class TradingEngineService {
                 marketService,
                 orderPriceService,
                 marketInformation,
-                financialInstrumentPositionsService,
                 workStatus
         );
     }

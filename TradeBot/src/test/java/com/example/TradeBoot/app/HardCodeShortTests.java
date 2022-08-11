@@ -147,8 +147,8 @@ public class HardCodeShortTests {
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation,
-                financialInstrumentPositionsService);
+                marketInformation
+        );
 
     }
 
@@ -176,8 +176,8 @@ public class HardCodeShortTests {
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation,
-                financialInstrumentPositionsService);
+                marketInformation
+        );
 
         TradeInformation tradeInformation = new TradeInformation(orderInformations);
 

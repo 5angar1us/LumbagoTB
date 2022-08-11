@@ -23,24 +23,23 @@ public class TradeService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradeService.class);
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus, Logger log, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
-        this(ordersService, marketService, orderPriceService, marketInformation, financialInstrumentPositionsService, workStatus);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus, Logger log) {
+        this(ordersService, marketService, orderPriceService, marketInformation, workStatus);
 
         this.log = log;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, FinancialInstrumentPositionsService financialInstrumentPositionsService, WorkStatus workStatus) {
-        this(ordersService, marketService, orderPriceService, marketInformation,  financialInstrumentPositionsService);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus) {
+        this(ordersService, marketService, orderPriceService, marketInformation);
 
         this.workStatus = workStatus;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, FinancialInstrumentPositionsService financialInstrumentPositionsService) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.orderPriceService = orderPriceService;
         this.marketInformation = marketInformation;
-        this.financialInstrumentPositionsService = financialInstrumentPositionsService;
 
         this.log = defaultLog;
         this.workStatus = new WorkStatus(false);
@@ -56,7 +55,6 @@ public class TradeService {
 
     private MarketInformation marketInformation;
 
-    private FinancialInstrumentPositionsService financialInstrumentPositionsService;
     private WorkStatus workStatus;
 
     private long lastRequestTime;

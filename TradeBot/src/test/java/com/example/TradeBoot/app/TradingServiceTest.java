@@ -62,8 +62,8 @@ public class TradingServiceTest {
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation,
-                financialInstrumentPositionsService);
+                marketInformation
+        );
 
         TestUtils.printOpenOrders(marketName);
         System.out.println("Start catching slip");
