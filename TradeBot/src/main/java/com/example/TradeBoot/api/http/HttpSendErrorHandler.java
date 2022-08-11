@@ -21,13 +21,13 @@ public class HttpSendErrorHandler {
         } catch (IOException e) {
 
             var message = getErrorMessage(httpRequest, e);
-            log.error(message, e);
+            log.error(message);
             throw new UnceckedIOException(message, e);
 
         } catch (InterruptedException e) {
 
             var message = getErrorMessage(httpRequest, e);
-            log.error(message, e);
+            log.error(message);
             throw new UnknownErrorSendRequestException(message, e);
 
         }

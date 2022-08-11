@@ -5,10 +5,7 @@ import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.OrderAlreadyQueuedForCancellationException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.model.*;
@@ -112,18 +109,17 @@ public class TradeService {
             throw new RuntimeException(e);
 
         } catch (UnceckedIOException e) {
-            log.error(e.getMessage());
             sleep(200);
 
         } catch (OrderAlreadyQueuedForCancellationException e) {
-            log.error(e.getMessage(), e);
             sleep(500);
 
-        } catch (BadRequestByFtxException e) {
-            log.error(e.getMessage());
+        } catch (RetryRequestException e){
+            sleep(2000);
+        }
+        catch (BadRequestByFtxException e) {
 
         } catch (UnknownErrorRequestByFtxException e) {
-            log.error("Caught unknown error: " + e.getMessage(), e);
             workStatus.setNeedStop(true);
             sleep(1000);
 
@@ -142,7 +138,7 @@ public class TradeService {
         do {
             closeAttemptsCount++;
             log.debug("Close attempts " + closeAttemptsCount);
-            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(150 * closeAttemptsCount);
+            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(closeAttemptsCount);
 
         } while (isSuccessCloseAllOrdersInMarket == false && closeAttemptsCount < maxCloseAttemptsCount);
 
@@ -158,19 +154,20 @@ public class TradeService {
         return order.getStatus() == EStatus.CLOSED;
     }
 
-    private boolean tryCloseAllOrdersInMarket(int delayBetweenBadRequest) {
+    private boolean tryCloseAllOrdersInMarket(int closeAttemptsCount) {
         boolean isSuccess = true;
 
         try {
 
             ordersService.cancelAllOrderByMarketByOne(marketInformation.getMarket());
 
-        } catch (BadRequestByFtxException | UnceckedIOException e) {
-            log.error(e.getMessage());
-            sleep(delayBetweenBadRequest);
+        }catch (UnexpectedErrorException e){
+            sleep((long)(closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
+        }
+        catch (BadRequestByFtxException | UnceckedIOException e) {
+            sleep(closeAttemptsCount * 150);
             isSuccess = false;
         } catch (UnknownErrorRequestByFtxException e) {
-            log.error("Caught unknown error: " + e.getMessage(), e);
             workStatus.setNeedStop(true);
             sleep(1000);
             isSuccess = false;

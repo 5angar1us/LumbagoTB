@@ -31,18 +31,18 @@ public class HttpResponseErrorHandler {
             case "Order already queued for cancellation" -> throw new OrderAlreadyQueuedForCancellationException();
             case "Not logged in: Invalid signature", "Invalid signature" -> {
                 var headers = response.headers();
-                var details = String.format(" Response: %s . Headers: %s, %s, %s, %s.",
-                        response.toString(),
+                var details = String.format("Headers: %s, %s, %s, %s.",
                         getMessageTuple(headers, EHttpHeaders.FTX_KEY.getName()),
                         getMessageTuple(headers, EHttpHeaders.FTX_SIGN.getName()),
                         getMessageTuple(headers, EHttpHeaders.FTX_TS.getName()),
                         getMessageTuple(headers, EHttpHeaders.FTX_SUBACCOUNT.getName())
                 );
+                log.error(details);
                 throw new InvalidSignatureException(errorMessage + details);
             }
             default -> {
                 if (apiErrorMessage.contains("An unexpected error occurred, please try again later")) {
-                    throw new UnexpectederrorException(apiErrorMessage);
+                    throw new UnexpectedErrorException(apiErrorMessage);
                 }
 
                 throw new UnknownErrorRequestByFtxException(errorMessage);

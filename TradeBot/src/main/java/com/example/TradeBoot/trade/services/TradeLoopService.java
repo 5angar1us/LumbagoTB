@@ -38,12 +38,13 @@ public class TradeLoopService {
         while (this.workStatus.isNeedStop() == false) {
 
             tradeService.trade(openPositionStatus, openPositionTradeInformation);
-            log.debug("Position opened");
+
             var closePositionTradeInformation = closePositionInformationService
                     .createTradeInformation(market);
 
 
             if (closePositionTradeInformation.isPresent()) {
+                log.debug("Position opened");
                 try {
                     Thread.sleep(2000);
                 } catch (InterruptedException e) {
