@@ -1,9 +1,7 @@
 package com.example.TradeBoot.api;
 
 import com.example.TradeBoot.api.domain.Market;
-import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.http.HttpRequestFactory;
-import com.example.TradeBoot.api.http.HttpResponseHandler;
+import com.example.TradeBoot.api.http.*;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,7 +21,9 @@ public class MarketOperationTests {
     {
         httpRequestFactory = new HttpRequestFactory(TestConfig.getAuntification());
 
-        httpClient = new HttpClientWorker(httpRequestFactory, new HttpResponseHandler());
+        var httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
+
+        httpClient = new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
     }
 
     @Test

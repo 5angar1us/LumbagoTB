@@ -46,8 +46,8 @@ public class ApiAuthConfiguration {
     public HttpClientWorkerWithDelay httpClientHelper() {
 
         HttpRequestFactory httpRequestFactory = new HttpRequestFactory(getAuth());
-        HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
+        HttpResponseHandler httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
 
-        return new HttpClientWorkerWithDelay(new HttpClientWorker(httpRequestFactory, httpResponseHandler));
+        return new HttpClientWorkerWithDelay(new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler));
     }
 }

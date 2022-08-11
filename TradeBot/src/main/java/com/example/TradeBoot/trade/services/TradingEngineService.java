@@ -108,7 +108,7 @@ public class TradingEngineService {
     void launch(List<TradeSettings> marketTradeSettings) {
         this.engines.clear();
 
-        workStatus.setDefaultState();
+        workStatus.setNeedStop(false);
 
         this.trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
