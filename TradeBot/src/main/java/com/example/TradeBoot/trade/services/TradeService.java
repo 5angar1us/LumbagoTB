@@ -5,10 +5,7 @@ import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.OrderAlreadyQueuedForCancellationException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.model.*;
@@ -116,10 +113,14 @@ public class TradeService {
             sleep(200);
 
         } catch (OrderAlreadyQueuedForCancellationException e) {
-            log.error(e.getMessage(), e);
+            log.error(e.getMessage());
             sleep(500);
 
-        } catch (BadRequestByFtxException e) {
+        } catch (RetryRequestException e){
+            sleep(2000);
+            log.error(e.getMessage());
+        }
+        catch (BadRequestByFtxException e) {
             log.error(e.getMessage());
 
         } catch (UnknownErrorRequestByFtxException e) {
