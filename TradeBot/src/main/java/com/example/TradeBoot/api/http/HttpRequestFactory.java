@@ -61,14 +61,14 @@ public class HttpRequestFactory {
         Auntification.AuntificationData auntificationData = auntification.CreateAuthInformation(signaturePayloadBuilder);
 
         HttpRequest.Builder requestBuilder = builder
-                .header("FTX-KEY", auntificationData.getApiKey())
-                .header("FTX-SIGN", auntificationData.getSignature())
-                .header("FTX-TS", String.valueOf(auntificationData.getTimeStamp()))
+                .header(EHttpHeaders.FTX_KEY.getName(), auntificationData.getApiKey())
+                .header(EHttpHeaders.FTX_SIGN.getName(), auntificationData.getSignature())
+                .header(EHttpHeaders.FTX_TS.getName(), String.valueOf(auntificationData.getTimeStamp()))
                 .timeout(Duration.of(10L, ChronoUnit.SECONDS))
                 .uri(uri);
 
         if (this.auntification.getSubAccountName().isPresent())
-            requestBuilder = requestBuilder.header("FTX-SUBACCOUNT", this.auntification.getSubAccountName().get());
+            requestBuilder = requestBuilder.header(EHttpHeaders.FTX_SUBACCOUNT.getName(), this.auntification.getSubAccountName().get());
 
         return requestBuilder;
     }
