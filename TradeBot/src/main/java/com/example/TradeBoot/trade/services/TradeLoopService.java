@@ -37,7 +37,7 @@ public class TradeLoopService {
         log.debug("Run trade loop");
         while (this.workStatus.isNeedStop() == false) {
 
-            tradeService.trade(openPositionStatus, openPositionTradeInformation);
+            tradeService.runTrade(openPositionStatus, openPositionTradeInformation);
 
             var closePositionTradeInformation = closePositionInformationService
                     .createTradeInformation(market);
@@ -51,7 +51,7 @@ public class TradeLoopService {
                     throw new RuntimeException(e);
                 }
 
-                tradeService.trade(closePositionStatus, closePositionTradeInformation.get());
+                tradeService.runTrade(closePositionStatus, closePositionTradeInformation.get());
                 log.debug("Position closed");
             }
             log.debug("Trade cycle iteration ended");

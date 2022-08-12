@@ -55,16 +55,15 @@ public class TradingServiceTest {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradeDelay
-        );
+                tradeDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation,
-                new Persent(1),
-                financialInstrumentPositionsService);
+                marketInformation
+        );
 
         TestUtils.printOpenOrders(marketName);
         System.out.println("Start catching slip");
