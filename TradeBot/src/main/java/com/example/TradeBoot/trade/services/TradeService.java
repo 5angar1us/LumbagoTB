@@ -21,16 +21,16 @@ public class TradeService {
     static final Logger defaultLog =
             LoggerFactory.getLogger(TradeService.class);
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus, Logger log) {
-        this(ordersService, marketService, orderPriceService, marketInformation, workStatus);
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus globalWorkStatus, Logger log) {
+        this(ordersService, marketService, orderPriceService, marketInformation, globalWorkStatus);
 
         this.log = log;
     }
 
-    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus workStatus) {
+    public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
         this(ordersService, marketService, orderPriceService, marketInformation);
 
-        this.workStatus = workStatus;
+        this.globalWorkStatus = globalWorkStatus;
     }
 
     public TradeService(OrdersService ordersService, IMarketService marketService, OrderPriceService orderPriceService, MarketInformation marketInformation) {
@@ -40,7 +40,7 @@ public class TradeService {
         this.marketInformation = marketInformation;
 
         this.log = defaultLog;
-        this.workStatus = new WorkStatus(false);
+        this.globalWorkStatus = new WorkStatus(false);
 
         lastRequestTime = System.currentTimeMillis();
     }
@@ -53,94 +53,108 @@ public class TradeService {
 
     private MarketInformation marketInformation;
 
-    private WorkStatus workStatus;
+    private WorkStatus globalWorkStatus;
 
     private long lastRequestTime;
 
     private final long MINIMUM_DELAY_MS = 105;
 
-    public void trade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
-        try {
-            var orderBook = getOrderBook();
+    public void runTrade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
+        ETradeState state = ETradeState.TRADE;
+        boolean localWorkStatus = true;
+        boolean isNeedThrow = false;
+        final int maxCloseAttemptsCount = 5;
+        int closeAttemptsCount = 1;
 
-            Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(orderBook, tradeInformation.getOrderInformations());
 
-            log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
+        while (localWorkStatus) {
+            try {
+                switch (state) {
+                    case TRADE -> {
+                        trade(positionStatus, tradeInformation);
+                        log.debug("Close trap orders");
+                    }
+                    case CLOSE_ORDERS -> {
 
+                        if (closeAttemptsCount <= maxCloseAttemptsCount) {
+                            closeAttemptsCount++;
+                            log.debug(
+                                    String.format("Close attempts %d", --closeAttemptsCount)
+                            );
 
-            Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
+                            ordersService.cancelAllOrderByMarketByOne(marketInformation.market());
 
-            long start = System.currentTimeMillis();
-
-            while (positionStatus.getPositionStatus(marketInformation.market()) == false
-                    && isRandomOrderClosed(placedOrders) == false
-                    && workStatus.isNeedStop() == false) {
-
-                Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
-                        placedOrders,
-                        getOrderBook(),
-                        marketInformation.market(),
-                        marketInformation.maximumDivination()
-                );
-
-                if (optionalOrderToPlaces.isPresent()) {
-                    log.debug("Replacing orders");
-                    placedOrders = replaceOrder(placedOrders, optionalOrderToPlaces.get());
-
+                        } else {
+                            isNeedThrow = true;
+                        }
+                        localWorkStatus = false;
+                    }
                 }
-                long workTime = (System.currentTimeMillis() - start);
-                long currentSleepTime = marketInformation.tradingDelay() - workTime;
+            } catch (UnexpectedErrorException | RetryRequestException e) {
+                //4 9
+                sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
 
-                if (currentSleepTime > 0) {
-                    Thread.sleep(currentSleepTime);
-                }
+            } catch (OrderAlreadyQueuedForCancellationException e) {
+                sleep(closeAttemptsCount * 300);
 
-                start = System.currentTimeMillis();
+            } catch (UnceckedIOException | BadRequestByFtxException e) {
+                sleep(closeAttemptsCount * 150);
+
+            } catch (UnknownErrorRequestByFtxException e) {
+                globalWorkStatus.setNeedStop(true);
+                sleep(1000);
             }
-
-            log.debug("Close trap orders");
-
-
-        } catch (InterruptedException e) {
-            log.error(e.getMessage());
-            throw new RuntimeException(e);
-
-        } catch (UnceckedIOException e) {
-            sleep(200);
-
-        } catch (OrderAlreadyQueuedForCancellationException e) {
-            sleep(500);
-
-        } catch (RetryRequestException e){
-            sleep(2000);
+            finally {
+                state = ETradeState.CLOSE_ORDERS;
+            }
         }
-        catch (BadRequestByFtxException e) {
 
-        } catch (UnknownErrorRequestByFtxException e) {
-            workStatus.setNeedStop(true);
-            sleep(1000);
-
-        } finally {
-            closeOrdersOrThrow();
+        if (isNeedThrow) {
+            throw new UnknownErrorRequestByFtxException(closeAttemptsCount + " attempts to close orders ended in failure");
         }
     }
 
-    private void closeOrdersOrThrow() {
-        final int maxCloseAttemptsCount = 4;
+    enum ETradeState {
+        TRADE,
+        CLOSE_ORDERS,
+    }
 
-        var closeAttemptsCount = 0;
+    private void trade(IPositionStatusService positionStatus, TradeInformation tradeInformation) {
+        var orderBook = getOrderBook();
 
-        boolean isSuccessCloseAllOrdersInMarket = false;
+        Map<OrderInformation, OrderToPlace> ordersToPlace = getPlacedOrders(orderBook, tradeInformation.getOrderInformations());
 
-        do {
-            closeAttemptsCount++;
-            log.debug("Close attempts " + closeAttemptsCount);
-            isSuccessCloseAllOrdersInMarket = tryCloseAllOrdersInMarket(closeAttemptsCount);
+        log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
 
-        } while (isSuccessCloseAllOrdersInMarket == false && closeAttemptsCount < maxCloseAttemptsCount);
 
-        if (isSuccessCloseAllOrdersInMarket == false) {
-            throw new UnknownErrorRequestByFtxException(maxCloseAttemptsCount + " attempts to close orders ended in failure");
+        Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
+
+        long start = System.currentTimeMillis();
+
+        while (positionStatus.getPositionStatus(marketInformation.market()) == false
+                && isRandomOrderClosed(placedOrders) == false
+                && globalWorkStatus.isNeedStop() == false) {
+
+            Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces = createCorrectOrderToPlace(
+                    placedOrders,
+                    getOrderBook(),
+                    marketInformation.market(),
+                    marketInformation.maximumDivination()
+            );
+
+            if (optionalOrderToPlaces.isPresent()) {
+                log.debug("Replacing orders");
+                placedOrders = replaceOrder(placedOrders, optionalOrderToPlaces.get());
+
+            }
+            long workTime = (System.currentTimeMillis() - start);
+            long currentSleepTime = marketInformation.tradingDelay() - workTime;
+
+            if (currentSleepTime > 0) {
+                sleep(currentSleepTime);
+            }
+
+            start = System.currentTimeMillis();
         }
     }
 
@@ -151,31 +165,11 @@ public class TradeService {
         return order.getStatus() == EStatus.CLOSED;
     }
 
-    private boolean tryCloseAllOrdersInMarket(int closeAttemptsCount) {
-        boolean isSuccess = true;
-
-        try {
-
-            ordersService.cancelAllOrderByMarketByOne(marketInformation.market());
-
-        }catch (UnexpectedErrorException e){
-            sleep((long)(closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
-        }
-        catch (BadRequestByFtxException | UnceckedIOException e) {
-            sleep(closeAttemptsCount * 150);
-            isSuccess = false;
-        } catch (UnknownErrorRequestByFtxException e) {
-            workStatus.setNeedStop(true);
-            sleep(1000);
-            isSuccess = false;
-        }
-        return isSuccess;
-    }
-
     private void sleep(long millis) {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException ex) {
+            log.error(ex.getMessage());
             throw new RuntimeException(ex);
         }
     }
@@ -192,7 +186,7 @@ public class TradeService {
 
     private Map<OrderInformation, PlacedOrder> replaceOrder(
             Map<OrderInformation, PlacedOrder> placedOrders,
-            Map<OrderInformation, OrderToPlace> ordersToPlace) throws InterruptedException {
+            Map<OrderInformation, OrderToPlace> ordersToPlace) {
 
         Map<OrderInformation, PlacedOrder> newPlacedOrders = new HashMap<>();
 
@@ -211,7 +205,7 @@ public class TradeService {
     }
 
     private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
-            throws BadRequestByFtxException, InterruptedException {
+            throws BadRequestByFtxException {
         Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
@@ -222,7 +216,7 @@ public class TradeService {
         return placedOrders;
     }
 
-    private PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException, InterruptedException {
+    private PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException {
 
         var currentTime = System.currentTimeMillis();
         var delayBetweenLastRequest = currentTime - lastRequestTime;
@@ -231,7 +225,7 @@ public class TradeService {
 
             var sleepTime = MINIMUM_DELAY_MS - delayBetweenLastRequest;
 
-            Thread.sleep(sleepTime);
+            sleep(sleepTime);
         }
 
         var placedOrder = ordersService.placeOrder(order);
@@ -239,43 +233,6 @@ public class TradeService {
         lastRequestTime = System.currentTimeMillis();
 
         return placedOrder;
-    }
-
-
-    private List<Order> notClosedOrders(Stream<Order> orderStatusStream) {
-        return orderStatusStream
-                .filter(orderStatus -> orderStatus.getStatus() != EStatus.CLOSED)
-                .collect(Collectors.toList());
-    }
-
-    private void closeOrders(Map<OrderInformation, PlacedOrder> placedOrders)
-            throws BadRequestByFtxException {
-        for (PlacedOrder placedOrder : placedOrders.values()) {
-            ordersService.cancelOrder(placedOrder.getId());
-        }
-    }
-
-    private void closeOrders(List<Order> orders)
-            throws BadRequestByFtxException {
-        for (Order placedOrder : orders) {
-            ordersService.cancelOrder(placedOrder.getId());
-        }
-    }
-
-    private Stream<Order> getOrderStatuses(Map<OrderInformation, PlacedOrder> placedOrders) {
-        return placedOrders.values()
-                .stream()
-                .map(placedOrder -> ordersService.getOrderStatus(placedOrder.getId()));
-    }
-
-    private List<Order> getOrders(String marketName) {
-        return ordersService.getOpenOrdersBy(marketName).stream()
-                .filter(openOrder -> openOrder.getStatus() != EStatus.CLOSED)
-                .collect(Collectors.toList());
-    }
-
-    private boolean anyClosed(Stream<Order> orderStatusStream) {
-        return orderStatusStream.anyMatch(orderStatus -> orderStatus.getStatus() == EStatus.CLOSED);
     }
 
     private Optional<Map<OrderInformation, OrderToPlace>> createCorrectOrderToPlace(

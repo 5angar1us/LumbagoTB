@@ -189,7 +189,7 @@ public class HardCodeShortTests {
             }
         };
 
-        tradeService.trade(positionStatus, tradeInformation);
+        tradeService.runTrade(positionStatus, tradeInformation);
     }
 
 
