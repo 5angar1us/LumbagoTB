@@ -1,9 +1,6 @@
 package com.example.TradeBoot.configuration;
 
-import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
-import com.example.TradeBoot.api.http.HttpRequestFactory;
-import com.example.TradeBoot.api.http.HttpResponseHandler;
+import com.example.TradeBoot.api.http.*;
 import com.example.TradeBoot.api.services.*;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.services.*;
@@ -86,9 +83,9 @@ public class TestServiceInstances {
     static {
         //Api
         HttpRequestFactory httpRequestFactory = new HttpRequestFactory(TestConfig.getAuntification());
-        HttpResponseHandler httpResponseHandler = new HttpResponseHandler();
+        HttpResponseHandler httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
 
-        httpClient = new HttpClientWorker(httpRequestFactory, httpResponseHandler);
+        httpClient = new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
         httpClientWorkerWithDelay = new HttpClientWorkerWithDelay(httpClient);
 
         iPositionsService = new IPositionsService.Base(httpClientWorkerWithDelay);

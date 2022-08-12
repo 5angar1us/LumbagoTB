@@ -37,9 +37,9 @@ class HttpRequestFactoryTests {
         var request = httpRequestFactory.createPostRequest(uri, body);
 
         var headers = request.headers();
-        var requestApiKey = headers.firstValue("FTX-KEY").get();
-        var requestSignature = headers.firstValue("FTX-SIGN").get();
-        var requestTS = Long.parseLong(headers.firstValue("FTX-TS").get());
+        var requestApiKey = headers.firstValue(EHttpHeaders.FTX_KEY.getName()).get();
+        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName());
+        var requestTS = Long.parseLong(headers.firstValue(EHttpHeaders.FTX_TS.getName()).get());
 
         var targetSignature = "c4fbabaf178658a59d7bbf57678d44c369382f3da29138f04cd46d3d582ba4ba";
         assertAll("Should return auth information: API_KEY, signature, TS",
@@ -60,9 +60,9 @@ class HttpRequestFactoryTests {
         var request = httpClient.createGetRequest(uri);
 
         var headers = request.headers();
-        var requestApiKey = headers.firstValue("FTX-KEY").get();
-        var requestSignature = headers.firstValue("FTX-SIGN").get();
-        var requestTS = Long.parseLong(headers.firstValue("FTX-TS").get());
+        var requestApiKey = headers.firstValue(EHttpHeaders.FTX_KEY.getName()).get();
+        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName());
+        var requestTS = Long.parseLong(headers.firstValue(EHttpHeaders.FTX_TS.getName()).get());
 
         assertAll("Should return auth information: API_KEY, signature, TS",
                 () -> assertEquals("LR0RQT6bKjrUNh38eCw9jYC89VDAbRkCogAc_XAm", requestApiKey), //API_KEY
