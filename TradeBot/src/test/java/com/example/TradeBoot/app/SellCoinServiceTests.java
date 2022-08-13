@@ -65,15 +65,15 @@ public class SellCoinServiceTests {
 
         MarketInformation marketInformation = new MarketInformation(
                 marketName,
-                tradingDelay
-        );
+                tradingDelay,
+                new Persent(0.3));
 
         TradeService tradeService = new TradeService(
                 ordersService,
                 marketService,
                 new OrderPriceService(),
-                marketInformation, new Persent(0.3),
-                financialInstrumentPositionsService);
+                marketInformation
+        );
         //PrintAccountInfo();
         //PrintPosition(marketName);
         //PrintPositions();
