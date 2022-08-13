@@ -16,10 +16,11 @@ public class HttpResponseErrorHandler {
         var methodName = response.request().method();
         var statusCode = response.statusCode();
 
-        var errorMessage = String.format("Response from %s request. Status %d. ErrorMessage: %s.",
+        var errorMessage = String.format("Response from %s request. Status %d. ErrorMessage: %s. Request uri: %s",
                 methodName,
-                Integer.valueOf(statusCode),
-                responseData.error().get()
+                statusCode,
+                responseData.error().get(),
+                response.request().uri()
         );
 
         log.error(errorMessage);
