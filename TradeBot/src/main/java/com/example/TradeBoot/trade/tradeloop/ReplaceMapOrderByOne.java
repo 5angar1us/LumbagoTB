@@ -5,23 +5,20 @@ import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrders;
+import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrder;
+import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrderMap;
 
 import java.util.HashMap;
 import java.util.Map;
 
-public class ReplaceOrdersByOne implements IReplaceOrders {
+public class ReplaceMapOrderByOne implements IReplaceOrderMap {
 
 
-    public ReplaceOrdersByOne(IOrdersService ordersService, IPlaceOrder placeOrder) {
-        this.ordersService = ordersService;
-        this.placeOrder = placeOrder;
+    public ReplaceMapOrderByOne(IOrdersService ordersService, IPlaceOrder placeOrder){
+        replaceOrder = new ReplaceByOne(ordersService, placeOrder);
     }
 
-    private IOrdersService ordersService;
-
-    private IPlaceOrder placeOrder;
-
+    private IReplaceOrder replaceOrder;
 
 
     @Override
@@ -32,9 +29,9 @@ public class ReplaceOrdersByOne implements IReplaceOrders {
             var orderInformation = orderInformationPlacedOrderEntry.getKey();
             var placedOrder = orderInformationPlacedOrderEntry.getValue();
 
-            ordersService.cancelOrder(placedOrder.getId());
             var orderToPlace = ordersToPlace.get(orderInformation);
-            var newPlacedOrder = placeOrder.place(orderToPlace);
+
+            var newPlacedOrder = replaceOrder.replace(placedOrder, orderToPlace);
 
             newPlacedOrders.put(orderInformation, newPlacedOrder);
         }

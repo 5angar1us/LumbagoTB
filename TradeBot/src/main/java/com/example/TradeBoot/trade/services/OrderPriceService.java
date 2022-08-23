@@ -24,16 +24,17 @@ public class OrderPriceService {
 
     static final Logger log =
             LoggerFactory.getLogger(OrderPriceService.class);
-    public OrderPriceService() {}
+
+    public OrderPriceService() {
+    }
 
 
     public Map<OrderInformation, OrderToPlace> createWorstOrdersToPlaceMap(OrderBook orderBook, List<OrderInformation> orderInformations, String market) {
 
         Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
         for (OrderInformation orderInformation : orderInformations) {
-            BigDecimal price = calculateCorrectPrice(
+            BigDecimal price = calculateMarketPrice(
                     orderBook,
-                    orderInformation.getDistanceInPercent(),
                     orderInformation.getSide()
             );
 
@@ -58,7 +59,7 @@ public class OrderPriceService {
 
         Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
         for (OrderInformation orderInformation : orderInformations) {
-            BigDecimal price = calculateWorstPrice(
+            BigDecimal price = calculateCorrectPrice(
                     orderBook,
                     orderInformation.getDistanceInPercent(),
                     orderInformation.getSide()
@@ -93,14 +94,14 @@ public class OrderPriceService {
                 placedPrice
         );
 
-        log.debug("bottomBording " + bottomBoarding + " currentPrice "+ currentPrice + " topBording " + topBoarding + " placedPrice " + placedPrice);
+        log.debug("bottomBording " + bottomBoarding + " currentPrice " + currentPrice + " topBording " + topBoarding + " placedPrice " + placedPrice);
         log.debug("isLessOrEqualTopBoarding " + isLessOrEqualTopBoarding + " " + " isMoreOrEqualsBottomBoarding " + isMoreOrEqualsBottomBoarding);
         return isLessOrEqualTopBoarding && isMoreOrEqualsBottomBoarding;
     }
 
-    public BigDecimal calculateWorstPrice(OrderBook orderBook, Persent distance, ESide side){
-        log.debug("Using worst");
-        return createCorrectPrice(distance, side, orderBook.getBestBySide(ESideChange.change(side)).getPrice());
+    public BigDecimal calculateMarketPrice(OrderBook orderBook, ESide side) {
+        log.debug("Using market");
+        return createCorrectPrice(new Persent(0), side, orderBook.getBestBySide(ESideChange.change(side)).getPrice());
     }
 
     public BigDecimal calculateCorrectPrice(OrderBook orderBook, Persent distance, ESide side) {
@@ -108,28 +109,36 @@ public class OrderPriceService {
         return createCorrectPrice(distance, side, orderBook.getBestBySide(side).getPrice());
     }
 
-    public BigDecimal calculateCorrectPriceWithIgnoreLower(OrderBook orderBook, Persent distanceInPercent, ESide side , BigDecimal placedVolume) {
-        log.debug("Using a better option");
-        var index = 0;
-        BigDecimal accamulatedVolume = BigDecimal.ZERO;
-        var data = orderBook.getAllBySide(side);
-        for (Price datum : data) {
-            accamulatedVolume = accamulatedVolume.add(datum.getVolume());
-            index++;
-            if(BigDecimalUtils.check(
-                            accamulatedVolume,
-                            BigDecimalUtils.EOperator.LESS_THAN_OR_EQUALS,
-                            placedVolume.divide(new BigDecimal(2)))){
-                break;
-            }
+    public BigDecimal calculateMostFavorablePrice(OrderBook orderBook, Persent distanceInPercent, ESide side, BigDecimal placedVolume) {
+        log.debug("Using a most favorable");
 
-        }
-        var price = data.get(--index).getPrice();
+        BigDecimal price = getMostFavorablePrice(orderBook.getAllBySide(side), placedVolume);
 
         return createCorrectPrice(distanceInPercent, side, price);
     }
 
-    private BigDecimal createCorrectPrice(Persent distance, ESide side, BigDecimal price){
+    private BigDecimal getMostFavorablePrice(List<OrderBookLine> OrderBookLines, BigDecimal placedVolume) {
+        var index = 0;
+        BigDecimal accamulatedVolume = BigDecimal.ZERO;
+        var maxIgnoredVolume = placedVolume.divide(new BigDecimal(2));
+        log.debug("maxIgnoredVolume: " + maxIgnoredVolume );
+
+        for (OrderBookLine orderBookLine : OrderBookLines) {
+            accamulatedVolume = accamulatedVolume.add(orderBookLine.getVolume());
+            index++;
+
+            log.debug("accamulatedVolume: " + accamulatedVolume);
+            log.debug("index: "+ index);
+            if (BigDecimalUtils.check(accamulatedVolume, BigDecimalUtils.EOperator.GREATER_THAN_OR_EQUALS, maxIgnoredVolume)) {
+                log.debug("break");
+                break;
+            }
+
+        }
+        return OrderBookLines.get(--index).getPrice();
+    }
+
+    private BigDecimal createCorrectPrice(Persent distance, ESide side, BigDecimal price) {
         return switch (side) {
             case BUY -> {
 
@@ -171,7 +180,6 @@ public class OrderPriceService {
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100L);
     private static final BigDecimal ONE_HUNDREDTH = new BigDecimal("0.01");
-
 
 
 }

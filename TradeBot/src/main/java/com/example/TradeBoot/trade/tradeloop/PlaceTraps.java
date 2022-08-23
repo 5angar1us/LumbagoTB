@@ -11,7 +11,7 @@ import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.IPositionStatusService;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrders;
+import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrderMap;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,7 +25,7 @@ public class PlaceTraps implements ITradeService {
             LoggerFactory.getLogger(PlaceTraps.class);
 
 
-    public PlaceTraps(IOrdersService ordersService, IMarketService marketService, IPositionStatusService positionStatus, OrderPriceService orderPriceService, IReplaceOrders replaceOrders, IPlaceOrder placeOrder, TradeInformation tradeInformation, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
+    public PlaceTraps(IOrdersService ordersService, IMarketService marketService, IPositionStatusService positionStatus, OrderPriceService orderPriceService, IReplaceOrderMap replaceOrders, IPlaceOrder placeOrder, TradeInformation tradeInformation, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.positionStatus = positionStatus;
@@ -45,7 +45,7 @@ public class PlaceTraps implements ITradeService {
 
     OrderPriceService orderPriceService;
 
-    IReplaceOrders replaceOrders;
+    IReplaceOrderMap replaceOrders;
 
     IPlaceOrder placeOrder;
 

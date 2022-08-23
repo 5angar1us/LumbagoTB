@@ -6,7 +6,7 @@ import com.example.TradeBoot.trade.model.OrderInformation;
 
 import java.util.Map;
 
-public interface IReplaceOrders {
+public interface IReplaceOrderMap {
 
     Map<OrderInformation, PlacedOrder> replace(
             Map<OrderInformation, PlacedOrder> placedOrders,

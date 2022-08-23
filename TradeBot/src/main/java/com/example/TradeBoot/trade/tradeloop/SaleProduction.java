@@ -1,24 +1,24 @@
 package com.example.TradeBoot.trade.tradeloop;
 
 import com.example.TradeBoot.api.domain.markets.OrderBook;
+import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
 import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.utils.ESideChange;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrders;
+import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrder;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SaleProduction implements ITradeService {
 
@@ -26,15 +26,15 @@ public class SaleProduction implements ITradeService {
             LoggerFactory.getLogger(SaleProduction.class);
 
 
-    public SaleProduction(FinancialInstrumentPositionsService financialInstrumentPositionsService, ClosePositionInformationService closePositionInformationService, MarketInformation marketInformation, OrderPriceService orderPriceService, IPlaceOrder placeOrder, IMarketService marketService, WorkStatus globalWorkStatus, IReplaceOrders replaceOrders) {
+    public SaleProduction(IMarketService marketService, OrderPriceService orderPriceService, FinancialInstrumentPositionsService financialInstrumentPositionsService, ClosePositionInformationService closePositionInformationService, IPlaceOrder placeOrder, IReplaceOrder replaceOrder, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
+        this.marketService = marketService;
+        this.orderPriceService = orderPriceService;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
         this.closePositionInformationService = closePositionInformationService;
-        this.marketInformation = marketInformation;
-        this.orderPriceService = orderPriceService;
         this.placeOrder = placeOrder;
-        this.marketService = marketService;
+        this.replaceOrder = replaceOrder;
+        this.marketInformation = marketInformation;
         this.globalWorkStatus = globalWorkStatus;
-        this.replaceOrders = replaceOrders;
     }
 
     IMarketService marketService;
@@ -47,7 +47,7 @@ public class SaleProduction implements ITradeService {
 
     IPlaceOrder placeOrder;
 
-    IReplaceOrders replaceOrders;
+    IReplaceOrder replaceOrder;
 
     MarketInformation marketInformation;
 
@@ -55,7 +55,6 @@ public class SaleProduction implements ITradeService {
 
     long maxWorkTime = 6000;
 
-    Persent maximumDefinition = new Persent(0);
 
     @Override
     public boolean trade() {
@@ -63,7 +62,7 @@ public class SaleProduction implements ITradeService {
 
         var positionSize = financialInstrumentPositionsService.getPositionNetSize(marketInformation.market());
 
-        if (financialInstrumentPositionsService.isPositionOpen(positionSize) == false){
+        if (financialInstrumentPositionsService.isPositionOpen(positionSize) == false) {
             return false;
         }
 
@@ -74,49 +73,49 @@ public class SaleProduction implements ITradeService {
         var closePositionTradeInformation = closePositionInformationService
                 .createTradeInformation(positionSize);
 
-        Map<OrderInformation, OrderToPlace> ordersToPlace = getOrdersToPlace(orderBook, closePositionTradeInformation.get().getOrderInformations());
+        var orderToPlace = createMostFavorableOrderToPlace(orderBook, closePositionTradeInformation.get());
 
-        log.debug("Start place position order as " + ordersToPlace.values().stream().collect(Collectors.toList()));
+        log.debug("Start place position order:" + orderToPlace);
 
-        Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
+        var placedOrder = placeOrder.place(orderToPlace);
 
 
         long startTradeTime = System.currentTimeMillis();
 
         long startIterationTime = startTradeTime;
-        long currentTradeTime = 0;
-
+        boolean isNeedCloseByMostFavorablePrice = true;
 
         while (financialInstrumentPositionsService.isPositionOpen(positionSize) == true
                 && globalWorkStatus.isNeedStop() == false) {
 
-            Optional<Map<OrderInformation, OrderToPlace>> optionalOrderToPlaces;
-            if(currentTradeTime <= maxWorkTime){
-                optionalOrderToPlaces = createCorrectOrderToPlace(
-                        placedOrders,
+            Optional<OrderToPlace> optionalOrderToPlaces;
+            if (isNeedCloseByMostFavorablePrice) {
+                optionalOrderToPlaces = createMostFavorableOrderToPlace(
+                        placedOrder,
                         getOrderBook(),
                         marketInformation.market(),
-                        maximumDefinition,
                         positionSize
                 );
-            }
-            else {
-                optionalOrderToPlaces = createWorstOrderToPlace(
-                        placedOrders,
+            } else {
+                optionalOrderToPlaces = createMarketOrderToPlace(
+                        placedOrder,
                         getOrderBook(),
                         marketInformation.market(),
-                        maximumDefinition,
                         positionSize
                 );
-                log.debug("Close at unfavorable price");
             }
 
 
             if (optionalOrderToPlaces.isPresent()) {
-                log.debug("Replacing orders");
-                placedOrders = replaceOrders.replace(placedOrders, optionalOrderToPlaces.get());
+                if(isNeedCloseByMostFavorablePrice){
+                    log.debug("Replacing orders by most favorable price");
+                }else {
+                    log.debug("Replacing orders by market price");
+                }
+                placedOrder = replaceOrder.replace(placedOrder, optionalOrderToPlaces.get());
 
             }
+
             long workTime = (System.currentTimeMillis() - startIterationTime);
             long currentSleepTime = marketInformation.tradingDelay() - workTime;
 
@@ -124,94 +123,71 @@ public class SaleProduction implements ITradeService {
                 sleep(currentSleepTime);
             }
 
-            positionSize = financialInstrumentPositionsService.getPositionNetSize(marketInformation.market());
+
             startIterationTime = System.currentTimeMillis();
-            currentTradeTime = startIterationTime - startTradeTime;
+
+            var currentTradeTime = startIterationTime - startTradeTime;
+            isNeedCloseByMostFavorablePrice = currentTradeTime <= maxWorkTime;
+            positionSize = financialInstrumentPositionsService.getPositionNetSize(marketInformation.market());
         }
         log.debug("Position closed");
         return true;
     }
 
-    private Optional<Map<OrderInformation, OrderToPlace>> createCorrectOrderToPlace(
-            Map<OrderInformation, PlacedOrder> orderInformationPlacedOrderMap,
+    private Optional<OrderToPlace> createMostFavorableOrderToPlace(
+            PlacedOrder placedOrder,
             OrderBook orderBook,
             String market,
-            Persent maximumDiviantion,
             BigDecimal positionSize) {
 
-        var firstPair = orderInformationPlacedOrderMap.entrySet()
-                .stream()
-                .findFirst()
-                .orElseThrow();
-
-        var placedOrder = firstPair.getValue();
-        var orderInformation = firstPair.getKey();
-
-        var currentPrice = orderPriceService.calculateCorrectPriceWithIgnoreLower(
+        var currentPrice = orderPriceService.calculateMostFavorablePrice(
                 orderBook,
-                orderInformation.getDistanceInPercent(),
+                new Persent(0),
                 placedOrder.getSide(),
                 placedOrder.getSize());
 
-        var isPriceInBoarding = orderPriceService.isPriceInBoarding(
-                currentPrice,
-                placedOrder.getPrice(),
-                maximumDiviantion);
-
-        var closePositionTradeInformation = closePositionInformationService
-                .createTradeInformation(positionSize);
-
-
-        if (isPriceInBoarding && closePositionTradeInformation.isEmpty()) return Optional.empty();
-
-
-        return Optional.of(
-                orderPriceService.createOrdersToPlaceMap(
-                        orderBook,
-                        closePositionTradeInformation.get().getOrderInformations(),
-                        market)
-        );
+        return createOrderToPlace(currentPrice, placedOrder.getPrice(), positionSize, market);
     }
 
-    private Optional<Map<OrderInformation, OrderToPlace>> createWorstOrderToPlace(
-        Map<OrderInformation, PlacedOrder> orderInformationPlacedOrderMap,
-        OrderBook orderBook,
-        String market,
-        Persent maximumDiviantion,
-        BigDecimal positionSize)
-    {
-        var firstPair = orderInformationPlacedOrderMap.entrySet()
-                .stream()
-                .findFirst()
-                .orElseThrow();
+    private Optional<OrderToPlace> createMarketOrderToPlace(
+            PlacedOrder placedOrder,
+            OrderBook orderBook,
+            String market,
+            BigDecimal positionSize) {
 
-        var placedOrder = firstPair.getValue();
-        var orderInformation = firstPair.getKey();
-
-        var currentPrice = orderPriceService.calculateCorrectPrice(
+        var currentPrice = orderPriceService.calculateMarketPrice(
                 orderBook,
-                orderInformation.getDistanceInPercent(),
-                ESideChange.change(closePositionInformationService.getSideBy(positionSize))
-                );
+                closePositionInformationService.getSideBy(positionSize)
+        );
 
-        var isPriceInBoarding = orderPriceService.isPriceInBoarding(
-                currentPrice,
-                placedOrder.getPrice(),
-                maximumDiviantion);
+       return createOrderToPlace(currentPrice, placedOrder.getPrice(), positionSize, market);
+    }
+
+    private Optional<OrderToPlace> createOrderToPlace(
+            BigDecimal currentPrice,
+            BigDecimal placedPrice,
+            BigDecimal positionSize,
+            String market) {
 
         var closePositionTradeInformation = closePositionInformationService
                 .createTradeInformation(positionSize);
 
+        if (BigDecimalUtils.check(currentPrice, BigDecimalUtils.EOperator.EQUALS, placedPrice) == false
+                && closePositionTradeInformation.isEmpty()) {
+            return Optional.empty();
+        }
 
-        if (isPriceInBoarding && closePositionTradeInformation.isEmpty()) return Optional.empty();
+        var orderInformation = closePositionTradeInformation.get();
 
-        return Optional.of(
-                orderPriceService.createWorstOrdersToPlaceMap(
-                        orderBook,
-                        closePositionTradeInformation.get().getOrderInformations(),
-                        market)
+        var orderToPlace = new OrderToPlace(
+                market,
+                orderInformation.getSide(),
+                currentPrice,
+                EType.LIMIT,
+                orderInformation.getVolume()
         );
 
+        return Optional.of(orderToPlace);
     }
 
     private void sleep(long millis) {
@@ -223,21 +199,21 @@ public class SaleProduction implements ITradeService {
         }
     }
 
-    private Map<OrderInformation, OrderToPlace> getOrdersToPlace(
+    private OrderToPlace createMostFavorableOrderToPlace(
             OrderBook orderBook,
-            List<OrderInformation> orderInformations) {
-        return orderPriceService.createOrdersToPlaceMap(orderBook, orderInformations, marketInformation.market());
-    }
+            OrderInformation orderInformation) {
 
-    private Map<OrderInformation, PlacedOrder> placeOrders(Map<OrderInformation, OrderToPlace> orderToPlaces)
-            throws BadRequestByFtxException {
-        Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
+        var price = orderPriceService.calculateCorrectPrice(orderBook, new Persent(0), orderInformation.getSide());
 
-        for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
-            placedOrders.put(entryOrderToPlace.getKey(), placeOrder.place(entryOrderToPlace.getValue()));
-        }
+        var orderToPlace = new OrderToPlace(
+                marketInformation.market(),
+                orderInformation.getSide(),
+                price,
+                EType.LIMIT,
+                orderInformation.getVolume()
+        );
 
-        return placedOrders;
+        return orderToPlace;
     }
 
     private OrderBook getOrderBook() {

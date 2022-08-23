@@ -139,21 +139,21 @@ public class ReworkHardCodeShortTests {
                 new Persent(0.3));
 
         var placeWithDelay = new PlaceWithDelay(ordersService);
-        var replaceOrders = new ReplaceOrdersByOne(ordersService, placeWithDelay);
+        var replaceOrder = new ReplaceByOne(ordersService, placeWithDelay);
         var closeOrders = new CloseByOne(ordersService, marketInformation);
 
         var globalWorkStatus =  new WorkStatus(false);
 
 
         ITradeService tradeService = new SaleProduction(
+                marketService,
+                new OrderPriceService(),
                 financialInstrumentPositionsService,
                 closePositionInformationService,
-                marketInformation,
-                new OrderPriceService(),
                 placeWithDelay,
-                marketService,
-                globalWorkStatus,
-                replaceOrders
+                replaceOrder,
+                marketInformation,
+                globalWorkStatus
         );
 
         LocalTradeLoop localTradeLoop = new LocalTradeLoop(
@@ -185,21 +185,21 @@ public class ReworkHardCodeShortTests {
                 new Persent(0.3));
 
         var placeWithDelay = new PlaceWithDelay(ordersService);
-        var replaceOrders = new ReplaceOrdersByOne(ordersService, placeWithDelay);
+        var replaceOrder = new ReplaceByOne(ordersService, placeWithDelay);
         var closeOrders = new CloseByOne(ordersService, marketInformation);
 
         var globalWorkStatus =  new WorkStatus(false);
 
 
         ITradeService tradeService = new SaleProduction(
+                marketService,
+                new OrderPriceService(),
                 financialInstrumentPositionsService,
                 closePositionInformationService,
-                marketInformation,
-                new OrderPriceService(),
                 placeWithDelay,
-                marketService,
-                globalWorkStatus,
-                replaceOrders
+                replaceOrder,
+                marketInformation,
+                globalWorkStatus
         );
 
 

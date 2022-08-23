@@ -43,12 +43,12 @@ public class ClosePositionInformationService {
     }
 
 
-    public synchronized Optional<TradeInformation> createTradeInformation(BigDecimal volume) {
+    public synchronized Optional<OrderInformation> createTradeInformation(BigDecimal netVolume) {
 
-        var newSide = getSideBy(volume);
+        var newSide = getSideBy(netVolume);
 
         var isTotalVolumeIsZero = BigDecimalUtils.check(
-                volume,
+                netVolume,
                 BigDecimalUtils.EOperator.EQUALS,
                 BigDecimal.ZERO
         );
@@ -56,10 +56,7 @@ public class ClosePositionInformationService {
         if (isTotalVolumeIsZero || (newSide == ESide.EMPTY))
             return Optional.empty();
 
-        var orderInformation = createOrderinformation(volume, newSide);
-
-        return Optional.of(
-                new TradeInformation(orderInformation));
+        return Optional.of(new OrderInformation(netVolume.abs(), newSide, new Persent(0)));
     }
 
     private BigDecimal getVolume(String marketName, EInstrumentType instrumentType) {
@@ -68,16 +65,6 @@ public class ClosePositionInformationService {
             case FUTURE -> futureVolumeVisitor.getVolume(marketName);
             case EMPTY -> throw new IllegalArgumentException(String.valueOf(instrumentType));
         };
-    }
-
-
-    private List<OrderInformation> createOrderinformation(BigDecimal volume, ESide newSide) {
-        List<OrderInformation> orderInformation = new ArrayList<>();
-        orderInformation.add(
-                new OrderInformation(volume.abs(), newSide, new Persent(0))
-        );
-
-        return orderInformation;
     }
 
     public ESide getSideBy(BigDecimal volume) {

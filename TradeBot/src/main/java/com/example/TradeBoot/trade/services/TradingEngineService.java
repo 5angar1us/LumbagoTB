@@ -2,12 +2,12 @@ package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IOrdersService;
-import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.trade.ExtendedExecutor;
 import com.example.TradeBoot.trade.TradingRunnableEngine;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.tradeloop.*;
+import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
 import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
@@ -126,7 +126,10 @@ public class TradingEngineService {
 
                     var placeWithDelay = new  PlaceWithDelay(ordersService);
 
-                    var replaceOrder = new ReplaceOrdersByOne(ordersService, placeWithDelay);
+                    var replaceOrders = new ReplaceMapOrderByOne(ordersService, placeWithDelay);
+
+                    var replaceOrder = new ReplaceByOne(ordersService, placeWithDelay);
+
 
                     var openPositionStatus = new IPositionStatusService.OpenPositionStatusService(financialInstrumentPositionsService);
 
@@ -135,38 +138,39 @@ public class TradingEngineService {
                             marketService,
                             openPositionStatus,
                             orderPriceService,
-                            replaceOrder,
+                            replaceOrders,
                             placeWithDelay,
                             tradeInformation,
                             marketInformation,
                             globalWorkStatus);
 
-                    var SaleProduction = new SaleProduction(
+                    var saleProduction = new SaleProduction(
+                            marketService,
+                            new OrderPriceService(),
                             financialInstrumentPositionsService,
                             closePositionInformationService,
-                            marketInformation,
-                            orderPriceService,
                             placeWithDelay,
-                            marketService,
-                            globalWorkStatus,
-                            replaceOrder);
+                            replaceOrder,
+                            marketInformation,
+                            globalWorkStatus
+                    );
 
 
 
-                    var placeTrapOdersTradeLoop = new LocalTradeLoop(
+                    var placeTrapOrdersTradeLoop = new LocalTradeLoop(
                             PlaceTraps,
                             closeOrders,
                             globalWorkStatus
                     );
 
                     var saleProductionTradeLoop = new LocalTradeLoop(
-                            SaleProduction,
+                            saleProduction,
                             closeOrders,
                             globalWorkStatus
                     );
 
                     var tradeService = new GlobalTradeLoop(
-                            placeTrapOdersTradeLoop,
+                            placeTrapOrdersTradeLoop,
                             saleProductionTradeLoop,
                             globalWorkStatus
                     );
