@@ -23,7 +23,7 @@ class HttpRequestFactoryTests {
         Auntification auntification = new Auntification(new Encoder(new HashAlgorithm.HmacSHa256()), new TimeKeper.Mock(timeStamp));
         auntification.Init(key, secret, Optional.empty());
 
-        return  new HttpRequestFactory(auntification);
+        return new HttpRequestFactory(auntification);
     }
 
     @Test
