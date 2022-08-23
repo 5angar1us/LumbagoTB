@@ -31,7 +31,7 @@ public interface IOrdersService {
 
     Order getOrderStatus(String orderId);
 
-    PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId, String market) throws BadRequestByFtxException;
+    PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadRequestByFtxException;
 
     abstract class Abstract implements IOrdersService{
         public void cancelAllOrderByMarketByOne(String marketName) throws BadRequestByFtxException{
@@ -46,7 +46,7 @@ public interface IOrdersService {
                     .TargetPrice(price);
             //.TargetSize(placedOrder.getSize());
 
-            return modifyOrderBy(builder, placedOrder.getId(), placedOrder.getMarket());
+            return modifyOrderBy(builder, placedOrder.getId());
 
         }
 
@@ -95,7 +95,7 @@ public interface IOrdersService {
         @Override
         public PlacedOrder placeOrder(OrderToPlace order) throws BadRequestByFtxException {
             String placeOrderJson = JsonModelConverter.convertModelToJson(order);
-            String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson, order.getMarket());
+            String placedOrderJson = this.httpClient.createPostRequest(placeOrderURI, placeOrderJson);
             return JsonModelConverter.convertJsonToModel(PlacedOrder.class, placedOrderJson);
         }
 
@@ -145,7 +145,7 @@ public interface IOrdersService {
         }
 
         @Override
-        public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId, String market) throws BadRequestByFtxException {
+        public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadRequestByFtxException {
             String uri = UriComponentsBuilder.newInstance()
                     .path(ORDERS_PATH)
                     .path("/").pathSegment(orderId)
@@ -153,7 +153,7 @@ public interface IOrdersService {
                     .toUriString();
 
             String body = builder.toString();
-            String json = this.httpClient.createPostRequest(uri, body, market);
+            String json = this.httpClient.createPostRequest(uri, body);
             return JsonModelConverter.convertJsonToModel(PlacedOrder.class, json);
         }
     }
@@ -230,7 +230,7 @@ public interface IOrdersService {
         }
 
         @Override
-        public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId, String market) throws BadRequestByFtxException {
+        public PlacedOrder modifyOrderBy(ModifyOrderBuilder builder, String orderId) throws BadRequestByFtxException {
             throw new UnsupportedOperationException();
         }
 
