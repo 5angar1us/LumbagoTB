@@ -45,6 +45,9 @@ public class HttpResponseErrorHandler {
                 if (apiErrorMessage.contains("An unexpected error occurred, please try again later")) {
                     throw new UnexpectedErrorException(apiErrorMessage);
                 }
+                if(apiErrorMessage.contains("Do not send more than 2 orders")){
+                    throw new DoNotSendMoreThanExeption(apiErrorMessage);
+                }
 
                 throw new UnknownErrorRequestByFtxException(errorMessage);
             }
