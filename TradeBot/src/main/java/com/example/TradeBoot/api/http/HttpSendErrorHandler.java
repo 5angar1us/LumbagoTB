@@ -21,7 +21,7 @@ public class HttpSendErrorHandler {
         } catch (IOException e) {
 
             var message = getErrorMessage(httpRequest, e);
-            log.error(message);
+            log.debug(message);
             throw new UnceckedIOException(message, e);
 
         } catch (InterruptedException e) {
@@ -34,11 +34,11 @@ public class HttpSendErrorHandler {
     }
 
     private String getErrorMessage(HttpRequest httpRequest, Exception e) {
-        return String.format("Sending a %s request to '%s' throws exception. ErrorName: %s. ErrorMessage: '%s'",
-                httpRequest.method(),
-                httpRequest.uri(),
+        return String.format("Stage: Sending request. ErrorMessage: '%s'. ErrorName: %s. Method: %s. Request uri: %s.",
+                e.getMessage(),
                 e.getClass().getSimpleName(),
-                e.getMessage()
+                httpRequest.method(),
+                httpRequest.uri()
         );
     }
 }

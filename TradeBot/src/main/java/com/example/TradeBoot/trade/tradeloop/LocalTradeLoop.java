@@ -33,8 +33,8 @@ public class LocalTradeLoop {
         ETradeState state = ETradeState.TRADE;
         boolean localWorkStatus = true;
         boolean isNeedThrow = false;
-
         int closeAttemptsCount = 1;
+        long sleepAfterCloseOrdersInMS = 0;
 
 
         while (localWorkStatus) {
@@ -69,20 +69,21 @@ public class LocalTradeLoop {
             } catch (UnexpectedErrorException | RetryRequestException e) {
                 //4 9
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
-
+                sleepAfterCloseOrdersInMS = 30;
             } catch (OrderAlreadyQueuedForCancellationException e) {
                 sleep(closeAttemptsCount * 300);
             }  catch(DoNotSendMoreThanExeption e){
                 log.error(e.getMessage());
                 sleep(100);
-            }catch (UnceckedIOException | BadRequestByFtxException e) {
-                sleep(closeAttemptsCount * 150);
-
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
                 log.error(e.getMessage(), e);
                 sleep(1000);
-            } catch (Exception e){
+            } catch (UnceckedIOException | BadRequestByFtxException e) {
+                sleep(closeAttemptsCount * 150);
+
+            }
+            catch (Exception e){
                 globalWorkStatus.setNeedStop(true);
                 log.error(e.getMessage(), e);
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
@@ -94,6 +95,10 @@ public class LocalTradeLoop {
 
         if (isNeedThrow) {
             throw new UnknownErrorRequestByFtxException(closeAttemptsCount + " attempts to close orders ended in failure");
+        }
+
+        if(sleepAfterCloseOrdersInMS > 0){
+            sleep(sleepAfterCloseOrdersInMS);
         }
     }
 

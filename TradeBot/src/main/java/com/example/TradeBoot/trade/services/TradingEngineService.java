@@ -35,9 +35,6 @@ public class TradingEngineService {
 
     protected final ClosePositionInformationService closePositionInformationService;
 
-
-    protected List<TradingOrderInfoPair> trapLimitPositionPairs;
-
     protected WorkStatus globalWorkStatus = new WorkStatus(true);
 
     protected ITradeSettingsService tradeSettingsService;
@@ -106,7 +103,7 @@ public class TradingEngineService {
 
         globalWorkStatus.setNeedStop(false);
 
-        this.trapLimitPositionPairs = marketTradeSettings.stream()
+        var trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
                 .flatMap(List::stream)
                 .collect(Collectors.toList());
