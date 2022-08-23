@@ -29,6 +29,8 @@ public class AccountInformation {
 
     private BigDecimal totalPositionSize;
 
+    private BigDecimal totalAccountNav;
+
     private String username;
 
     private BigDecimal leverage;
@@ -248,6 +250,13 @@ public class AccountInformation {
     }
 
 
+    public BigDecimal getTotalAccountNav() {
+        return totalAccountNav;
+    }
+
+    public void setTotalAccountNav(BigDecimal totalAccountNav) {
+        this.totalAccountNav = totalAccountNav;
+    }
 }
 
 
