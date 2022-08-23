@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class ExceptionTests {
 
-    private static OrdersService ordersService;
+    private static IOrdersService.Base ordersService;
 
     private static IMarketService marketService;
 

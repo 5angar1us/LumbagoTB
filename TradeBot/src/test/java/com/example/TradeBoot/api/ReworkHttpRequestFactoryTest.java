@@ -1,17 +1,14 @@
 package com.example.TradeBoot.api;
 
-import com.example.TradeBoot.api.domain.Market;
 import com.example.TradeBoot.api.http.*;
 import com.example.TradeBoot.configuration.TestConfig;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class MarketOperationTests {
+public class ReworkHttpRequestFactoryTest {
 
     static HttpClientWorker httpClient;
     static HttpRequestFactory httpRequestFactory;
@@ -41,23 +38,5 @@ public class MarketOperationTests {
 
         assertEquals("https://ftx.com/api/markets/SOL%2FUSD/orderbook?depth=20", body.uri().toString());
     }
-
-    void canGetAllMarketsInfo() throws JsonProcessingException {
-        String uri = new StringBuilder()
-                .append("/markets")
-                .toString();
-
-        var body = httpClient.createGetRequest(uri);
-        var markets =  new ObjectMapper().readValue(body, Market[].class);
-
-        for (var x : markets) {
-            System.out.println(x.getName());
-        }
-       var node = new ObjectMapper().readTree(body);
-
-        System.out.println(node.get(0));
-
-    }
-
 
 }

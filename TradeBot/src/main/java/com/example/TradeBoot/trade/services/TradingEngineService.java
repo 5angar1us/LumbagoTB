@@ -1,12 +1,13 @@
 package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.api.services.IWalletService;
 import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.services.OrdersService;
 import com.example.TradeBoot.trade.ExtendedExecutor;
 import com.example.TradeBoot.trade.TradingRunnableEngine;
 import com.example.TradeBoot.trade.model.*;
+import com.example.TradeBoot.trade.tradeloop.*;
 import com.example.TradeBoot.ui.service.ITradeSettingsService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
@@ -27,21 +28,17 @@ public class TradingEngineService {
 
     static final Logger log =
             LoggerFactory.getLogger(TradingEngineService.class);
-    protected final OrdersService ordersService;
+    protected final IOrdersService.Abstract ordersService;
     protected final IMarketService marketService;
-
-    protected final IWalletService walletService;
 
     protected final OrderPriceService orderPriceService;
 
     protected final ClosePositionInformationService closePositionInformationService;
 
-    protected List<MarketTradeSettings> marketTradeSettings;
-
 
     protected List<TradingOrderInfoPair> trapLimitPositionPairs;
 
-    protected WorkStatus workStatus = new WorkStatus(true);
+    protected WorkStatus globalWorkStatus = new WorkStatus(true);
 
     protected ITradeSettingsService tradeSettingsService;
 
@@ -53,9 +50,8 @@ public class TradingEngineService {
 
     @Autowired
     public TradingEngineService(
-            OrdersService ordersService,
+            IOrdersService.Abstract ordersService,
             IMarketService marketService,
-            IWalletService walletService,
             OrderPriceService orderPriceService,
             ClosePositionInformationService closePositionInformationService,
             ITradeSettingsService tradeSettingsService,
@@ -63,7 +59,7 @@ public class TradingEngineService {
     ) {
         this.ordersService = ordersService;
         this.marketService = marketService;
-        this.walletService = walletService;
+
         this.orderPriceService = orderPriceService;
         this.closePositionInformationService = closePositionInformationService;
         this.tradeSettingsService = tradeSettingsService;
@@ -81,7 +77,7 @@ public class TradingEngineService {
     }
 
     public void saveStop() {
-        workStatus.setNeedStop(true);
+        globalWorkStatus.setNeedStop(true);
 
         if (this.executorService == null)
             return;
@@ -96,7 +92,7 @@ public class TradingEngineService {
     }
 
     public boolean isStop() {
-        return workStatus.isNeedStop();
+        return globalWorkStatus.isNeedStop();
     }
 
 
@@ -108,7 +104,7 @@ public class TradingEngineService {
     void launch(List<TradeSettings> marketTradeSettings) {
         this.engines.clear();
 
-        workStatus.setNeedStop(false);
+        globalWorkStatus.setNeedStop(false);
 
         this.trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
@@ -117,23 +113,66 @@ public class TradingEngineService {
 
         this.executorService = new ExtendedExecutor(trapLimitPositionPairs.size());
 
-        var openPositionStatus = new IPositionStatusService.OpenPositionStatusService(financialInstrumentPositionsService);
-        var closePositionStatus = new IPositionStatusService.ClosePositionStatusService(financialInstrumentPositionsService);
+
 
         this.engines = trapLimitPositionPairs.stream()
                 .map(tradingOrderInfoPair -> {
 
-                    var tradeService = new TradeLoopService(tradingOrderInfoPair.tradeService(),
-                            workStatus,
+                    MarketInformation marketInformation = tradingOrderInfoPair.marketInformation;
+
+                    TradeInformation tradeInformation = tradingOrderInfoPair.tradeInformation();
+
+                    var closeOrders = new CloseByOne(ordersService, marketInformation);
+
+                    var placeWithDelay = new  PlaceWithDelay(ordersService);
+
+                    var replaceOrder = new ReplaceOrdersByOne(ordersService, placeWithDelay);
+
+                    var openPositionStatus = new IPositionStatusService.OpenPositionStatusService(financialInstrumentPositionsService);
+
+                    var PlaceTraps = new PlaceTraps(
+                            ordersService,
+                            marketService,
                             openPositionStatus,
-                            closePositionStatus,
+                            orderPriceService,
+                            replaceOrder,
+                            placeWithDelay,
+                            tradeInformation,
+                            marketInformation,
+                            globalWorkStatus);
+
+                    var SaleProduction = new SaleProduction(
+                            financialInstrumentPositionsService,
                             closePositionInformationService,
-                            tradingOrderInfoPair.tradeInformation(),
-                            tradingOrderInfoPair.market()
+                            marketInformation,
+                            orderPriceService,
+                            placeWithDelay,
+                            marketService,
+                            globalWorkStatus,
+                            replaceOrder);
+
+
+
+                    var placeTrapOdersTradeLoop = new LocalTradeLoop(
+                            PlaceTraps,
+                            closeOrders,
+                            globalWorkStatus
+                    );
+
+                    var saleProductionTradeLoop = new LocalTradeLoop(
+                            SaleProduction,
+                            closeOrders,
+                            globalWorkStatus
+                    );
+
+                    var tradeService = new GlobalTradeLoop(
+                            placeTrapOdersTradeLoop,
+                            saleProductionTradeLoop,
+                            globalWorkStatus
                     );
 
                     return new TradingRunnableEngine(
-                            tradingOrderInfoPair.market(),
+                            marketInformation.market(),
                             tradeService
                     );
                 })
@@ -179,9 +218,8 @@ public class TradingEngineService {
 
         tradingOrderInfoPairPairs.add(
                 new TradingOrderInfoPair(
-                        createTrapLimitOrdersService(marketInformation),
-                        new TradeInformation(tradeInformation),
-                        marketInformation.market()
+                        marketInformation,
+                        new TradeInformation(tradeInformation)
                 ));
 
         return tradingOrderInfoPairPairs;
@@ -194,19 +232,7 @@ public class TradingEngineService {
                 new Persent(tradeSettings.getMaximumDefinition()));
     }
 
-    protected TradeService createTrapLimitOrdersService(
-            MarketInformation marketInformation) {
-        return new TradeService(
-                ordersService,
-                marketService,
-                orderPriceService,
-                marketInformation,
-                workStatus
-        );
-    }
-
-
-    public static record TradingOrderInfoPair(TradeService tradeService, TradeInformation tradeInformation, String market) {
+    public static record TradingOrderInfoPair( MarketInformation marketInformation, TradeInformation tradeInformation) {
     }
 }
 

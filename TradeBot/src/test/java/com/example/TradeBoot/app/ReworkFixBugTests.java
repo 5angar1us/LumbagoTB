@@ -5,7 +5,7 @@ import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.services.IMarketService;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
@@ -22,9 +22,9 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-public class FixBugTests {
+public class ReworkFixBugTests {
 
-    OrdersService ordersService;
+    IOrdersService.Base ordersService;
     IMarketService marketService;
 
     OrderPriceService orderPriceService;

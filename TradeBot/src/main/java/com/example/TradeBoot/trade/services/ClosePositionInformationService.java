@@ -43,12 +43,9 @@ public class ClosePositionInformationService {
     }
 
 
-    public Optional<TradeInformation> createTradeInformation(String marketName) {
+    public Optional<TradeInformation> createTradeInformation(BigDecimal volume) {
 
-        var instrumentType = financialInstrumentService.getInstrumentType(marketName);
-        var volume = getVolume(marketName, instrumentType);
-
-        var newSide = createNewSideBy(volume);
+        var newSide = getSideBy(volume);
 
         var isTotalVolumeIsZero = BigDecimalUtils.check(
                 volume,
@@ -83,7 +80,7 @@ public class ClosePositionInformationService {
         return orderInformation;
     }
 
-    private ESide createNewSideBy(BigDecimal volume) {
+    public ESide getSideBy(BigDecimal volume) {
         var newSide = ESide.EMPTY;
         if (BigDecimalUtils.check(volume, BigDecimalUtils.EOperator.GREATER_THAN, BigDecimal.ZERO)) {
             newSide = ESide.SELL;

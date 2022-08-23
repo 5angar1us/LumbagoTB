@@ -9,6 +9,7 @@ import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.model.TradeInformation;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
+import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.VolumeVisitor;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,9 +19,11 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 
-public class TestClosePosition {
+public class ReworkTestClosePosition {
 
     private static ClosePositionInformationService closePositionInformationService;
+
+    private static FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
     private static IWalletService.Mock mockWalletService;
 
@@ -49,10 +52,9 @@ public class TestClosePosition {
 
         mockPositionsService.setPositions(List.of(defaultPosition));
 
-
-        var tradeInformation = closePositionInformationService.createTradeInformation(marketName)
+        var positionSize = financialInstrumentPositionsService.getPositionNetSize(marketName);
+        var tradeInformation = closePositionInformationService.createTradeInformation(positionSize)
                 .get();
-
 
         var expectedOrderInformation = new OrderInformation(new BigDecimal("0.1"), ESide.SELL, new Persent(0));
         var expectedTradeInformation = new TradeInformation(List.of(expectedOrderInformation));
@@ -69,8 +71,8 @@ public class TestClosePosition {
 
         mockWalletService.setBalances(List.of(defaultBalance));
 
-
-        var tradeInformation = closePositionInformationService.createTradeInformation(marketName)
+        var positionSize = financialInstrumentPositionsService.getPositionNetSize(marketName);
+        var tradeInformation = closePositionInformationService.createTradeInformation(positionSize)
                 .get();
 
 

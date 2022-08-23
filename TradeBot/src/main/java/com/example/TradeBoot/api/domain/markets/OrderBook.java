@@ -13,9 +13,9 @@ public class OrderBook {
                 '}';
     }
 
-    private List<Ask> asks;
+    private List<Price> asks;
 
-    private List<Bid> bids;
+    private List<Price> bids;
 
     public OrderBook(List<List<BigDecimal>> asks, List<List<BigDecimal>> bids) {
         setAsks(asks);
@@ -32,29 +32,45 @@ public class OrderBook {
         this.asks = asks.stream().map(Ask::new).collect(Collectors.toList());
     }
 
-    public List<Ask> getAllAsks() {
+    public List<Price> getAllAsks() {
         return this.asks;
     }
 
-    public List<Bid> getAllBids() {
+    public List<Price> getAllBids() {
         return this.bids;
     }
 
-    public Ask getBestAsk() {
+    public Price getBestAsk() {
         return this.asks.get(0);
     }
 
-    public Bid getBestBid() {
+    public Price getBestBid() {
         return this.bids.get(0);
     }
 
-    public Ask getAsk(int number) {
+    public Price getAsk(int number) {
         return this.asks.get(number);
     }
 
-    public Bid getBid(int count) {
+    public Price getBid(int count) {
         return this.bids.get(count);
     }
 
+
+    public Price getBestBySide(ESide side){
+        return switch (side){
+            case BUY -> getBestBid();
+            case SELL -> getBestAsk();
+            default -> throw new IllegalArgumentException("side");
+        };
+    }
+
+    public List<Price> getAllBySide(ESide side){
+        return switch (side){
+            case BUY -> getAllBids();
+            case SELL -> getAllAsks();
+            default -> throw new IllegalArgumentException("side");
+        };
+    }
 
 }

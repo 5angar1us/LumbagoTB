@@ -1,4 +1,4 @@
-package com.example.TradeBoot.api.services;
+package com.example.TradeBoot;
 
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
@@ -10,10 +10,7 @@ import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class FinancialInstrumentsTest {
-
-
-
+public class ShowFinancialInstruments {
 
     private static FinancialInstrumentService financialInstrumentService;
 

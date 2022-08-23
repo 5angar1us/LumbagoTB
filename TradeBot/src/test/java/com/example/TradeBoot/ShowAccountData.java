@@ -1,17 +1,15 @@
-package com.example.TradeBoot.api.services;
+package com.example.TradeBoot;
 
 import com.example.TradeBoot.configuration.TestUtils;
 import org.junit.jupiter.api.Test;
 
-public class AccountTests {
+public class ShowAccountData {
 
     @Test
     public void print(){
-        var market= "SOL/USD";
         TestUtils.printAccountInfo();
         TestUtils.printBalances();
         TestUtils.printAllInfoBalances();
-        TestUtils.printOpenOrders(market);
         TestUtils.printPositions();
         TestUtils.printAllInfoPositions();
     }

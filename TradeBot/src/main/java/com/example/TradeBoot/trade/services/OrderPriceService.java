@@ -2,6 +2,7 @@ package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
+import com.example.TradeBoot.api.domain.markets.Price;
 import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
@@ -72,27 +73,54 @@ public class OrderPriceService {
     }
 
     public BigDecimal calculateCorrectPrice(OrderBook orderBook, Persent distance, ESide side) {
-        BigDecimal price;
-        switch (side) {
+        log.debug("Using best target");
+        return createCorrectPrice(distance, side, orderBook.getBestBySide(side).getPrice());
+    }
+
+    public BigDecimal calculateCorrectPriceWithIgnoreLower(OrderBook orderBook, Persent distanceInPercent, ESide side , BigDecimal placedVolume) {
+        log.debug("Using a better option");
+        var index = 0;
+        BigDecimal accamulatedVolume = BigDecimal.ZERO;
+        var data = orderBook.getAllBySide(side);
+        for (Price datum : data) {
+            accamulatedVolume = accamulatedVolume.add(datum.getVolume());
+            index++;
+            if(BigDecimalUtils.check(
+                            accamulatedVolume,
+                            BigDecimalUtils.EOperator.LESS_THAN_OR_EQUALS,
+                            placedVolume.divide(new BigDecimal(2)))){
+                break;
+            }
+
+        }
+        var price = data.get(--index).getPrice();
+
+        return createCorrectPrice(distanceInPercent, side, price);
+    }
+
+    private BigDecimal createCorrectPrice(Persent distance, ESide side, BigDecimal price){
+        return switch (side) {
             case BUY -> {
-                price = targetPriceLower(
-                        orderBook.getBestBid().getPrice(),
+
+                log.debug("targetBid:" + price);
+
+                yield targetPriceLower(
+                        price,
                         distance);
 
-                log.debug("bestBid " + orderBook.getBestBid().getPrice());
             }
 
             case SELL -> {
-                price = targetPriceHigher(
-                        orderBook.getBestAsk().getPrice(),
+                log.debug("targetAsk:" + price);
+
+                yield targetPriceHigher(
+                        price,
                         distance);
 
-                log.debug("bestAsk " + orderBook.getBestAsk().getPrice());
             }
 
             default -> throw new IllegalArgumentException("side");
-        }
-        return price;
+        };
     }
 
     private BigDecimal targetPriceHigher(BigDecimal askPrice, Persent persent) {
@@ -112,5 +140,6 @@ public class OrderPriceService {
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100L);
     private static final BigDecimal ONE_HUNDREDTH = new BigDecimal("0.01");
+
 
 }
