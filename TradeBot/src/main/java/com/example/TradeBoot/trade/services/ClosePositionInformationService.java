@@ -43,7 +43,7 @@ public class ClosePositionInformationService {
     }
 
 
-    public Optional<TradeInformation> createTradeInformation(BigDecimal volume) {
+    public synchronized Optional<TradeInformation> createTradeInformation(BigDecimal volume) {
 
         var newSide = getSideBy(volume);
 

@@ -82,8 +82,9 @@ public class SaleProduction implements ITradeService {
 
 
         long startTradeTime = System.currentTimeMillis();
-        long currentTradeTime = startTradeTime;
+
         long startIterationTime = startTradeTime;
+        long currentTradeTime = 0;
 
 
         while (financialInstrumentPositionsService.isPositionOpen(positionSize) == true
@@ -205,7 +206,7 @@ public class SaleProduction implements ITradeService {
         if (isPriceInBoarding && closePositionTradeInformation.isEmpty()) return Optional.empty();
 
         return Optional.of(
-                orderPriceService.createOrdersToPlaceMap(
+                orderPriceService.createWorstOrdersToPlaceMap(
                         orderBook,
                         closePositionTradeInformation.get().getOrderInformations(),
                         market)

@@ -6,6 +6,7 @@ import com.example.TradeBoot.api.domain.markets.Price;
 import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
+import com.example.TradeBoot.api.utils.ESideChange;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import org.slf4j.Logger;
@@ -25,6 +26,31 @@ public class OrderPriceService {
             LoggerFactory.getLogger(OrderPriceService.class);
     public OrderPriceService() {}
 
+
+    public Map<OrderInformation, OrderToPlace> createWorstOrdersToPlaceMap(OrderBook orderBook, List<OrderInformation> orderInformations, String market) {
+
+        Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
+        for (OrderInformation orderInformation : orderInformations) {
+            BigDecimal price = calculateCorrectPrice(
+                    orderBook,
+                    orderInformation.getDistanceInPercent(),
+                    orderInformation.getSide()
+            );
+
+            orderToPlaces.put(
+                    orderInformation,
+                    new OrderToPlace(
+                            market,
+                            orderInformation.getSide(),
+                            price,
+                            EType.LIMIT,
+                            orderInformation.getVolume()
+                    ));
+        }
+        return orderToPlaces;
+
+    }
+
     public Map<OrderInformation, OrderToPlace> createOrdersToPlaceMap(
             OrderBook orderBook,
             List<OrderInformation> orderInformations,
@@ -32,7 +58,7 @@ public class OrderPriceService {
 
         Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
         for (OrderInformation orderInformation : orderInformations) {
-            BigDecimal price = calculateCorrectPrice(
+            BigDecimal price = calculateWorstPrice(
                     orderBook,
                     orderInformation.getDistanceInPercent(),
                     orderInformation.getSide()
@@ -70,6 +96,11 @@ public class OrderPriceService {
         log.debug("bottomBording " + bottomBoarding + " currentPrice "+ currentPrice + " topBording " + topBoarding + " placedPrice " + placedPrice);
         log.debug("isLessOrEqualTopBoarding " + isLessOrEqualTopBoarding + " " + " isMoreOrEqualsBottomBoarding " + isMoreOrEqualsBottomBoarding);
         return isLessOrEqualTopBoarding && isMoreOrEqualsBottomBoarding;
+    }
+
+    public BigDecimal calculateWorstPrice(OrderBook orderBook, Persent distance, ESide side){
+        log.debug("Using worst");
+        return createCorrectPrice(distance, side, orderBook.getBestBySide(ESideChange.change(side)).getPrice());
     }
 
     public BigDecimal calculateCorrectPrice(OrderBook orderBook, Persent distance, ESide side) {
@@ -140,6 +171,7 @@ public class OrderPriceService {
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100L);
     private static final BigDecimal ONE_HUNDREDTH = new BigDecimal("0.01");
+
 
 
 }

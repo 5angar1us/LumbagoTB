@@ -80,7 +80,12 @@ public class LocalTradeLoop {
 
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
+                log.error(e.getMessage(), e);
                 sleep(1000);
+            } catch (Exception e){
+                globalWorkStatus.setNeedStop(true);
+                log.error(e.getMessage(), e);
+                sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
             }
             finally {
                 state = ETradeState.CLOSE_ORDERS;
