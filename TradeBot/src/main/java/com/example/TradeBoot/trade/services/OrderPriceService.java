@@ -2,7 +2,7 @@ package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
-import com.example.TradeBoot.api.domain.markets.Price;
+import com.example.TradeBoot.api.domain.markets.OrderBookLine;
 import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;

@@ -13,9 +13,9 @@ public class OrderBook {
                 '}';
     }
 
-    private List<Price> asks;
+    private List<OrderBookLine> asks;
 
-    private List<Price> bids;
+    private List<OrderBookLine> bids;
 
     public OrderBook(List<List<BigDecimal>> asks, List<List<BigDecimal>> bids) {
         setAsks(asks);
@@ -25,39 +25,39 @@ public class OrderBook {
     public OrderBook() {}
 
     public void setBids(List<List<BigDecimal>> bids) {
-        this.bids = bids.stream().map(Bid::new).collect(Collectors.toList());
+        this.bids = bids.stream().map(BidOrderBookLine::new).collect(Collectors.toList());
     }
 
     public void setAsks(List<List<BigDecimal>> asks) {
-        this.asks = asks.stream().map(Ask::new).collect(Collectors.toList());
+        this.asks = asks.stream().map(AskOrderBookLine::new).collect(Collectors.toList());
     }
 
-    public List<Price> getAllAsks() {
+    public List<OrderBookLine> getAllAsks() {
         return this.asks;
     }
 
-    public List<Price> getAllBids() {
+    public List<OrderBookLine> getAllBids() {
         return this.bids;
     }
 
-    public Price getBestAsk() {
+    public OrderBookLine getBestAsk() {
         return this.asks.get(0);
     }
 
-    public Price getBestBid() {
+    public OrderBookLine getBestBid() {
         return this.bids.get(0);
     }
 
-    public Price getAsk(int number) {
+    public OrderBookLine getAsk(int number) {
         return this.asks.get(number);
     }
 
-    public Price getBid(int count) {
+    public OrderBookLine getBid(int count) {
         return this.bids.get(count);
     }
 
 
-    public Price getBestBySide(ESide side){
+    public OrderBookLine getBestBySide(ESide side){
         return switch (side){
             case BUY -> getBestBid();
             case SELL -> getBestAsk();
@@ -65,12 +65,11 @@ public class OrderBook {
         };
     }
 
-    public List<Price> getAllBySide(ESide side){
+    public List<OrderBookLine> getAllBySide(ESide side){
         return switch (side){
             case BUY -> getAllBids();
             case SELL -> getAllAsks();
             default -> throw new IllegalArgumentException("side");
         };
     }
-
 }
