@@ -94,10 +94,8 @@ public interface IMarketService {
 
     class Mock implements IMarketService {
         List<Market> markets;
-        Market market;
 
         OrderBook orderBook;
-        Trades trades;
 
         @Override
         public List<Market> getAllMarkets() {
@@ -106,7 +104,7 @@ public interface IMarketService {
 
         @Override
         public Market getMarket(String marketName) {
-            return market;
+           return markets.stream().filter(market -> market.getName() == marketName).findFirst().orElseThrow();
         }
 
         @Override
@@ -116,23 +114,16 @@ public interface IMarketService {
 
         @Override
         public Trades getTrade(String marketName) {
-            return trades;
+            throw new UnsupportedOperationException();
         }
 
         public void setMarkets(List<Market> markets) {
             this.markets = markets;
         }
 
-        public void setMarket(Market market) {
-            this.market = market;
-        }
-
         public void setOrderBook(OrderBook orderBook) {
             this.orderBook = orderBook;
         }
 
-        public void setTrades(Trades trades) {
-            this.trades = trades;
-        }
     }
 }

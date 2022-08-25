@@ -3,12 +3,12 @@ package com.example.TradeBoot.api.domain.markets;
 import java.math.BigDecimal;
 import java.util.List;
 
-public interface Price {
+public interface OrderBookLine {
     BigDecimal getPrice();
 
     BigDecimal getVolume();
 
-    public abstract class Abstract implements Price {
+    public abstract class Abstract implements OrderBookLine {
         @Override
         public String toString() {
             return "Abstract{" +

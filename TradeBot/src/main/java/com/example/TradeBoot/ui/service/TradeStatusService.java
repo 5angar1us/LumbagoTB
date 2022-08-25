@@ -1,9 +1,9 @@
 package com.example.TradeBoot.ui.service;
 
+import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
-import com.example.TradeBoot.api.services.OrdersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +17,7 @@ import java.util.stream.StreamSupport;
 public class TradeStatusService {
 
     @Autowired
-    public TradeStatusService(ITradeSettingsService tradeSettingsService, IWalletService walletService, OrdersService ordersService, IPositionsService positionsService) {
+    public TradeStatusService(ITradeSettingsService tradeSettingsService, IWalletService walletService, IOrdersService.Base ordersService, IPositionsService positionsService) {
         this.tradeSettingsService = tradeSettingsService;
         this.walletService = walletService;
         this.ordersService = ordersService;
@@ -29,7 +29,7 @@ public class TradeStatusService {
 
     private IWalletService walletService;
 
-    private OrdersService ordersService;
+    private IOrdersService.Base ordersService;
 
     private IPositionsService positionsService;
 

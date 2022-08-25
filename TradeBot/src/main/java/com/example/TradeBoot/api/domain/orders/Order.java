@@ -66,6 +66,7 @@ public class Order {
                 '}';
     }
 
+
     public boolean isLiquidation() { return liquidation; }
 
     public void setLiquidation(boolean liquidation) { this.liquidation = liquidation; }

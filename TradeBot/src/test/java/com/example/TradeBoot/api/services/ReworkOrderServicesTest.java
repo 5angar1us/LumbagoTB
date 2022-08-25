@@ -17,9 +17,9 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-public class OrderServicesTest {
+public class ReworkOrderServicesTest {
 
-    private static OrdersService ordersService;
+    private static IOrdersService.Base ordersService;
 
     private static IMarketService marketService;
 

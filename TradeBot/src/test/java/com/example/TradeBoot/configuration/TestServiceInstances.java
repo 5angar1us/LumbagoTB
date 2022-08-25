@@ -25,7 +25,7 @@ public class TestServiceInstances {
         return iPositionsService;
     }
 
-    public static OrdersService getOrdersService() {
+    public static IOrdersService.Base getOrdersService() {
         return ordersService;
     }
 
@@ -59,7 +59,7 @@ public class TestServiceInstances {
     private static HttpClientWorkerWithDelay httpClientWorkerWithDelay;
 
     private static IPositionsService iPositionsService;
-    private static OrdersService ordersService;
+    private static IOrdersService.Base ordersService;
     private static IMarketService iMarketService;
 
     private static IFutureService iFutureService;
@@ -89,7 +89,7 @@ public class TestServiceInstances {
         httpClientWorkerWithDelay = new HttpClientWorkerWithDelay(httpClient);
 
         iPositionsService = new IPositionsService.Base(httpClientWorkerWithDelay);
-        ordersService = new OrdersService(httpClientWorkerWithDelay);
+        ordersService = new IOrdersService.Base(httpClientWorkerWithDelay);
         iMarketService = new IMarketService.Base(httpClientWorkerWithDelay);
         walletService = new IWalletService.Base(httpClientWorkerWithDelay);
         accountService = new AccountService(httpClientWorkerWithDelay);

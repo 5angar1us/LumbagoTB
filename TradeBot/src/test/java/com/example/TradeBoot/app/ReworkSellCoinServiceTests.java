@@ -2,16 +2,9 @@ package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 import com.example.TradeBoot.api.http.HttpClientWorker;
-import com.example.TradeBoot.api.services.IMarketService;
-import com.example.TradeBoot.api.services.IPositionsService;
-import com.example.TradeBoot.api.services.IWalletService;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.*;
 import com.example.TradeBoot.configuration.TestConfig;
 import com.example.TradeBoot.configuration.TestServiceInstances;
-import com.example.TradeBoot.configuration.TestUtils;
-import com.example.TradeBoot.trade.services.TradeService;
-import com.example.TradeBoot.trade.services.OrderPriceService;
-import com.example.TradeBoot.trade.model.MarketInformation;
 import com.example.TradeBoot.trade.model.OrderInformation;
 import com.example.TradeBoot.trade.model.Persent;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
@@ -24,11 +17,11 @@ import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
-public class SellCoinServiceTests {
+public class ReworkSellCoinServiceTests {
     private static HttpClientWorker httpClient;
 
     private static IPositionsService positionsService;
-    private static OrdersService ordersService;
+    private static IOrdersService.Base ordersService;
     private static IMarketService marketService;
 
     private static IWalletService walletService;
@@ -56,42 +49,42 @@ public class SellCoinServiceTests {
 
 
     public void canSetLimitOrder() {
-        String marketName = TestConfig.MARKET_NAME;
-        var market = marketService.getMarket(marketName);
-        var orderBook = marketService.getOrderBook(marketName, 5);
-        var incrementSize = market.getSizeIncrement();
-        long tradingDelay = 0;
-
-
-        MarketInformation marketInformation = new MarketInformation(
-                marketName,
-                tradingDelay,
-                new Persent(0.3));
-
-        TradeService tradeService = new TradeService(
-                ordersService,
-                marketService,
-                new OrderPriceService(),
-                marketInformation
-        );
-        //PrintAccountInfo();
-        //PrintPosition(marketName);
-        //PrintPositions();
-        TestUtils.printBalances();
-        TestUtils.printBalance(marketName);
-        TestUtils.printOpenOrders(marketName);
-
-        var orderInformation = getCoinOrderInformation(marketName);
-        if (orderInformation.isPresent()) {
-            System.out.println("Start trading");
-//            tradingService.workWithOrders(orderInformation.get());
-        }
-
-
-        TestUtils.printBalances();
-        TestUtils.printBalance(marketName);
-        TestUtils.printOpenOrders(marketName);
-        System.out.println("END");
+//        String marketName = TestConfig.MARKET_NAME;
+//        var market = marketService.getMarket(marketName);
+//        var orderBook = marketService.getOrderBook(marketName, 5);
+//        var incrementSize = market.getSizeIncrement();
+//        long tradingDelay = 0;
+//
+//
+//        MarketInformation marketInformation = new MarketInformation(
+//                marketName,
+//                tradingDelay,
+//                new Persent(0.3));
+//
+//        LocalTradeLoop localTradeLoop = new LocalTradeLoop(
+//                ordersService,
+//                marketService,
+//                new OrderPriceService(),
+//                marketInformation
+//        );
+//        //PrintAccountInfo();
+//        //PrintPosition(marketName);
+//        //PrintPositions();
+//        TestUtils.printBalances();
+//        TestUtils.printBalance(marketName);
+//        TestUtils.printOpenOrders(marketName);
+//
+//        var orderInformation = getCoinOrderInformation(marketName);
+//        if (orderInformation.isPresent()) {
+//            System.out.println("Start trading");
+////            tradingService.workWithOrders(orderInformation.get());
+//        }
+//
+//
+//        TestUtils.printBalances();
+//        TestUtils.printBalance(marketName);
+//        TestUtils.printOpenOrders(marketName);
+//        System.out.println("END");
     }
 
     private Optional<List<OrderInformation>> getCoinOrderInformation(String market) {

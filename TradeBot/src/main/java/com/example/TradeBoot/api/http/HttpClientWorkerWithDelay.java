@@ -21,7 +21,7 @@ public class HttpClientWorkerWithDelay {
     }
 
 
-    public String createPostRequest(String uri, String body, String market) throws BadRequestByFtxException {
+    public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
         return httpClientWorker.createPostRequest(uri, body);
     }
 

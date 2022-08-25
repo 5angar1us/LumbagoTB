@@ -1,6 +1,6 @@
 package com.example.TradeBoot.trade;
 
-import com.example.TradeBoot.trade.services.TradeLoopService;
+import com.example.TradeBoot.trade.tradeloop.GlobalTradeLoop;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,11 +13,11 @@ public class TradingRunnableEngine implements Runnable {
 
     protected String marketName;
 
-    protected TradeLoopService tradeLoopService;
+    protected GlobalTradeLoop globalTradeLoop;
 
-    public TradingRunnableEngine(String marketName, TradeLoopService tradeLoopService) {
+    public TradingRunnableEngine(String marketName, GlobalTradeLoop globalTradeLoop) {
         this.marketName = marketName;
-        this.tradeLoopService = tradeLoopService;
+        this.globalTradeLoop = globalTradeLoop;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class TradingRunnableEngine implements Runnable {
         log.debug("Start Engine " + marketName);
         isStopped = false;
 
-        tradeLoopService.run();
+        globalTradeLoop.run();
 
 
         log.debug("Stop Engine " + marketName);

@@ -18,23 +18,23 @@ public class HttpRequestFactory {
         this.auntification = auntification;
     }
 
-    public HttpRequest createGetRequest(String uri) {
+    public synchronized HttpRequest createGetRequest(String uri) {
         return createRequest(uri, "", "GET");
     }
 
-    public HttpRequest createPostRequest(String uri, String body) {
+    public synchronized HttpRequest createPostRequest(String uri, String body) {
         return createRequest(uri, body, "POST");
     }
 
-    public HttpRequest createDeleteRequest(String uri) {
+    public synchronized HttpRequest createDeleteRequest(String uri) {
         return createRequest(uri, "", "DELETE");
     }
 
-    public HttpRequest createDeleteRequest(String uri, String body) {
+    public synchronized HttpRequest createDeleteRequest(String uri, String body) {
         return createRequest(uri, body, "DELETE");
     }
 
-    private HttpRequest createRequest(
+    private synchronized HttpRequest createRequest(
             String uri,
             String body,
             String httpMethodName) {
@@ -54,7 +54,7 @@ public class HttpRequestFactory {
         return requestBuilder.build();
     }
 
-    private HttpRequest.Builder DefaultConfigureRequestBuilder(
+    private synchronized HttpRequest.Builder DefaultConfigureRequestBuilder(
             HttpRequest.Builder builder,
             SignaturePayloadBuilder signaturePayloadBuilder,
             URI uri) {

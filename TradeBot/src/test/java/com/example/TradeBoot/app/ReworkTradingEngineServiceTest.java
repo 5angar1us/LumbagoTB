@@ -1,7 +1,7 @@
 package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
-import com.example.TradeBoot.api.services.OrdersService;
+import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.TradingEngineService;
 import com.example.TradeBoot.ui.models.TradeSettings;
@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.springframework.test.util.AssertionErrors.assertTrue;
 
-public class TradingEngineServiceTest {
+public class ReworkTradingEngineServiceTest {
 
 
 
@@ -30,7 +30,7 @@ public class TradingEngineServiceTest {
 
     private static TradeStatusService tradeStatusService;
 
-    private static OrdersService ordersService;
+    private static IOrdersService.Base ordersService;
 
     @BeforeAll
     static void init() {
@@ -45,7 +45,6 @@ public class TradingEngineServiceTest {
         tradeEngineService = new TradingEngineService(
                 TestServiceInstances.getOrdersService(),
                 TestServiceInstances.getMarketService(),
-                TestServiceInstances.getWalletService(),
                 TestServiceInstances.getOrderPriceCalculator(),
                 TestServiceInstances.getClosePositionInformationService(),
                 mockTradeSettingsService,

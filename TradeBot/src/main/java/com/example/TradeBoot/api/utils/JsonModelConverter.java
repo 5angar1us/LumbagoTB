@@ -1,6 +1,6 @@
 package com.example.TradeBoot.api.utils;
 
-import com.example.TradeBoot.api.extentions.MapperConvertException;
+import com.example.TradeBoot.api.extentions.ParseToModelException;
 import com.example.TradeBoot.api.extentions.ParseToJsonException;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -17,7 +17,7 @@ public class JsonModelConverter {
         try {
             return mapper.readValue(json, tClass);
         } catch (JsonProcessingException e) {
-            throw new MapperConvertException("Convert throws exception", e);
+            throw new ParseToModelException("Convert throws exception", e);
         }
     }
 
@@ -30,7 +30,7 @@ public class JsonModelConverter {
             return mapper.readValue(jsonArray, javaType);
 
         } catch (JsonProcessingException e) {
-            throw new MapperConvertException("Convert throws exception", e);
+            throw new ParseToModelException("Convert throws exception", e);
         }
 
     }

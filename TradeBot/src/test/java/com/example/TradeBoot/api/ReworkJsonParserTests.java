@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
-public class JsonParserTests {
+public class ReworkJsonParserTests {
 
     String body = "{\"name\":\"1INCH-PERP\",\"enabled\":true,\"postOnly\":false,\"priceIncrement\":1.0E-4,\"sizeIncrement\":1.0,\"minProvideSize\":1.0,\"last\":0.9744,\"bid\":0.9744,\"ask\":0.9748,\"price\":0.9744,\"type\":\"future\",\"baseCurrency\":null,\"isEtfMarket\":false,\"quoteCurrency\":null,\"underlying\":\"1INCH\",\"restricted\":false,\"highLeverageFeeExempt\":false,\"largeOrderThreshold\":500.0,\"change1h\":-0.0182367758186398,\"change24h\":-0.012465795074490726,\"changeBod\":-0.01971830985915493,\"quoteVolume24h\":9978809.6464,\"volumeUsd24h\":9978809.6464,\"priceHigh24h\":1.053,\"priceLow24h\":0.9701}";
 
