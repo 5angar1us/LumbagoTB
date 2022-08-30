@@ -11,85 +11,78 @@
 <div th:replace="base :: navbar()"/>
 
 <div class="container">
-    <div class="card m-4">
-        <h2 class="card-header">Панель управления</h2>
-        <div class="card-body">
-            <div class="col-md-auto">
-                <div class="row">
-                    <h2>Текущий статус: [[${status}]]</h2>
-                </div>
-                <div class="row">
-                    <h3>Настроено монет\спотов: [[${tradeSettingsCount}]]</h3>
-                </div>
-                <div class="row">
-                    <h3>Сейчас торгуется монет\спотов: [[${runnableEngineCount}]]</h3>
-                </div>
-                <div class="row">
-                    <form id="form_id" method="post" th:action="@{/trade_settings/add}">
-                        <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/start')">
-                            Start
-                        </button>
-                        <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/stop')">
-                            Stop
-                        </button>
-                    </form>
+            <div class="card m-4">
+                <h2 class="card-header">Панель управления</h2>
+                <div class="card-body">
+                    <div class="col-md-auto">
+
+                            <h2>Текущий статус: [[${status}]]</h2>
+
+
+                            <h3>Настроено монет\спотов: [[${tradeSettingsCount}]]</h3>
+
+                            <h3>Сейчас торгуется монет\спотов: [[${runnableEngineCount}]]</h3>
+                            <form id="form_id" method="post" th:action="@{/trade_settings/add}">
+                                <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/start')">
+                                    Start
+                                </button>
+                                <button class="btn btn-primary m-1" onclick="changeAction('/control_panel/stop')">
+                                    Stop
+                                </button>
+                            </form>
+                    </div>
+
                 </div>
             </div>
 
-        </div>
-    </div>
+            <div class="card m-4">
+                <h2 class="card-header">Открытые ордера</h2>
+                <div class="card-body">
+                    <div class="col-md-auto">
+                            <div th:if="${openOrders.empty}"> Тут пусто</div>
+                            <table class="table col col-lg-4" th:if="${!openOrders.empty}">
+                                <thead>
+                                <tr>
+                                    <th scope="col">Название маркета</th>
+                                    <th scope="col">Количество</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="openOrder : ${openOrders}">
+                                    <td th:text="${openOrder.marketName}" >test name</td>
+                                    <td th:text="${openOrder.size}" >test total</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                    </div>
 
-    <div class="card m-4">
-        <h2 class="card-header">Открытые ордера</h2>
-        <div class="card-body">
-            <div class="col-md-auto">
-                <div class="row">
-                    <div th:if="${openOrders.empty}"> Тут пусто</div>
-                    <table class="table col col-lg-4" th:if="${!openOrders.empty}">
-                        <thead>
-                        <tr>
-                            <th scope="col">Название маркета</th>
-                            <th scope="col">Количество</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="openOrder : ${openOrders}">
-                            <td th:text="${openOrder.marketName}" >test name</td>
-                            <td th:text="${openOrder.size}" >test total</td>
-                        </tr>
-                        </tbody>
-                    </table>
                 </div>
             </div>
 
-        </div>
-    </div>
 
-    <div class="card m-4">
-        <h2 class="card-header">Открытые позиции</h2>
-        <div class="card-body">
-            <div class="col-md-auto">
-                <div class="row">
-                    <div th:if="${openPositions.empty}"> Тут пусто</div>
-                    <table class="table col col-lg-4" th:if="${!openPositions.empty}">
-                        <thead>
-                        <tr>
-                            <th scope="col">Название маркета</th>
-                            <th scope="col">Объём позиции</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr th:each="openPosition : ${openPositions}">
-                            <td th:text="${openPosition.marketName}" >test name</td>
-                            <td th:text="${openPosition.total}" >test total</td>
-                        </tr>
-                        </tbody>
-                    </table>
+            <div class="card m-4">
+                <h2 class="card-header">Открытые позиции</h2>
+                <div class="card-body">
+                    <div class="col-md-auto">
+                        <div th:if="${openPositions.empty}"> Тут пусто</div>
+                        <table class="table col col-lg-4" th:if="${!openPositions.empty}">
+                            <thead>
+                            <tr>
+                                <th scope="col">Название маркета</th>
+                                <th scope="col">Объём позиции</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr th:each="openPosition : ${openPositions}">
+                                <td th:text="${openPosition.marketName}" >test name</td>
+                                <td th:text="${openPosition.total}" >test total</td>
+                            </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
-            </div>
-
         </div>
-    </div>
 
 </div>
 
