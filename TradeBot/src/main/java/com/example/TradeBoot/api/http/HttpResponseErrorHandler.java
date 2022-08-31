@@ -31,12 +31,15 @@ public class HttpResponseErrorHandler {
 
 
         var apiErrorMessage = responseData.error().get();
-        ExceptionData exceptionData = switch (apiErrorMessage) {
-            case "Order already closed" -> new ExceptionData(new OrderAlreadyClosedException(), Level.ERROR, "");
-            case "Please retry request" -> new ExceptionData(new RetryRequestException(), Level.ERROR, "");
-            case "Order already queued for cancellation" ->
-                    new ExceptionData(new OrderAlreadyQueuedForCancellationException(), Level.ERROR, "");
-            case "Not logged in: Invalid signature", "Invalid signature" -> {
+        ExceptionData exceptionData = switch (response.statusCode()) {
+            case 400 -> switch (apiErrorMessage) {
+                case "Order already closed" ->
+                        new ExceptionData(new OrderAlreadyClosedException(), Level.ERROR, "");
+                case "Order already queued for cancellation" ->
+                        new ExceptionData(new OrderAlreadyQueuedForCancellationException(), Level.ERROR, "");
+                default -> getDefaultExceptionData(apiErrorMessage);
+            };
+            case 401 -> {
                 var headers = response.request().headers();
                 var details = String.format("Headers: %s, %s, %s, %s.",
                         getMessageTuple(headers, EHttpHeaders.FTX_KEY.getName()),
@@ -46,15 +49,15 @@ public class HttpResponseErrorHandler {
                 );
                 yield new ExceptionData(new InvalidSignatureException(errorMessage + details), Level.ERROR, "");
             }
-            default -> {
+            case 429 -> new ExceptionData(new DoNotSendMoreThanExeption(apiErrorMessage), Level.ERROR, "");
+            case 500 -> {
                 if (apiErrorMessage.contains("An unexpected error occurred, please try again later")) {
                     yield new ExceptionData(new UnexpectedErrorException(apiErrorMessage), Level.ERROR, "");
                 }
-                if (apiErrorMessage.contains("Do not send more than 2 orders")) {
-                    yield new ExceptionData(new DoNotSendMoreThanExeption(apiErrorMessage), Level.ERROR, "");
-                }
-                yield new ExceptionData(new UnknownErrorRequestByFtxException(errorMessage), Level.ERROR, "");
+                yield getDefaultExceptionData(apiErrorMessage);
             }
+            case 503 -> new ExceptionData(new RetryRequestException(), Level.ERROR, "");
+            default -> getDefaultExceptionData(apiErrorMessage);
         };
 
         var logMessage = String.format("%s. %s",
@@ -73,6 +76,10 @@ public class HttpResponseErrorHandler {
                 headerName,
                 headerValue
         );
+    }
+
+    private ExceptionData getDefaultExceptionData(String errorMessage){
+        return  new ExceptionData(new UnknownErrorRequestByFtxException(errorMessage), Level.ERROR, "");
     }
 
     record ExceptionData(BadRequestByFtxException exception, Level logLevel, String errorDetail) {
