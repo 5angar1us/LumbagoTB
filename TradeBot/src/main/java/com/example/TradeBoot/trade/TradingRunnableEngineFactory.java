@@ -68,8 +68,6 @@ public class TradingRunnableEngineFactory {
 
         var closeOrders = new CloseByOne(ordersService, marketInformation);
 
-        var placeWithDelay = new PlaceWithDelay(ordersService);
-
         var replaceOrders = new ReplaceMapOrderByOne(ordersService);
 
         var replaceOrder = new ReplaceByOne(ordersService);
@@ -82,7 +80,6 @@ public class TradingRunnableEngineFactory {
                 openPositionStatus,
                 orderPriceService,
                 replaceOrders,
-                placeWithDelay,
                 tradeInformation,
                 marketInformation,
                 globalWorkStatus);

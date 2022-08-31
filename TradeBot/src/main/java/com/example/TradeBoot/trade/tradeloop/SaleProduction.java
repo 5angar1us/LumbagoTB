@@ -11,7 +11,6 @@ import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
 import com.example.TradeBoot.trade.services.OrderPriceService;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrder;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
 import org.slf4j.Logger;

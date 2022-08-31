@@ -3,7 +3,6 @@ package com.example.TradeBoot.trade.tradeloop;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.services.IOrdersService;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrder;
 
 public class ReplaceByOne implements IReplaceOrder {
@@ -13,7 +12,6 @@ public class ReplaceByOne implements IReplaceOrder {
     }
 
     IOrdersService ordersService;
-    IPlaceOrder placeOrder;
 
     @Override
     public PlacedOrder replace(PlacedOrder placedOrder, OrderToPlace orderToPlace) {
