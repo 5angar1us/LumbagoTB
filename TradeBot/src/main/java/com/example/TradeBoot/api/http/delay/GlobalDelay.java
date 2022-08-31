@@ -22,8 +22,7 @@ public class GlobalDelay implements IHttpClientWorker {
     public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimit) {
         this.httpClientWorker = httpClientWorker;
 
-        Refill refill = Refill.intervally(requestLimit, Duration.ofMinutes(1));
-        Bandwidth limit = Bandwidth.classic(requestLimit, refill);
+        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMinutes(1));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
                 .build();

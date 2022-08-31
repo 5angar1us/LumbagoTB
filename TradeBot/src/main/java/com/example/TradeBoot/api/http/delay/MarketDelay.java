@@ -21,8 +21,7 @@ public class MarketDelay implements IHttpClientWorker {
     public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit) {
         this.httpClientWorker = httpClientWorker;
 
-        Refill refill = Refill.intervally(requestLimit, Duration.ofMillis(200));
-        Bandwidth limit = Bandwidth.classic(requestLimit, refill);
+        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(200));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
                 .build();
