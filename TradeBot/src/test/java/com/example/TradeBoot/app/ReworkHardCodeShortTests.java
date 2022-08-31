@@ -138,8 +138,7 @@ public class ReworkHardCodeShortTests {
                 tradeDelay,
                 new Persent(0.3));
 
-        var placeWithDelay = new PlaceWithDelay(ordersService);
-        var replaceOrder = new ReplaceByOne(ordersService, placeWithDelay);
+        var replaceOrder = new ReplaceByOne(ordersService);
         var closeOrders = new CloseByOne(ordersService, marketInformation);
 
         var globalWorkStatus =  new WorkStatus(false);
@@ -147,10 +146,10 @@ public class ReworkHardCodeShortTests {
 
         ITradeService tradeService = new SaleProduction(
                 marketService,
+                ordersService,
                 new OrderPriceService(),
                 financialInstrumentPositionsService,
                 closePositionInformationService,
-                placeWithDelay,
                 replaceOrder,
                 marketInformation,
                 globalWorkStatus
@@ -184,8 +183,7 @@ public class ReworkHardCodeShortTests {
                 tradeDelay,
                 new Persent(0.3));
 
-        var placeWithDelay = new PlaceWithDelay(ordersService);
-        var replaceOrder = new ReplaceByOne(ordersService, placeWithDelay);
+        var replaceOrder = new ReplaceByOne(ordersService);
         var closeOrders = new CloseByOne(ordersService, marketInformation);
 
         var globalWorkStatus =  new WorkStatus(false);
@@ -193,10 +191,10 @@ public class ReworkHardCodeShortTests {
 
         ITradeService tradeService = new SaleProduction(
                 marketService,
+                ordersService,
                 new OrderPriceService(),
                 financialInstrumentPositionsService,
                 closePositionInformationService,
-                placeWithDelay,
                 replaceOrder,
                 marketInformation,
                 globalWorkStatus

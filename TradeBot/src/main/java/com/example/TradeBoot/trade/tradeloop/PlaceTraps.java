@@ -31,7 +31,6 @@ public class PlaceTraps implements ITradeService {
         this.positionStatus = positionStatus;
         this.orderPriceService = orderPriceService;
         this.replaceOrders = replaceOrders;
-        this.placeOrder = placeOrder;
         this.tradeInformation = tradeInformation;
         this.marketInformation = marketInformation;
         this.globalWorkStatus = globalWorkStatus;
@@ -46,8 +45,6 @@ public class PlaceTraps implements ITradeService {
     OrderPriceService orderPriceService;
 
     IReplaceOrderMap replaceOrders;
-
-    IPlaceOrder placeOrder;
 
     TradeInformation tradeInformation;
 
@@ -128,7 +125,7 @@ public class PlaceTraps implements ITradeService {
         Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
-            placedOrders.put(entryOrderToPlace.getKey(), placeOrder.place(entryOrderToPlace.getValue()));
+            placedOrders.put(entryOrderToPlace.getKey(), ordersService.placeOrder(entryOrderToPlace.getValue()));
 
         }
 

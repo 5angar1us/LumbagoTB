@@ -1,22 +1,10 @@
 package com.example.TradeBoot.app;
 
-import com.example.TradeBoot.api.domain.Market;
-import com.example.TradeBoot.api.domain.markets.ESide;
-import com.example.TradeBoot.api.domain.markets.OrderBook;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
-import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.OrderPriceService;
-import com.example.TradeBoot.trade.services.TradingEngineService;
-import com.example.TradeBoot.ui.models.TradeSettings;
-import com.example.TradeBoot.ui.models.TradeSettingsDetail;
-import com.example.TradeBoot.ui.models.TradingStrategy;
 import org.junit.jupiter.api.BeforeAll;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.List;
 
 public class TradeTest {
 

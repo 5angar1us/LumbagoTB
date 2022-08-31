@@ -14,8 +14,8 @@ import java.util.Map;
 public class ReplaceMapOrderByOne implements IReplaceOrderMap {
 
 
-    public ReplaceMapOrderByOne(IOrdersService ordersService, IPlaceOrder placeOrder){
-        replaceOrder = new ReplaceByOne(ordersService, placeOrder);
+    public ReplaceMapOrderByOne(IOrdersService ordersService){
+        replaceOrder = new ReplaceByOne(ordersService);
     }
 
     private IReplaceOrder replaceOrder;

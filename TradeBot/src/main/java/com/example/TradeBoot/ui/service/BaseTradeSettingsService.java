@@ -3,6 +3,7 @@ package com.example.TradeBoot.ui.service;
 import com.example.TradeBoot.ui.repoositories.TradeSettingsRepository;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;

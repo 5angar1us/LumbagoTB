@@ -8,9 +8,8 @@ import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrder;
 
 public class ReplaceByOne implements IReplaceOrder {
 
-    public ReplaceByOne(IOrdersService ordersService, IPlaceOrder placeOrder) {
+    public ReplaceByOne(IOrdersService ordersService) {
         this.ordersService = ordersService;
-        this.placeOrder = placeOrder;
     }
 
     IOrdersService ordersService;
@@ -19,6 +18,6 @@ public class ReplaceByOne implements IReplaceOrder {
     @Override
     public PlacedOrder replace(PlacedOrder placedOrder, OrderToPlace orderToPlace) {
         ordersService.cancelOrder(placedOrder.getId());
-        return placeOrder.place(orderToPlace);
+        return ordersService.placeOrder(orderToPlace);
     }
 }

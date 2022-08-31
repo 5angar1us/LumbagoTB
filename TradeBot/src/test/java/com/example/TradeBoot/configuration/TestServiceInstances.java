@@ -1,6 +1,7 @@
 package com.example.TradeBoot.configuration;
 
 import com.example.TradeBoot.api.http.*;
+import com.example.TradeBoot.api.http.delay.GlobalDelay;
 import com.example.TradeBoot.api.services.*;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.services.*;
@@ -56,7 +57,7 @@ public class TestServiceInstances {
     //Api
     private static HttpClientWorker httpClient;
 
-    private static HttpClientWorkerWithDelay httpClientWorkerWithDelay;
+    private static GlobalDelay globalDelay;
 
     private static IPositionsService iPositionsService;
     private static IOrdersService.Base ordersService;
@@ -86,14 +87,14 @@ public class TestServiceInstances {
         HttpResponseHandler httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
 
         httpClient = new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
-        httpClientWorkerWithDelay = new HttpClientWorkerWithDelay(httpClient);
+        globalDelay = new GlobalDelay(httpClient, 1);
 
-        iPositionsService = new IPositionsService.Base(httpClientWorkerWithDelay);
-        ordersService = new IOrdersService.Base(httpClientWorkerWithDelay);
-        iMarketService = new IMarketService.Base(httpClientWorkerWithDelay);
-        walletService = new IWalletService.Base(httpClientWorkerWithDelay);
-        accountService = new AccountService(httpClientWorkerWithDelay);
-        iFutureService = new IFutureService.Base(httpClientWorkerWithDelay);
+        iPositionsService = new IPositionsService.Base(globalDelay);
+        ordersService = new IOrdersService.Base(globalDelay);
+        iMarketService = new IMarketService.Base(globalDelay);
+        walletService = new IWalletService.Base(globalDelay);
+        accountService = new AccountService(globalDelay);
+        iFutureService = new IFutureService.Base(globalDelay);
 
 
 

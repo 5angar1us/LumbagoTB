@@ -5,8 +5,8 @@ import com.example.TradeBoot.api.domain.orders.EType;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.services.IMarketService;
+import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.api.utils.BigDecimalUtils;
-import com.example.TradeBoot.api.utils.ESideChange;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
@@ -26,12 +26,12 @@ public class SaleProduction implements ITradeService {
             LoggerFactory.getLogger(SaleProduction.class);
 
 
-    public SaleProduction(IMarketService marketService, OrderPriceService orderPriceService, FinancialInstrumentPositionsService financialInstrumentPositionsService, ClosePositionInformationService closePositionInformationService, IPlaceOrder placeOrder, IReplaceOrder replaceOrder, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
+    public SaleProduction(IMarketService marketService, IOrdersService ordersService, OrderPriceService orderPriceService, FinancialInstrumentPositionsService financialInstrumentPositionsService, ClosePositionInformationService closePositionInformationService, IReplaceOrder replaceOrder, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
         this.marketService = marketService;
+        this.ordersService = ordersService;
         this.orderPriceService = orderPriceService;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
         this.closePositionInformationService = closePositionInformationService;
-        this.placeOrder = placeOrder;
         this.replaceOrder = replaceOrder;
         this.marketInformation = marketInformation;
         this.globalWorkStatus = globalWorkStatus;
@@ -39,13 +39,13 @@ public class SaleProduction implements ITradeService {
 
     IMarketService marketService;
 
+    IOrdersService ordersService;
+
     OrderPriceService orderPriceService;
 
     FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
     ClosePositionInformationService closePositionInformationService;
-
-    IPlaceOrder placeOrder;
 
     IReplaceOrder replaceOrder;
 
@@ -77,7 +77,7 @@ public class SaleProduction implements ITradeService {
 
         log.debug("Start place position order:" + orderToPlace);
 
-        var placedOrder = placeOrder.place(orderToPlace);
+        var placedOrder = ordersService.placeOrder(orderToPlace);
 
 
         long startTradeTime = System.currentTimeMillis();
