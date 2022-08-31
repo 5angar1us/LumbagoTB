@@ -43,7 +43,7 @@ public class ApiAuthConfiguration {
     }
 
     @Bean
-    public HttpClientWorkerWithDelay httpClientHelper() {
+    public HttpClientWorker httpClientWorker() {
 
         HttpRequestFactory httpRequestFactory = new HttpRequestFactory(getAuth());
         HttpResponseHandler httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());

@@ -4,7 +4,6 @@ import com.example.TradeBoot.api.domain.Market;
 import com.example.TradeBoot.api.domain.markets.OrderBook;
 import com.example.TradeBoot.api.domain.markets.Trade;
 import com.example.TradeBoot.api.domain.markets.Trades;
-import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.Strings;
@@ -27,10 +26,10 @@ public interface IMarketService {
     class Base implements IMarketService {
 
         private static final String MARKETS_PATH = "/markets";
-        private final HttpClientWorkerWithDelay httpClient;
+        private final IHttpClientWorker httpClient;
 
         @Autowired
-        public Base(HttpClientWorkerWithDelay httpClient) {
+        public Base(IHttpClientWorker httpClient) {
             this.httpClient = httpClient;
         }
 
