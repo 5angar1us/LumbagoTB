@@ -1,6 +1,9 @@
 package com.example.TradeBoot.api.http;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.http.delay.GlobalDelay;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.net.http.HttpClient;
@@ -9,7 +12,8 @@ import java.net.http.HttpResponse;
 
 public class HttpClientWorker implements IHttpClientWorker {
 
-
+    static final Logger log =
+            LoggerFactory.getLogger(HttpClientWorker.class);
     private final HttpClient client;
     private final HttpRequestFactory httpRequestFactory;
 
@@ -34,6 +38,7 @@ public class HttpClientWorker implements IHttpClientWorker {
 
     @Override
     public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
+        log.debug("Create post request");
         HttpRequest request = httpRequestFactory.createPostRequest(uri, body);
         HttpResponse<String> response = httpSendErrorHandler.sendResponseOrHandleError(client,request);
         return httpResponseHandler.handlePostResponse(response);

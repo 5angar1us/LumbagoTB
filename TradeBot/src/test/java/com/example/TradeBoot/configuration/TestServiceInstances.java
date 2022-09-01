@@ -87,7 +87,7 @@ public class TestServiceInstances {
         HttpResponseHandler httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
 
         httpClient = new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
-        globalDelay = new GlobalDelay(httpClient, 1);
+        globalDelay = new GlobalDelay(httpClient, 1, 1);
 
         iPositionsService = new IPositionsService.Base(globalDelay);
         ordersService = new IOrdersService.Base(globalDelay);

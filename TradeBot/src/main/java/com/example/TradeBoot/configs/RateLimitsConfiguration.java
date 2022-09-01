@@ -28,7 +28,7 @@ public class RateLimitsConfiguration {
     @Bean
     @Primary
     public IHttpClientWorker httpClientWorkerWithDelay(HttpClientWorker httpClientWorker){
-        return new GlobalDelay(httpClientWorker, globalLimit);
+        return new GlobalDelay(httpClientWorker, globalLimit, marketLimit);
     }
 
     

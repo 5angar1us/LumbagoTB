@@ -22,10 +22,10 @@ public class MarketDelay implements IHttpClientWorker {
         this.httpClientWorker = httpClientWorker;
 
         Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(210));
-        Bandwidth limit2 = Bandwidth.simple(requestLimitForSecond, Duration.ofMillis(1010));
+        Bandwidth limitInSecond = Bandwidth.simple(requestLimitForSecond, Duration.ofMillis(1010));
         this.bucket = Bucket.builder()
+                .addLimit(limitInSecond)
                 .addLimit(limit)
-                .addLimit(limit2)
                 .build();
     }
 
@@ -42,7 +42,7 @@ public class MarketDelay implements IHttpClientWorker {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
+        log.debug("Market delay end " + this);
         return httpClientWorker.createPostRequest(uri, body);
     }
 

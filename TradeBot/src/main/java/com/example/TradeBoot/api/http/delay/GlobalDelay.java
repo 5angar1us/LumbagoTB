@@ -19,12 +19,14 @@ public class GlobalDelay implements IHttpClientWorker {
 
     private Bucket bucket;
 
-    public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimit) {
+    public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimitInSecond, int requestLimit) {
         this.httpClientWorker = httpClientWorker;
 
-        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(1010));
+        Bandwidth limitInSeconds = Bandwidth.simple(requestLimitInSecond, Duration.ofMillis(1010));
+        //Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(210));
         this.bucket = Bucket.builder()
-                .addLimit(limit)
+                .addLimit(limitInSeconds)
+                //.addLimit(limit)
                 .build();
     }
 
@@ -41,7 +43,7 @@ public class GlobalDelay implements IHttpClientWorker {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-
+        log.debug("Global delay end " + this);
         return httpClientWorker.createPostRequest(uri, body);
     }
 
