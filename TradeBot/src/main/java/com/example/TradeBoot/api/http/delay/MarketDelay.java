@@ -18,12 +18,14 @@ public class MarketDelay implements IHttpClientWorker {
 
     private Bucket bucket;
 
-    public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit) {
+    public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit, int requestLimitForSecond) {
         this.httpClientWorker = httpClientWorker;
 
-        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(200));
+        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(210));
+        Bandwidth limit2 = Bandwidth.simple(requestLimitForSecond, Duration.ofMillis(1010));
         this.bucket = Bucket.builder()
                 .addLimit(limit)
+                .addLimit(limit2)
                 .build();
     }
 

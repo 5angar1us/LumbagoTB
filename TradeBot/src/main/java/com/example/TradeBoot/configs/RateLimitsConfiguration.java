@@ -21,6 +21,9 @@ public class RateLimitsConfiguration {
     @Value("${limits.market}")
     private int marketLimit;
 
+    @Value("${limits.marketForSecond}")
+    private int marketLimitForSecond;
+
     @Autowired
     @Bean
     @Primary
@@ -32,6 +35,6 @@ public class RateLimitsConfiguration {
     @Autowired
     @Bean
     public MarketDelayFactory marketDelayFactory(){
-        return new MarketDelayFactory(marketLimit);
+        return new MarketDelayFactory(marketLimit, marketLimitForSecond);
     }
 }
