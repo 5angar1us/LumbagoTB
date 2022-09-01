@@ -73,7 +73,6 @@ public class LocalTradeLoop {
             } catch (OrderAlreadyQueuedForCancellationException e) {
                 sleep(closeAttemptsCount * 300);
             }  catch(DoNotSendMoreThanExeption e){
-                log.error(e.getMessage());
                 sleep(100);
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);

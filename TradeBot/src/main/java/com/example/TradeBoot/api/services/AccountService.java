@@ -2,7 +2,6 @@ package com.example.TradeBoot.api.services;
 
 import com.example.TradeBoot.api.domain.account.AccountInformation;
 import com.example.TradeBoot.api.domain.account.Position;
-import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,10 +11,10 @@ import java.util.List;
 
 @Service
 public class AccountService {
-    private final HttpClientWorkerWithDelay httpClient;
+    private final IHttpClientWorker httpClient;
 
     @Autowired
-    public AccountService(HttpClientWorkerWithDelay httpClient) {
+    public AccountService(IHttpClientWorker httpClient) {
         this.httpClient = httpClient;
     }
 

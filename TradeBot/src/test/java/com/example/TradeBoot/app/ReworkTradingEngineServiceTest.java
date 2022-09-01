@@ -1,8 +1,10 @@
 package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.http.delay.MarketDelayFactory;
 import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.configuration.TestServiceInstances;
+import com.example.TradeBoot.trade.TradingRunnableEngineFactory;
 import com.example.TradeBoot.trade.services.TradingEngineService;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import com.example.TradeBoot.ui.models.TradeSettingsDetail;
@@ -23,14 +25,13 @@ import static org.springframework.test.util.AssertionErrors.assertTrue;
 public class ReworkTradingEngineServiceTest {
 
 
-
     private static MockTradeSettingsService mockTradeSettingsService;
 
     private static TradingEngineService tradeEngineService;
 
     private static TradeStatusService tradeStatusService;
 
-    private static IOrdersService.Base ordersService;
+    private static IOrdersService.Abstract ordersService;
 
     @BeforeAll
     static void init() {
@@ -40,15 +41,17 @@ public class ReworkTradingEngineServiceTest {
         ordersService = TestServiceInstances.getOrdersService();
 
 
-
+        var tradingRunnableEngineFactory = new TradingRunnableEngineFactory(
+                TestServiceInstances.getHttpClient(),
+                TestServiceInstances.getOrderPriceCalculator(),
+                TestServiceInstances.getMarketService(),
+                TestServiceInstances.getClosePositionInformationService(),
+                TestServiceInstances.getFinancialInstrumentPositionsService(),
+                new MarketDelayFactory(1));
 
         tradeEngineService = new TradingEngineService(
-                TestServiceInstances.getOrdersService(),
-                TestServiceInstances.getMarketService(),
-                TestServiceInstances.getOrderPriceCalculator(),
-                TestServiceInstances.getClosePositionInformationService(),
                 mockTradeSettingsService,
-                TestServiceInstances.getFinancialInstrumentPositionsService()
+                tradingRunnableEngineFactory
         );
 
 

@@ -10,7 +10,6 @@ import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.IPositionStatusService;
 import com.example.TradeBoot.trade.services.OrderPriceService;
-import com.example.TradeBoot.trade.tradeloop.interfaces.IPlaceOrder;
 import com.example.TradeBoot.trade.tradeloop.interfaces.IReplaceOrderMap;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
 import org.slf4j.Logger;
@@ -25,13 +24,12 @@ public class PlaceTraps implements ITradeService {
             LoggerFactory.getLogger(PlaceTraps.class);
 
 
-    public PlaceTraps(IOrdersService ordersService, IMarketService marketService, IPositionStatusService positionStatus, OrderPriceService orderPriceService, IReplaceOrderMap replaceOrders, IPlaceOrder placeOrder, TradeInformation tradeInformation, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
+    public PlaceTraps(IOrdersService ordersService, IMarketService marketService, IPositionStatusService positionStatus, OrderPriceService orderPriceService, IReplaceOrderMap replaceOrders, TradeInformation tradeInformation, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
         this.ordersService = ordersService;
         this.marketService = marketService;
         this.positionStatus = positionStatus;
         this.orderPriceService = orderPriceService;
         this.replaceOrders = replaceOrders;
-        this.placeOrder = placeOrder;
         this.tradeInformation = tradeInformation;
         this.marketInformation = marketInformation;
         this.globalWorkStatus = globalWorkStatus;
@@ -46,8 +44,6 @@ public class PlaceTraps implements ITradeService {
     OrderPriceService orderPriceService;
 
     IReplaceOrderMap replaceOrders;
-
-    IPlaceOrder placeOrder;
 
     TradeInformation tradeInformation;
 
@@ -128,7 +124,7 @@ public class PlaceTraps implements ITradeService {
         Map<OrderInformation, PlacedOrder> placedOrders = new HashMap<>(orderToPlaces.size());
 
         for (Map.Entry<OrderInformation, OrderToPlace> entryOrderToPlace : orderToPlaces.entrySet()) {
-            placedOrders.put(entryOrderToPlace.getKey(), placeOrder.place(entryOrderToPlace.getValue()));
+            placedOrders.put(entryOrderToPlace.getKey(), ordersService.placeOrder(entryOrderToPlace.getValue()));
 
         }
 

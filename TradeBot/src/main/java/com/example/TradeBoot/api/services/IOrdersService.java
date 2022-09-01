@@ -5,7 +5,7 @@ import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
-import com.example.TradeBoot.api.http.HttpClientWorkerWithDelay;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
 import com.example.TradeBoot.api.utils.OrderCancellationBuilder;
@@ -64,12 +64,12 @@ public interface IOrdersService {
     @Service
     class Base extends IOrdersService.Abstract {
 
-        private final HttpClientWorkerWithDelay httpClient;
+        private final IHttpClientWorker httpClient;
 
         private static final String ORDERS_PATH = "/orders";
 
         @Autowired
-        public Base(HttpClientWorkerWithDelay httpClient) {
+        public Base(IHttpClientWorker httpClient) {
             this.httpClient = httpClient;
         }
 
