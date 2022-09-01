@@ -4,11 +4,13 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadReques
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.Refill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class GlobalDelay implements IHttpClientWorker {
 
@@ -19,14 +21,14 @@ public class GlobalDelay implements IHttpClientWorker {
 
     private Bucket bucket;
 
-    public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimitInSecond, int requestLimit) {
+    public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimit1000, int requestLimit200) {
         this.httpClientWorker = httpClientWorker;
 
-        Bandwidth limitInSeconds = Bandwidth.simple(requestLimitInSecond, Duration.ofMillis(1010));
-        //Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(210));
+        Bandwidth limit1000 = Bandwidth.simple(requestLimit1000, Duration.ofMillis(1010));
+        Bandwidth limit200 = Bandwidth.simple(requestLimit200, Duration.ofMillis(210));
         this.bucket = Bucket.builder()
-                .addLimit(limitInSeconds)
-                //.addLimit(limit)
+                .addLimit(limit1000)
+                .addLimit(limit200)
                 .build();
     }
 
@@ -43,7 +45,14 @@ public class GlobalDelay implements IHttpClientWorker {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log.debug("Global delay end " + this);
+        synchronized (bucket){
+            
+            var message = String.format(
+                    "Global delay end. AvailableTokens: %d. Pointer: %s",
+                    bucket.getAvailableTokens(),
+                    this);
+            log.debug(message);
+        }
         return httpClientWorker.createPostRequest(uri, body);
     }
 

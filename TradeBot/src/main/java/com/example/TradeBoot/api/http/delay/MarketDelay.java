@@ -4,11 +4,13 @@ import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadReques
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
+import io.github.bucket4j.ConsumptionProbe;
 import io.github.bucket4j.Refill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.concurrent.TimeUnit;
 
 public class MarketDelay implements IHttpClientWorker {
     static final Logger log =
@@ -18,14 +20,14 @@ public class MarketDelay implements IHttpClientWorker {
 
     private Bucket bucket;
 
-    public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit, int requestLimitForSecond) {
+    public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit200, int requestLimit1000) {
         this.httpClientWorker = httpClientWorker;
 
-        Bandwidth limit = Bandwidth.simple(requestLimit, Duration.ofMillis(210));
-        Bandwidth limitInSecond = Bandwidth.simple(requestLimitForSecond, Duration.ofMillis(1010));
+        Bandwidth limit200 = Bandwidth.simple(requestLimit200, Duration.ofMillis(210));
+        Bandwidth limit1000 = Bandwidth.simple(requestLimit1000, Duration.ofMillis(1010));
         this.bucket = Bucket.builder()
-                .addLimit(limitInSecond)
-                .addLimit(limit)
+                .addLimit(limit1000)
+                .addLimit(limit200)
                 .build();
     }
 
@@ -42,7 +44,12 @@ public class MarketDelay implements IHttpClientWorker {
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        log.debug("Market delay end " + this);
+        var message = String.format(
+                "Market delay end. AvailableTokens: %d. Pointer: %s",
+                bucket.getAvailableTokens(),
+                this);
+
+        log.debug(message);
         return httpClientWorker.createPostRequest(uri, body);
     }
 

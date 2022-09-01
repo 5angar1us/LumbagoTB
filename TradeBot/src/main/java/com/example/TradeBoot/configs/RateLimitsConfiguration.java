@@ -15,26 +15,26 @@ import org.springframework.context.annotation.PropertySource;
 @PropertySource({"classpath:application.properties"})
 public class RateLimitsConfiguration {
 
-    @Value("${limits.global}")
-    private int globalLimit;
+    @Value("${limits.global1000}")
+    private int globalLimit1000;
 
-    @Value("${limits.market}")
-    private int marketLimit;
+    @Value("${limits.global200}")
+    private int globalLimit200;
+    @Value("${limits.market200}")
+    private int marketLimit200;
 
-    @Value("${limits.marketForSecond}")
-    private int marketLimitForSecond;
+    @Value("${limits.market1000}")
+    private int marketLimit1000;
 
     @Autowired
     @Bean
     @Primary
     public IHttpClientWorker httpClientWorkerWithDelay(HttpClientWorker httpClientWorker){
-        return new GlobalDelay(httpClientWorker, globalLimit, marketLimit);
+        return new GlobalDelay(httpClientWorker, globalLimit1000, marketLimit200);
     }
-
-    
     @Autowired
     @Bean
     public MarketDelayFactory marketDelayFactory(){
-        return new MarketDelayFactory(marketLimit, marketLimitForSecond);
+        return new MarketDelayFactory(marketLimit200, marketLimit1000);
     }
 }

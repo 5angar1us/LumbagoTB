@@ -47,7 +47,7 @@ public class ReworkTradingEngineServiceTest {
                 TestServiceInstances.getMarketService(),
                 TestServiceInstances.getClosePositionInformationService(),
                 TestServiceInstances.getFinancialInstrumentPositionsService(),
-                new MarketDelayFactory(1));
+                new MarketDelayFactory(1, 1));
 
         tradeEngineService = new TradingEngineService(
                 mockTradeSettingsService,
