@@ -16,7 +16,6 @@ import java.util.Objects;
 import java.util.Optional;
 
 @Configuration
-@PropertySource({"classpath:application.properties"})
 public class ApiAuthConfiguration {
     @Value("${api.key}")
     private String API_KEY;

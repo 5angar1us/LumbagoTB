@@ -48,7 +48,7 @@ task printSourceSetInformation(){
 	}
 }
 bootJar {
-	exclude ('application-dev.properties')
+	exclude ('*.properties')
 }
 
 var finalize = tasks.register('copyAllConfigs', Copy) {

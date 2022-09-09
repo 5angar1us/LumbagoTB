@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.PropertySource;
 
 @Configuration
-@PropertySource({"classpath:application.properties"})
 public class RateLimitsConfiguration {
 
     @Value("${limits.global1000}")

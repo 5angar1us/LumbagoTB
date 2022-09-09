@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -19,42 +20,37 @@ public class SecurityConfiguration {
             LoggerFactory.getLogger(SecurityConfiguration.class);
 
 
-    @Value("${spring.profiles.active:Unknown}")
-    private String activeProfile;
+    @Value("${app.security:true}")
+    private Boolean isShowLoginPage;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        switch (activeProfile){
-            case "dev" ->{
+            if(isShowLoginPage == false) {
                 http
-                    .requiresChannel().anyRequest().requiresSecure()
+                        .requiresChannel().anyRequest().requiresSecure()
                         .and()
-                    .authorizeRequests()
+                        .authorizeRequests()
                         .antMatchers("/").permitAll();
                 http.csrf().disable();
-                log.debug("Active endpoints dev");
             }
-            case "production" ->{
-                http
-                    .requiresChannel().anyRequest().requiresSecure()
-                    .and()
-                        .authorizeRequests()
-                        .antMatchers("/static/js/**", "/static/css/**").permitAll()
-                    .and()
-                        .authorizeRequests()
-                        .anyRequest().authenticated()
-                    .and()
-                        .formLogin()
-                        .loginPage("/login")
-                        .permitAll()
-                    .and()
-                        .logout()
-                        .permitAll();
-                log.debug("Active endpoints production");
-            }
-            default -> throw new IllegalArgumentException("activeProfile");
-        }
-        log.info("Security profile " + activeProfile);
+            else if(isShowLoginPage){
+                    http
+                            .requiresChannel().anyRequest().requiresSecure()
+                            .and()
+                            .authorizeRequests()
+                            .antMatchers("/static/js/**", "/static/css/**").permitAll()
+                            .and()
+                            .authorizeRequests()
+                            .anyRequest().authenticated()
+                            .and()
+                            .formLogin()
+                            .loginPage("/login")
+                            .permitAll()
+                            .and()
+                            .logout()
+                            .permitAll();
+                }
+        log.info("Show login page: " + isShowLoginPage);
         return http.build();
     }
 
