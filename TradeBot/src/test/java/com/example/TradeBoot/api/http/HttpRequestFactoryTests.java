@@ -6,13 +6,16 @@ import com.example.TradeBoot.api.http.auntification.HashAlgorithm;
 import com.example.TradeBoot.api.http.auntification.TimeKeper;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-@SpringBootTest
 class HttpRequestFactoryTests {
 
     private String key = "LR0RQT6bKjrUNh38eCw9jYC89VDAbRkCogAc_XAm";
@@ -38,7 +41,7 @@ class HttpRequestFactoryTests {
 
         var headers = request.headers();
         var requestApiKey = headers.firstValue(EHttpHeaders.FTX_KEY.getName()).get();
-        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName());
+        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName()).get();
         var requestTS = Long.parseLong(headers.firstValue(EHttpHeaders.FTX_TS.getName()).get());
 
         var targetSignature = "c4fbabaf178658a59d7bbf57678d44c369382f3da29138f04cd46d3d582ba4ba";
@@ -61,7 +64,7 @@ class HttpRequestFactoryTests {
 
         var headers = request.headers();
         var requestApiKey = headers.firstValue(EHttpHeaders.FTX_KEY.getName()).get();
-        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName());
+        var requestSignature = headers.firstValue(EHttpHeaders.FTX_SIGN.getName()).get();
         var requestTS = Long.parseLong(headers.firstValue(EHttpHeaders.FTX_TS.getName()).get());
 
         assertAll("Should return auth information: API_KEY, signature, TS",

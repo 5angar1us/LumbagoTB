@@ -37,14 +37,14 @@ public class OrderPriceServiceTest {
         var orderBook = marketService.getOrderBook(marketName, 5);
         System.out.println(orderBook);
 
-        BigDecimal worstPrice = orderPriceService.calculateMarketPrice(orderBook, targetSide);
+        BigDecimal marketPrice = orderPriceService.calculateMarketPrice(orderBook, targetSide);
 
         BigDecimal expectedPrice = orderBook.getBestBySide(ESideChange.change(targetSide)).getPrice();
 
 
-        worstPrice = worstPrice.setScale(expectedPrice.scale());
+        marketPrice = marketPrice.setScale(expectedPrice.scale());
 
-        Assertions.assertEquals(expectedPrice, worstPrice);
+        Assertions.assertEquals(expectedPrice, marketPrice);
     }
     @Test
     public void canCalculateMostFavorablePrice(){

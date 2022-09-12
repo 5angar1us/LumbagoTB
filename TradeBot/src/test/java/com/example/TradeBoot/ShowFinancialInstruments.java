@@ -1,9 +1,9 @@
 package com.example.TradeBoot;
 
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
-import com.example.TradeBoot.configuration.TestServiceInstances;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -11,13 +11,9 @@ import java.util.stream.Stream;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ShowFinancialInstruments {
+    @Autowired
+    private FinancialInstrumentService financialInstrumentService;
 
-    private static FinancialInstrumentService financialInstrumentService;
-
-    @BeforeAll
-    static void init() {
-        financialInstrumentService = TestServiceInstances.getFinancialInstrumentService();
-    }
 
     @Test
     public void printStableNamesInRow(){

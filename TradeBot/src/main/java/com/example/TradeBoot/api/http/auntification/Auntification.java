@@ -1,11 +1,11 @@
 package com.example.TradeBoot.api.http.auntification;
 
 import com.example.TradeBoot.api.http.SignaturePayloadBuilder;
+import org.springframework.stereotype.Component;
 
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
-
 public class Auntification {
 
     public Auntification(Encoder encoder, TimeKeper timeKeper) {

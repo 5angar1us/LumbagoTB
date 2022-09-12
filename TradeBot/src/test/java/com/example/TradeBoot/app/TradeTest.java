@@ -2,23 +2,18 @@ package com.example.TradeBoot.app;
 
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IOrdersService;
-import com.example.TradeBoot.configuration.TestServiceInstances;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import org.junit.jupiter.api.BeforeAll;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class TradeTest {
 
+    @Autowired
     IOrdersService.Base ordersService;
+    @Autowired
     IMarketService marketService;
-
+    @Autowired
     OrderPriceService orderPriceService;
-
-    @BeforeAll
-    public void init(){
-        ordersService = TestServiceInstances.getOrdersService();
-        marketService = TestServiceInstances.getMarketService();
-        orderPriceService = TestServiceInstances.getOrderPriceCalculator();
-    }
 
 //    public void t(){
 //        var marketName = "TESTCEL-PERP";

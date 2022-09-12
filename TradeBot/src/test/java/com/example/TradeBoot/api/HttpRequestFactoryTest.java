@@ -1,27 +1,21 @@
 package com.example.TradeBoot.api;
 
-import com.example.TradeBoot.api.http.*;
-import com.example.TradeBoot.configuration.TestConfig;
-import org.junit.jupiter.api.BeforeAll;
+import com.example.TradeBoot.api.http.HttpClientWorker;
+import com.example.TradeBoot.api.http.HttpRequestFactory;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class ReworkHttpRequestFactoryTest {
+@SpringBootTest
+@Lazy()
+public class HttpRequestFactoryTest {
 
-    static HttpClientWorker httpClient;
-    static HttpRequestFactory httpRequestFactory;
-
-    @BeforeAll
-    static void init()
-    {
-        httpRequestFactory = new HttpRequestFactory(TestConfig.getAuntification());
-
-        var httpResponseHandler = new HttpResponseHandler(new HttpFTXResponseParser(), new HttpResponseErrorHandler());
-
-        httpClient = new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
-    }
+    @Autowired
+    HttpRequestFactory httpRequestFactory;
 
     @Test
     void canCreateRequestToMarket() {

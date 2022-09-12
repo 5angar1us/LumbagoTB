@@ -4,15 +4,34 @@ package com.example.TradeBoot.configuration;
 import com.example.TradeBoot.api.domain.account.Position;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.wallet.Balance;
+import com.example.TradeBoot.api.services.AccountService;
+import com.example.TradeBoot.api.services.IOrdersService;
+import com.example.TradeBoot.api.services.IPositionsService;
+import com.example.TradeBoot.api.services.IWalletService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.StringJoiner;
 
+@Component
 public class TestUtils {
 
-    public static  void printAccountInfo() {
-        var accountInfo = TestServiceInstances.getAccountService().getAccountInformation();
+    @Autowired
+    private AccountService accountService;
+
+    @Autowired
+    private IPositionsService positionsService;
+    @Autowired
+    private IWalletService walletService;
+
+    @Autowired
+    private IOrdersService ordersService;
+
+
+    public void printAccountInfo() {
+        var accountInfo = accountService.getAccountInformation();
         System.out.println("AccountInfo");
         var joiner = new StringJoiner("\n");
         joiner.add(addParameter("Username",accountInfo.getUsername()));
@@ -36,8 +55,8 @@ public class TestUtils {
         return TABULATION.repeat(tabulationCount) + parameterName + " : " + value;
     }
 
-    public static  void printPosition(String market) {
-        Optional<Position> position = TestServiceInstances.getPositionsService().getPositionByMarket(market);
+    public void printPosition(String market) {
+        Optional<Position> position = positionsService.getPositionByMarket(market);
         if (position.isPresent()) {
             System.out.println("PositionInfo");
             System.out.println(TABULATION + position);
@@ -46,8 +65,8 @@ public class TestUtils {
         }
     }
 
-    public static  void printPositions() {
-        List<Position> positions = TestServiceInstances.getPositionsService().getAllPositions();
+    public void printPositions() {
+        List<Position> positions = positionsService.getAllPositions();
         System.out.println("AllPositionInfo");
         for (Position position : positions) {
             var joiner = new StringJoiner("\n");
@@ -59,16 +78,16 @@ public class TestUtils {
         }
     }
 
-    public static  void printAllInfoPositions() {
-        List<Position> positions = TestServiceInstances.getPositionsService().getAllPositions();
+    public void printAllInfoPositions() {
+        List<Position> positions = positionsService.getAllPositions();
         System.out.println("AllPositionInfo");
         for (Position position : positions) {
             System.out.println(TABULATION + position);
         }
     }
 
-    public static  void printBalance(String market) {
-        var balance = TestServiceInstances.getWalletService().getBalanceByMarket(market);
+    public void printBalance(String market) {
+        var balance =walletService.getBalanceByMarket(market);
         if(balance.isPresent()){
             System.out.println("Balance of " + market);
             System.out.println(TABULATION + balance);
@@ -77,17 +96,17 @@ public class TestUtils {
             System.out.println("Balance of " + market + " not found");
         }
     }
-    public static void printAllInfoBalances() {
+    public void printAllInfoBalances() {
 
-        var balances = TestServiceInstances.getWalletService().getBalances();
+        var balances = walletService.getBalances();
         System.out.println("All Balances  info");
         for (Balance balance : balances) {
             System.out.println(balance);
         }
     }
 
-    public static  void printBalances() {
-        var balances = TestServiceInstances.getWalletService().getBalances();
+    public void printBalances() {
+        var balances = walletService.getBalances();
         System.out.println("Balances");
         for (Balance balance : balances) {
             System.out.println(addParameter(balance.getCoin(), balance.getTotal().toString()));
@@ -95,8 +114,8 @@ public class TestUtils {
 
     }
 
-    public static void printOpenOrders(String market) {
-        var orders = TestServiceInstances.getOrdersService().getOpenOrdersBy(market);
+    public void printOpenOrders(String market) {
+        var orders = ordersService.getOpenOrdersBy(market);
         System.out.println("OpenOrders");
         for (Order order : orders) {
             System.out.println(TABULATION + order);
@@ -104,7 +123,7 @@ public class TestUtils {
         System.out.println("OpenOrders");
     }
 
-    public static void printOpenOrdersId(List<Order> openOrders) {
+    public void printOpenOrdersId(List<Order> openOrders) {
         System.out.println("OpenOrdersId:");
         for (Order openOrder : openOrders) {
 
