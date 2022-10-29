@@ -46,6 +46,8 @@ public class Future extends StandardMarketEntity {
 
     private BigDecimal imfWeight;
 
+    private BigDecimal mmfWeight;
+
     public BigDecimal getVolume() {
         return this.volume;
     }
@@ -204,5 +206,13 @@ public class Future extends StandardMarketEntity {
 
     public void setCloseOnly(boolean closeOnly) {
         this.closeOnly = closeOnly;
+    }
+
+    public BigDecimal getMmfWeight() {
+        return mmfWeight;
+    }
+
+    public void setMmfWeight(BigDecimal mmfWeight) {
+        this.mmfWeight = mmfWeight;
     }
 }

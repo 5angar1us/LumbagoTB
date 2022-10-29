@@ -1,19 +1,27 @@
 package com.example.TradeBoot;
 
+import com.example.TradeBoot.api.domain.futures.Future;
+import com.example.TradeBoot.api.http.IHttpClientWorker;
+import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.trade.services.FinancialInstrumentService;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Lazy;
 
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@SpringBootTest
+@Lazy
 public class ShowFinancialInstruments {
     @Autowired
     private FinancialInstrumentService financialInstrumentService;
 
+    @Autowired
+    private IHttpClientWorker httpClient;
 
     @Test
     public void printStableNamesInRow(){
@@ -42,6 +50,14 @@ public class ShowFinancialInstruments {
 
         assertTrue(futuresString.length == allNames.size());
     }
+
+    @Test
+    public void t(){
+
+        String json = this.httpClient.createGetRequest("/futures");
+        System.out.println(json);
+    }
+
     @Test
     public void printChanges(){
 
