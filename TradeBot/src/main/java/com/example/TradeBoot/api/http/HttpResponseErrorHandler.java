@@ -37,6 +37,8 @@ public class HttpResponseErrorHandler {
                         new ExceptionData(new OrderAlreadyClosedException(), Level.ERROR, "");
                 case "Order already queued for cancellation" ->
                         new ExceptionData(new OrderAlreadyQueuedForCancellationException(), Level.ERROR, "");
+                case "Missing parameter market" ->
+                        new ExceptionData(new MultithreadingException(), Level.ERROR, "");
                 default -> getDefaultExceptionData(apiErrorMessage);
             };
             case 401 -> {
