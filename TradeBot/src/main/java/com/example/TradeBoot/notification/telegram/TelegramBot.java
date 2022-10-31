@@ -1,5 +1,7 @@
-package com.example.TradeBoot.telegram;
+package com.example.TradeBoot.notification.telegram;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
@@ -9,10 +11,15 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
+import java.util.Arrays;
 
+
+@Component
 public class TelegramBot extends TelegramLongPollingBot {
 
-    private Message requestMessage = new Message();
+    static final Logger log =
+            LoggerFactory.getLogger(TelegramBot.class);
+    Message requestMessage = new Message();
     private final SendMessage messageSender = new SendMessage();
 
     private final String botUsername;
@@ -36,27 +43,57 @@ public class TelegramBot extends TelegramLongPollingBot {
     @Override
     public void onUpdateReceived(Update request) {
         requestMessage = request.getMessage();
-        messageSender.setChatId(requestMessage.getChatId().toString());
+        messageSender.setChatId(requestMessage.getChatId());
 
         if (request.hasMessage() && requestMessage.hasText()) {
-            try {
-                sendMessage(messageSender,"Я бот простой и отвечать на команды не умею");
-            } catch (TelegramApiException e) {
-                throw new RuntimeException(e);
+            String messageText = requestMessage.getText();
+
+            if (messageText.contains("/chartId")) {
+                Long chatId = request.getMessage().getChatId();
+                defaultSendMessageOrLogError(messageSender, "ID Канала : " + chatId.toString());
+            }
+            else {
+                defaultSendMessageOrLogError(messageSender,"Я тебя не понял");
             }
         }
     }
 
+    public void sendNotification(String[] chartsId, String message){
+        Arrays.stream(chartsId).forEach(chartId->{
+            messageSender.setChatId(chartId);
+            sendMessageOrLogError(messageSender, message, "Sending notification in telegram");
+        });
+    }
 
+
+    private void defaultSendMessageOrLogError(SendMessage messageSender, String message)
+    {
+        sendMessageOrLogError(messageSender, message, "Sending message");
+    }
+
+    private void sendMessageOrLogError(SendMessage messageSender, String message, String stage){
+        try {
+            defaultSendMessage(messageSender, message);
+        } catch (TelegramApiException e) {
+
+            var errorMessage = String.format("Stage: %s. ErrorMessage: %s. Message: %s",
+                    stage,
+                    e.getMessage(),
+                    message
+            );
+
+            log.error(errorMessage);
+        }
+    }
 
     /**
      * Шабонный метод отправки сообщения пользователю
      *
      * @param messageSender - метод обработки сообщения
-     * @param msg - сообщение
+     * @param message - сообщение
      */
-    private void sendMessage(SendMessage messageSender, String msg) throws TelegramApiException {
-        messageSender.setText(msg);
+    private void defaultSendMessage(SendMessage messageSender, String message) throws TelegramApiException {
+        messageSender.setText(message);
         execute(messageSender);
     }
 

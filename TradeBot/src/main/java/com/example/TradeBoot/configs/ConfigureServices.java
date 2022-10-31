@@ -7,6 +7,8 @@ import com.example.TradeBoot.api.http.delay.GlobalDelay;
 import com.example.TradeBoot.api.http.delay.MarketDelayFactory;
 import com.example.TradeBoot.api.services.IPositionsService;
 import com.example.TradeBoot.api.services.IWalletService;
+import com.example.TradeBoot.notification.EmptyNotificationService;
+import com.example.TradeBoot.notification.INotificationService;
 import com.example.TradeBoot.trade.TradingRunnableEngineFactory;
 import com.example.TradeBoot.trade.services.OrderPriceService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
@@ -54,4 +56,5 @@ public class ConfigureServices {
     TelegramBotsApi telegramBotsApi() throws TelegramApiException {
         return new TelegramBotsApi(DefaultBotSession.class);
     }
+
 }

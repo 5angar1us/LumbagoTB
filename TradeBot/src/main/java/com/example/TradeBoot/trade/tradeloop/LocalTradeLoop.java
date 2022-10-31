@@ -1,6 +1,8 @@
 package com.example.TradeBoot.trade.tradeloop;
 
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
+import com.example.TradeBoot.notification.EMessageType;
+import com.example.TradeBoot.notification.INotificationService;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ICloseOrders;
 import com.example.TradeBoot.trade.tradeloop.interfaces.ITradeService;
@@ -12,10 +14,11 @@ public class LocalTradeLoop {
     static final Logger log =
             LoggerFactory.getLogger(LocalTradeLoop.class);
 
-    public LocalTradeLoop(ITradeService tradeService, ICloseOrders closeOrders, WorkStatus globalWorkStatus) {
+    public LocalTradeLoop(WorkStatus globalWorkStatus, ITradeService tradeService, ICloseOrders closeOrders, INotificationService notificationServices) {
+        this.globalWorkStatus = globalWorkStatus;
         this.tradeService = tradeService;
         this.closeOrders = closeOrders;
-        this.globalWorkStatus = globalWorkStatus;
+        this.notificationServices = notificationServices;
     }
 
     //generall
@@ -25,6 +28,8 @@ public class LocalTradeLoop {
     private ITradeService tradeService;
 
     private ICloseOrders closeOrders;
+
+    private INotificationService notificationServices;
 
     final int MAX_CLOSE_ATTEMPTS_COUNT = 5;
 
@@ -77,6 +82,7 @@ public class LocalTradeLoop {
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
                 log.error(e.getMessage(), e);
+                notificationServices.sendMessage(EMessageType.ServerStoped,e.getMessage());
                 sleep(1000);
             } catch (UnceckedIOException | BadRequestByFtxException e) {
                 sleep(closeAttemptsCount * 150);
@@ -93,7 +99,9 @@ public class LocalTradeLoop {
         }
 
         if (isNeedThrow) {
-            throw new UnknownErrorRequestByFtxException(closeAttemptsCount + " attempts to close orders ended in failure");
+            var errorMessage = closeAttemptsCount + " attempts to close orders ended in failure";
+            notificationServices.sendMessage(EMessageType.TroubleClosingOrders, errorMessage);
+            throw new UnknownErrorRequestByFtxException(errorMessage);
         }
 
         if(sleepAfterCloseOrdersInMS > 0){
