@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="base :: baseHeader(~{::title},~{::link})">
+
+  <title>TradeBot</title>
+
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+  <link/>
+</head>
+<body>
+  <h3>Test Tradebot notification</h3>
+  <form th:action="@{/test/send_default_notification}" method="post">
+
+    <button class="btn btn-primary btn-lg mx-auto" onclick="changeAction('/test/send_telegram_notification')">
+      Отправить оповещение в телеграмм
+    </button>
+    <button class="btn btn-primary btn-lg mx-auto" onclick="changeAction('/test/send_default_notification')">
+      Отправить оповещение в дефолтное место
+    </button>
+  </form>
+  <script th:src="@{/static/js/send.js}"></script>
+</body>
+</html>

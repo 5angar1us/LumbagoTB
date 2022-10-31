@@ -5,6 +5,8 @@ import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.http.delay.MarketDelayFactory;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IOrdersService;
+import com.example.TradeBoot.notification.INotificationService;
+import com.example.TradeBoot.notification.telegram.TelegramNotificationService;
 import com.example.TradeBoot.trade.model.*;
 import com.example.TradeBoot.trade.services.ClosePositionInformationService;
 import com.example.TradeBoot.trade.services.FinancialInstrumentPositionsService;
@@ -23,12 +25,13 @@ import java.util.stream.Collectors;
 @Component
 public class TradingRunnableEngineFactory {
 
-    public TradingRunnableEngineFactory(IHttpClientWorker httpClientWorker, OrderPriceService orderPriceService, IMarketService marketService, ClosePositionInformationService closePositionInformationService, FinancialInstrumentPositionsService financialInstrumentPositionsService, MarketDelayFactory marketDelayFactory) {
+    public TradingRunnableEngineFactory(IHttpClientWorker httpClientWorker, OrderPriceService orderPriceService, IMarketService marketService, ClosePositionInformationService closePositionInformationService, FinancialInstrumentPositionsService financialInstrumentPositionsService, INotificationService notificationService, MarketDelayFactory marketDelayFactory) {
         this.httpClientWorker = httpClientWorker;
         this.orderPriceService = orderPriceService;
         this.marketService = marketService;
         this.closePositionInformationService = closePositionInformationService;
         this.financialInstrumentPositionsService = financialInstrumentPositionsService;
+        this.notificationService = notificationService;
         this.marketDelayFactory = marketDelayFactory;
     }
 
@@ -40,6 +43,8 @@ public class TradingRunnableEngineFactory {
     private final ClosePositionInformationService closePositionInformationService;
 
     private final FinancialInstrumentPositionsService financialInstrumentPositionsService;
+
+    private final INotificationService notificationService;
 
     private final MarketDelayFactory marketDelayFactory;
 
@@ -97,15 +102,17 @@ public class TradingRunnableEngineFactory {
 
 
         var placeTrapOrdersTradeLoop = new LocalTradeLoop(
+                globalWorkStatus,
                 PlaceTraps,
                 closeOrders,
-                globalWorkStatus
+                notificationService
         );
 
         var saleProductionTradeLoop = new LocalTradeLoop(
+                globalWorkStatus,
                 saleProduction,
                 closeOrders,
-                globalWorkStatus
+                notificationService
         );
 
         var tradeService = new GlobalTradeLoop(
