@@ -2,33 +2,41 @@ package com.example.TradeBoot.notification.telegram;
 
 import com.example.TradeBoot.notification.EMessageType;
 import com.example.TradeBoot.notification.INotificationService;
-import org.springframework.beans.factory.annotation.Value;
+import com.example.TradeBoot.notification.telegram.commands.*;
+import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 
 @Service
 public class TelegramNotificationService implements INotificationService {
 
-    @Value("${NotificationChartsId}")
-    private String[] notificationChartsId;
-
-    private TelegramBot telegramBot;
 
 
+    private SendTelegramBotNotificationService sendTelegramBotNotificationService;
 
-    public TelegramNotificationService(TelegramBot telegramBot) {
-        this.telegramBot = telegramBot;
+    private final ImmutableMap<EMessageType, String> detailMap;
+
+    public TelegramNotificationService(SendTelegramBotNotificationService sendTelegramBotNotificationService) {
+        this.sendTelegramBotNotificationService = sendTelegramBotNotificationService;
+
+        detailMap = ImmutableMap.<EMessageType, String>builder()
+                .put(EMessageType.ServerStoped, "Если ошибка вылезла не несколько раз подряд, то скорее всего она не критична и сервер можно перезапустить")
+                .put(EMessageType.TroubleClosingOrders, "Страшно! Страшно! Срочно зовите ремонтника")
+                .build();
     }
-
 
     @Override
     public void sendMessage(EMessageType messageType, String errorMessage){
-        if(notificationChartsId.length != 0){
 
-            var message = String.format("Сообщение: %s.\n Причина: %s",
-                    messageType.getMessage(),
-                    errorMessage) ;
+        var messageDetails = detailMap.getOrDefault(messageType, "");
 
-            telegramBot.sendNotification(notificationChartsId, message);
-        }
+
+        var message = String.format("Сообщение: %s\nПричина: %s",
+                messageType.getMessage(),
+                errorMessage) ;
+
+        if(messageDetails.isBlank() == false) message = message + "\n\n" + messageDetails;
+
+        sendTelegramBotNotificationService.sendNotification(message);
+
     }
 }

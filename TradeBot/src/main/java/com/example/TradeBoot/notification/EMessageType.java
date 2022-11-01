@@ -5,7 +5,7 @@ import com.example.TradeBoot.api.utils.IEnumStringValue;
 public enum EMessageType {
     ServerStoped("Сервер остановлен"),
     TroubleClosingOrders("Проблемы с закрытием ордеров"),
-    Empty("");
+    Empty("Ничего");
 
     private final String message;
     EMessageType(String message) {
