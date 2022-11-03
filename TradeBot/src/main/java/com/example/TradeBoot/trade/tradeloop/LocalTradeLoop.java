@@ -81,8 +81,8 @@ public class LocalTradeLoop {
                 sleep(100);
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
-                log.error(e.getMessage(), e);
-                notificationServices.sendMessage(EMessageType.ServerStoped,e.getMessage());
+                log.error("UnknownErrorRequestByFtxExceptionMessage: " + e.getMessage(), e);
+                notificationServices.sendMessage(EMessageType.ServerStoped, e.getMessage());
                 sleep(1000);
             } catch (UnceckedIOException | BadRequestByFtxException e) {
                 sleep(closeAttemptsCount * 150);
@@ -90,7 +90,8 @@ public class LocalTradeLoop {
             }
             catch (Exception e){
                 globalWorkStatus.setNeedStop(true);
-                log.error(e.getMessage(), e);
+                log.error("ExceptionMessage: " + e.getMessage(), e);
+                
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
             }
             finally {
@@ -118,7 +119,7 @@ public class LocalTradeLoop {
         try {
             Thread.sleep(millis);
         } catch (InterruptedException ex) {
-            log.error(ex.getMessage());
+            log.error("SleepErrorMessage: " + ex.getMessage(), ex);
             throw new RuntimeException(ex);
         }
     }
