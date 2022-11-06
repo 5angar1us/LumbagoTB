@@ -41,7 +41,12 @@ public class GlobalDelay implements IHttpClientWorker {
     public String createPostRequest(String uri, String body) throws BadRequestByFtxException {
 
         try {
-            bucket.asBlocking().consume(1);
+
+            synchronized (bucket){
+
+                bucket.asBlocking().consume(1);
+            }
+
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
