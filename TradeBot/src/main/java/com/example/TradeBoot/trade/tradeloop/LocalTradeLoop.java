@@ -1,5 +1,7 @@
 package com.example.TradeBoot.trade.tradeloop;
 
+import com.example.TradeBoot.api.extentions.ParseToJsonException;
+import com.example.TradeBoot.api.extentions.ParseToModelException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 import com.example.TradeBoot.notification.EMessageType;
 import com.example.TradeBoot.notification.INotificationService;
@@ -32,6 +34,8 @@ public class LocalTradeLoop {
     private INotificationService notificationServices;
 
     final int MAX_CLOSE_ATTEMPTS_COUNT = 5;
+
+    final int DEFAULT_SLEEP_TIME_MS = 100;
 
 
     public void runTrade() {
@@ -78,20 +82,26 @@ public class LocalTradeLoop {
             } catch (OrderAlreadyQueuedForCancellationException e) {
                 sleep(closeAttemptsCount * 300);
             }  catch(DoNotSendMoreThanExeption e){
-                sleep(100);
+                sleep(DEFAULT_SLEEP_TIME_MS);
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
                 log.error("UnknownErrorRequestByFtxExceptionMessage: " + e.getMessage(), e);
-                notificationServices.sendMessage(EMessageType.ServerStoped, e.getMessage());
+                notificationServices.sendMessage(EMessageType.API_UNKNOWN_ERROR, e.getMessage());
                 sleep(1000);
             } catch (UnceckedIOException | BadRequestByFtxException e) {
                 sleep(closeAttemptsCount * 150);
 
+            } catch (ParseToModelException | ParseToJsonException e){
+                globalWorkStatus.setNeedStop(true);
+                var message = e.getClass().getSimpleName();
+                log.error("ExceptionMessage: " + message, e);
+                notificationServices.sendMessage(EMessageType.CONVERT_EXCEPTION, message);
+                sleep(DEFAULT_SLEEP_TIME_MS);
             }
             catch (Exception e){
                 globalWorkStatus.setNeedStop(true);
                 log.error("ExceptionMessage: " + e.getMessage(), e);
-                
+                notificationServices.sendMessage(EMessageType.INTERNAL_ERROR, e.getMessage());
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
             }
             finally {
@@ -101,7 +111,7 @@ public class LocalTradeLoop {
 
         if (isNeedThrow) {
             var errorMessage = closeAttemptsCount + " attempts to close orders ended in failure";
-            notificationServices.sendMessage(EMessageType.TroubleClosingOrders, errorMessage);
+            notificationServices.sendMessage(EMessageType.TROUBLE_CLOSING_ORDERS, errorMessage);
             throw new UnknownErrorRequestByFtxException(errorMessage);
         }
 
