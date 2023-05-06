@@ -32,11 +32,9 @@ public class ApiAuthConfiguration {
         Auntification auntification = new Auntification(new Encoder(new HashAlgorithm.HmacSHa256()), new TimeKeper.Base());
         Objects.requireNonNull(auntification);
 
-
         var subAccount = Optional.of(this.environment.getProperty("subaccount"));
 
         auntification.Init(API_KEY, SECRET, subAccount);
-
 
         return auntification;
     }
@@ -49,6 +47,4 @@ public class ApiAuthConfiguration {
 
         return new HttpClientWorker(httpRequestFactory, new HttpSendErrorHandler(), httpResponseHandler);
     }
-
-
 }

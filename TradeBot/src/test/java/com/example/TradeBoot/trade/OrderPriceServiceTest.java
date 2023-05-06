@@ -41,13 +41,13 @@ public class OrderPriceServiceTest {
 
         BigDecimal expectedPrice = orderBook.getBestBySide(ESideChange.change(targetSide)).getPrice();
 
-
         marketPrice = marketPrice.setScale(expectedPrice.scale());
 
         Assertions.assertEquals(expectedPrice, marketPrice);
     }
+
     @Test
-    public void canCalculateMostFavorablePrice(){
+    public void canCalculateMostFavorablePrice() {
         var orderBook = CreateOrderBook(new BigDecimal("2.8095"), new BigDecimal("0.0005"), 5, 2);
         var currentPrice1 = orderPriceService.calculateMostFavorablePrice(
                 orderBook,

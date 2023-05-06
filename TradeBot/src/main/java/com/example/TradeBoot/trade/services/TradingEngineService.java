@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("ALL")
 @Service
 public class TradingEngineService {
 
@@ -40,7 +41,7 @@ public class TradingEngineService {
     private final TradingRunnableEngineFactory tradingRunnableEngineFactory;
 
     private ExtendedExecutor executorService;
-    private WorkStatus globalWorkStatus = new WorkStatus(true);
+    private final WorkStatus globalWorkStatus = new WorkStatus(true);
     private List<TradingRunnableEngine> engines = new ArrayList<>();
 
 

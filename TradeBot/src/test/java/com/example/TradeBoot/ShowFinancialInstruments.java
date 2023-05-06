@@ -68,9 +68,8 @@ public class ShowFinancialInstruments {
         System.out.println(allNames.size());
 
         var others = Stream.of(futuresString)
-                .filter(i -> !allNames.contains(i))
-                .collect(Collectors.toList());
+                .filter(i -> allNames.contains(i) == false).toList();
 
-        others.stream().forEach(other -> System.out.println(other));
+        others.forEach(System.out::println);
     }
 }

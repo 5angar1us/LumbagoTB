@@ -23,15 +23,13 @@ public class LocalTradeLoop {
         this.notificationServices = notificationServices;
     }
 
-    //generall
+    private final WorkStatus globalWorkStatus;
 
-    private WorkStatus globalWorkStatus;
+    private final ITradeService tradeService;
 
-    private ITradeService tradeService;
+    private final ICloseOrders closeOrders;
 
-    private ICloseOrders closeOrders;
-
-    private INotificationService notificationServices;
+    private final INotificationService notificationServices;
 
     final int MAX_CLOSE_ATTEMPTS_COUNT = 5;
 
@@ -80,7 +78,7 @@ public class LocalTradeLoop {
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
                 sleepAfterCloseOrdersInMS = 30;
             } catch (OrderAlreadyQueuedForCancellationException e) {
-                sleep(closeAttemptsCount * 300);
+                sleep(closeAttemptsCount * 300L);
             }  catch(DoNotSendMoreThanExeption e){
                 sleep(DEFAULT_SLEEP_TIME_MS);
             } catch (UnknownErrorRequestByFtxException e) {
@@ -89,7 +87,7 @@ public class LocalTradeLoop {
                 notificationServices.sendMessage(EMessageType.API_UNKNOWN_ERROR, e.getMessage());
                 sleep(1000);
             } catch (UnceckedIOException | BadRequestByFtxException e) {
-                sleep(closeAttemptsCount * 150);
+                sleep(closeAttemptsCount * 150L);
 
             } catch (ParseToModelException | ParseToJsonException e){
                 globalWorkStatus.setNeedStop(true);

@@ -6,10 +6,9 @@ import java.util.Optional;
 public interface TimeKeper
 {
     long currentTimeMillis();
-    public long getLastTimeMillis();
+    long getLastTimeMillis();
 
-
-    public class Base implements TimeKeper {
+    class Base implements TimeKeper {
         private Optional<Long> lastTime;
         public long currentTimeMillis() {
             long time = System.currentTimeMillis();
@@ -25,7 +24,7 @@ public interface TimeKeper
         }
     }
 
-    public class Mock implements TimeKeper
+    class Mock implements TimeKeper
     {
         private final long time;
 

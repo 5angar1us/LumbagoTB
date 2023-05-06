@@ -4,14 +4,15 @@ import com.example.TradeBoot.trade.model.WorkStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("ALL")
 public class GlobalTradeLoop {
 
     static final Logger log =
             LoggerFactory.getLogger(GlobalTradeLoop.class);
 
-    private LocalTradeLoop placeTrapsTradeLoop;
+    private final LocalTradeLoop placeTrapsTradeLoop;
 
-    private LocalTradeLoop saleProductionTradeLoop;
+    private final LocalTradeLoop saleProductionTradeLoop;
     private WorkStatus workStatus;
 
 

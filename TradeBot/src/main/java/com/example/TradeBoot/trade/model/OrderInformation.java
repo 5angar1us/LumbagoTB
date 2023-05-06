@@ -10,7 +10,7 @@ public class OrderInformation {
 
     private BigDecimal volume;
 
-    private ESide side;
+    private final ESide side;
 
     private Persent distanceInPercent;
 

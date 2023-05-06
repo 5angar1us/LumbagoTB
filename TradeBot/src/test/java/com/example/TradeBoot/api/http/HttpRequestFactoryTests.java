@@ -18,8 +18,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class HttpRequestFactoryTests {
 
-    private String key = "LR0RQT6bKjrUNh38eCw9jYC89VDAbRkCogAc_XAm";
-    private String secret = "T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2";
+    private final String key = "LR0RQT6bKjrUNh38eCw9jYC89VDAbRkCogAc_XAm";
+    private final String secret = "T4lPid48QtjNxjLUFOcUZghD7CUJ7sTVsfuvQZF2";
 
 
     HttpRequestFactory CreateMockHttpRequestFactory(String key, String secret, long timeStamp) {

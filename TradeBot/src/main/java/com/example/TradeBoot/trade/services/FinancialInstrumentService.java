@@ -1,6 +1,7 @@
 package com.example.TradeBoot.trade.services;
 
 import com.example.TradeBoot.api.domain.EInstrumentType;
+import com.example.TradeBoot.api.domain.StandardMarketEntity;
 import com.example.TradeBoot.api.services.IFutureService;
 import com.example.TradeBoot.api.services.IMarketService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,21 +20,19 @@ public class FinancialInstrumentService  {
         this.IFutureService = IFutureService;
     }
 
+    private final IMarketService IMarketService;
 
-    private IMarketService IMarketService;
-
-
-    private IFutureService IFutureService;
+    private final IFutureService IFutureService;
 
     public List<String> getAllNames(){
 
        var marketNames =  IMarketService.getAllMarkets()
                .stream()
-               .map(market -> market.getName());
+               .map(StandardMarketEntity::getName);
 
        var futureNames = IFutureService.getAllFutures()
                .stream()
-               .map(future -> future.getName());
+               .map(StandardMarketEntity::getName);
 
 
         return Stream.concat(marketNames, futureNames)
@@ -44,12 +43,12 @@ public class FinancialInstrumentService  {
 
         var marketNames =  IMarketService.getAllMarkets()
                 .stream()
-                .map(market -> market.getName());
+                .map(StandardMarketEntity::getName);
 
         var futureNames = IFutureService.getAllFutures()
                 .stream()
-                .filter(future -> future.getName().contains("PERP"))
-                .map(future -> future.getName());
+                .map(StandardMarketEntity::getName)
+                .filter(name -> name.contains("PERP"));
 
 
         return Stream.concat(marketNames, futureNames)

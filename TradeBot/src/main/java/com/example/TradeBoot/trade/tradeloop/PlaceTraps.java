@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+@SuppressWarnings("ALL")
 public class PlaceTraps implements ITradeService {
 
     static final Logger log =

@@ -1,5 +1,6 @@
 package com.example.TradeBoot.ui.service;
 
+import com.example.TradeBoot.ui.models.TradeSettingsDetail;
 import com.example.TradeBoot.ui.repoositories.TradeSettingsRepository;
 import com.example.TradeBoot.ui.models.TradeSettings;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +13,7 @@ import java.util.stream.StreamSupport;
 
 public class BaseTradeSettingsService implements ITradeSettingsService {
 
-    private TradeSettingsRepository tradeSettingsRepository;
+    private final TradeSettingsRepository tradeSettingsRepository;
 
     @Autowired
     public BaseTradeSettingsService(TradeSettingsRepository tradeSettingsRepository) {
@@ -23,21 +24,20 @@ public class BaseTradeSettingsService implements ITradeSettingsService {
         var preventDetails = tradeSettingsRepository.findById(tradeSettings.getId()).orElseThrow();
 
         var preventDetailsId = preventDetails.getTradeSettingsDetails().stream()
-                .map(tradeSettingsDetail -> tradeSettingsDetail.getId())
-                .collect(Collectors.toList());
+                .map(TradeSettingsDetail::getId)
+                .toList();
 
         var targetDetailsId = tradeSettings.getTradeSettingsDetails().stream()
-                .map(tradeSettingsDetail -> tradeSettingsDetail.getId())
-                .collect(Collectors.toList());
+                .map(TradeSettingsDetail::getId)
+                .toList();
 
         var toDelete = preventDetailsId.stream()
                 .filter(i -> !targetDetailsId.contains(i))
-                .collect(Collectors.toList());
+                .toList();
 
         var toDeleteDetails = preventDetails.getTradeSettingsDetails().stream()
-                .filter(tradeSettingsDetail -> toDelete.contains(tradeSettingsDetail))
+                .filter(toDelete::contains)
                 .collect(Collectors.toList());
-        ;
 
         toDeleteDetails.forEach(tradeSettingsDetail -> tradeSettingsDetail.setTradeSettings(null));
 

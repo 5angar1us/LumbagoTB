@@ -1,11 +1,12 @@
 package com.example.TradeBoot.trade.services;
 
+@SuppressWarnings("ALL")
 public interface IPositionStatusService {
 
     boolean getPositionStatus(String marketName);
 
     class OpenPositionStatusService implements IPositionStatusService {
-        private FinancialInstrumentPositionsService financialInstrumentPositionsService;
+        private final FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
         public OpenPositionStatusService(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
             this.financialInstrumentPositionsService = financialInstrumentPositionsService;
@@ -19,7 +20,7 @@ public interface IPositionStatusService {
     class ClosePositionStatusService implements IPositionStatusService {
 
 
-        private FinancialInstrumentPositionsService financialInstrumentPositionsService;
+        private final FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
         public ClosePositionStatusService(FinancialInstrumentPositionsService financialInstrumentPositionsService) {
             this.financialInstrumentPositionsService = financialInstrumentPositionsService;

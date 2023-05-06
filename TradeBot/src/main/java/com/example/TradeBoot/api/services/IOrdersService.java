@@ -17,6 +17,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public interface IOrdersService {
     List<Order> getOpenOrdersBy(String marketName);
@@ -88,7 +89,7 @@ public interface IOrdersService {
             return JsonModelConverter.convertJsonToListOfModels(Order.class, json);
         }
 
-        private String placeOrderURI = UriComponentsBuilder.newInstance()
+        private final String placeOrderURI = UriComponentsBuilder.newInstance()
                 .path(ORDERS_PATH)
                 .toUriString();
 
@@ -182,7 +183,7 @@ public interface IOrdersService {
             currentOrder.setId(String.valueOf(index));
             index++;
 
-            log.append("Place order:" + order);
+            log.append("Place order:").append(order);
             placedOrders.add(currentOrder);
 
             return currentOrder;
@@ -191,8 +192,10 @@ public interface IOrdersService {
         @Override
         public boolean cancelOrder(String orderId) throws BadRequestByFtxException {
 
-            log.append("Cancel order by id="+ orderId);
-            var orderToDelete = placedOrders.stream().filter(order -> order.getId() == orderId).findFirst();
+            log.append("Cancel order by id=").append(orderId);
+            var orderToDelete = placedOrders.stream()
+                    .filter(order -> Objects.equals(order.getId(), orderId))
+                    .findFirst();
 
             var result = false;
             if(orderToDelete.isPresent()){
@@ -200,7 +203,7 @@ public interface IOrdersService {
                 placedOrders.remove(orderToDelete.get());
                 result = true;
             }
-            log.append(" Cancellation status=" +result + "\n");
+            log.append(" Cancellation status=").append(result).append("\n");
             return result;
         }
 
@@ -214,7 +217,7 @@ public interface IOrdersService {
                 placedOrders.clear();
                 result = true;
             }
-            log.append(" Cancellation status=" +result + "\n");
+            log.append(" Cancellation status=").append(result).append("\n");
             return result;
         }
 
@@ -225,8 +228,8 @@ public interface IOrdersService {
 
         @Override
         public Order getOrderStatus(String orderId) {
-            log.append("Get order status by id=" + orderId + "\n");
-            return placedOrders.stream().filter(order -> order.getId() == orderId).findFirst().orElseThrow();
+            log.append("Get order status by id=").append(orderId).append("\n");
+            return placedOrders.stream().filter(order -> Objects.equals(order.getId(), orderId)).findFirst().orElseThrow();
         }
 
         @Override

@@ -11,11 +11,11 @@ import java.math.BigDecimal;
 @Service
 public class FinancialInstrumentPositionsService {
 
-    private FinancialInstrumentService financialInstrumentService;
+    private final FinancialInstrumentService financialInstrumentService;
 
     private final IWalletService walletService;
 
-    private IPositionsService positionsService;
+    private final IPositionsService positionsService;
 
     public FinancialInstrumentPositionsService(FinancialInstrumentService financialInstrumentService, IWalletService walletService, IPositionsService iPositionsService) {
         this.financialInstrumentService = financialInstrumentService;

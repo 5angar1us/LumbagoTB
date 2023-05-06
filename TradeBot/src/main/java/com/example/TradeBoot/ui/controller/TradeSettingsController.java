@@ -29,22 +29,18 @@ public class TradeSettingsController {
     }
 
     @Autowired
-    private BaseTradeSettingsService baseTradeSettingsService;
+    private final BaseTradeSettingsService baseTradeSettingsService;
 
-    private Validator baseValidator =  Validation.buildDefaultValidatorFactory().getValidator();
-
-
+    private final Validator baseValidator = Validation.buildDefaultValidatorFactory().getValidator();
 
     @GetMapping("trade_settings/signup")
     public String showSignUpForm(TradeSettings tradeSettings, Model model) {
 
         double epsilon = 0.000001d;
         var isTradeDelay = tradeSettings.getTradeDelay() == 0L;
-//        var isMax = tradeSettings.getMaximumDefinition() - 0.0 > epsilon;
         var isMax = BigDecimalUtils.check(tradeSettings.getMaximumDefinition(), BigDecimalUtils.EOperator.EQUALS, BigDecimal.ZERO);
         if (isTradeDelay && isMax) {
             tradeSettings.setTradeDelay(1000);
-            //tradeSettings.setMaximumDefinition(0.01);
             tradeSettings.setMaximumDefinition(new BigDecimal("0.01"));
         }
         model.addAttribute("tradingStrategyTypes", TradingStrategy.values());
@@ -57,8 +53,7 @@ public class TradeSettingsController {
 
         var tradeSettings = (TradeSettings) model.getAttribute("tradeSettings");
         if (tradeSettings == null) {
-            tradeSettings = this.baseTradeSettingsService.findById(id)
-                    .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+            tradeSettings = this.baseTradeSettingsService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
             model.addAttribute("tradeSettings", tradeSettings);
         }
         model.addAttribute("tradingStrategyTypes", TradingStrategy.values());
@@ -68,13 +63,11 @@ public class TradeSettingsController {
 
 
     @GetMapping("trade_settings/add")
-    public String addGet(@Valid TradeSettings tradeSettings, BindingResult result, Model model, HttpServletRequest request){
+    public String addGet(@Valid TradeSettings tradeSettings, BindingResult result, Model model, HttpServletRequest request) {
         TradeSettingsFiledParser.parse(request, tradeSettings);
-        var tradeSettingsDetailsErrors = ValidorUtil.validateModels(baseValidator, tradeSettings.getTradeSettingsDetails());
-//        var marketNameErrors =  ValidorUtil.validateMarketName(tradeSettings.getMarketName(), financialInstrumentsNames);
 
+        var tradeSettingsDetailsErrors = ValidorUtil.validateModels(baseValidator, tradeSettings.getTradeSettingsDetails());
         ErrorsUtils.AddErrors(result, tradeSettingsDetailsErrors);
-//        ErrorsUtils.AddErrors(result, marketNameErrors);
 
         model.addAttribute("tradingStrategyTypes", TradingStrategy.values());
         return "add-trade-settings";
@@ -82,21 +75,13 @@ public class TradeSettingsController {
 
     @PostMapping("trade_settings/add")
     public String add(@Valid TradeSettings tradeSettings, BindingResult result, Model model, HttpServletRequest request) {
-
         TradeSettingsFiledParser.parse(request, tradeSettings);
+
         var tradeSettingsDetailsErrors = ValidorUtil.validateModels(baseValidator, tradeSettings.getTradeSettingsDetails());
-//        var marketNameErrors =  ValidorUtil.validateMarketName(tradeSettings.getMarketName(), financialInstrumentsNames);
-
         ErrorsUtils.AddErrors(result, tradeSettingsDetailsErrors);
-//        ErrorsUtils.AddErrors(result, marketNameErrors);
-
 
         if (result.hasErrors()) {
-//            redirectAttributes.addFlashAttribute("tradeSettings", tradeSettings);
-//            redirectAttributes.addFlashAttribute("tradingStrategyTypes", TradingStrategy.values());
-
             model.addAttribute("tradingStrategyTypes", TradingStrategy.values());
-            //return "redirect:/trade_settings/signup";
             return "add-trade-settings";
         }
 
@@ -104,8 +89,6 @@ public class TradeSettingsController {
         return "redirect:/trade_settings/index";
     }
 
-
-    // additional CRUD methods
 
     @PostMapping("trade_settings/update/{id}")
     public String update(@PathVariable("id") long id, @Valid TradeSettings tradeSettings, BindingResult result, Model model, HttpServletRequest request) {
@@ -124,14 +107,11 @@ public class TradeSettingsController {
 
     @GetMapping("trade_settings/delete/{id}")
     public String delete(@PathVariable("id") long id, Model model) {
-        TradeSettings tradeSettings = this.baseTradeSettingsService.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
+        TradeSettings tradeSettings = this.baseTradeSettingsService.findById(id).orElseThrow(() -> new IllegalArgumentException("Invalid user Id:" + id));
         this.baseTradeSettingsService.delete(tradeSettings);
 
         return "redirect:/trade_settings/index";
     }
-
-
 
     @GetMapping("trade_settings/index")
     public String showUserList(Model model) {
@@ -139,8 +119,6 @@ public class TradeSettingsController {
         return "trade-settings-list";
     }
 
-
-    ///
     @PostMapping("trade_settings/add_detail")
     public String addDetail(TradeSettings tradeSettings, Model model, RedirectAttributes redirectAttrs, HttpServletRequest request) {
         TradeSettingsFiledParser.parse(request, tradeSettings);
@@ -153,16 +131,12 @@ public class TradeSettingsController {
     public String addRow(TradeSettings tradeSettings, Model model, RedirectAttributes redirectAttributes, HttpServletRequest request) throws MalformedURLException {
         TradeSettingsFiledParser.parse(request, tradeSettings);
 
-        tradeSettings.getTradeSettingsDetails().add(new TradeSettingsDetail(TradingStrategy.ALL,10, new BigDecimal("0.001")));
-
-        //redirectUtils.addTradeSettingsCrudAttributes(redirectAttributes, tradeSettings);
+        tradeSettings.getTradeSettingsDetails()
+                .add(new TradeSettingsDetail(TradingStrategy.ALL, 10, new BigDecimal("0.001")));
 
         redirectAttributes.addFlashAttribute("tradingStrategyTypes", TradingStrategy.values());
         redirectAttributes.addFlashAttribute("tradeSettings", tradeSettings);
-        var t = HttpServletRequestUitls.getPreventPath(request);
+
         return "redirect:" + HttpServletRequestUitls.getPreventPath(request);
-        //return "add-trade-settings";
     }
-
-
 }

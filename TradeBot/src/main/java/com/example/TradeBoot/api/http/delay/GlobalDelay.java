@@ -17,9 +17,9 @@ public class GlobalDelay implements IHttpClientWorker {
     static final Logger log =
             LoggerFactory.getLogger(GlobalDelay.class);
 
-    private IHttpClientWorker httpClientWorker;
+    private final IHttpClientWorker httpClientWorker;
 
-    private Bucket bucket;
+    private final Bucket bucket;
 
     public GlobalDelay(IHttpClientWorker httpClientWorker, int requestLimit1000, int requestLimit200) {
         this.httpClientWorker = httpClientWorker;

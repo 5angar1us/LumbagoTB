@@ -26,9 +26,6 @@ public class ControlPanelController {
 
     @GetMapping("control_panel")
     public String index(Model model) {
-
-
-
         model.addAttribute("status", tradingEngineService.isStop() ? "stopped" : "works");
         model.addAttribute("runnableEngineCount", tradingEngineService.runnableEnginesCount());
 
@@ -41,8 +38,6 @@ public class ControlPanelController {
 
     @PostMapping("control_panel/start")
     public String start(Model model) {
-
-
         log.info("Trading engine service launch");
         tradingEngineService.correctStart();
         return "redirect:/control_panel";

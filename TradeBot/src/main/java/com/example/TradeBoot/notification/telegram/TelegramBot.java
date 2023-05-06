@@ -16,6 +16,7 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 
 
+@SuppressWarnings("ALL")
 @Component
 public class TelegramBot extends TelegramLongPollingBot {
 

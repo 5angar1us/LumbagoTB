@@ -16,6 +16,8 @@ public class NotificationConfiguration {
     public Long[] notificationChatsId() {
         if (notificationChatsIdAsString.length == 0) return new Long[0];
 
-        return Arrays.stream(notificationChatsIdAsString).map(chatId -> Long.parseLong(chatId)).toArray(Long[]::new);
+        return Arrays.stream(notificationChatsIdAsString)
+                .map(Long::parseLong)
+                .toArray(Long[]::new);
     }
 }

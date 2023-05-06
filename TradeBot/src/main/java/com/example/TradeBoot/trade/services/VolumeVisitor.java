@@ -5,10 +5,11 @@ import com.example.TradeBoot.api.services.IWalletService;
 
 import java.math.BigDecimal;
 
+@SuppressWarnings("ALL")
 public interface VolumeVisitor {
     BigDecimal getVolume(String marketName);
 
-    public class FutureVolumeVisitor implements VolumeVisitor {
+    class FutureVolumeVisitor implements VolumeVisitor {
 
         IPositionsService positionsService;
 
@@ -20,13 +21,14 @@ public interface VolumeVisitor {
         public BigDecimal getVolume(String marketName) {
             var position = positionsService.getPositionByMarketOrTrow(marketName);
             var volume = position.getNetSize();
+
             return volume;
         }
     }
 
-    public class CoinVolumeVisitor implements VolumeVisitor {
+    class CoinVolumeVisitor implements VolumeVisitor {
 
-        private IWalletService walletService;
+        private final IWalletService walletService;
 
         public CoinVolumeVisitor(IWalletService walletService) {
             this.walletService = walletService;

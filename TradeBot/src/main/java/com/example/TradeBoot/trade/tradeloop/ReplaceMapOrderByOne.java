@@ -17,7 +17,7 @@ public class ReplaceMapOrderByOne implements IReplaceOrderMap {
         replaceOrder = new ReplaceByOne(ordersService);
     }
 
-    private IReplaceOrder replaceOrder;
+    private final IReplaceOrder replaceOrder;
 
 
     @Override

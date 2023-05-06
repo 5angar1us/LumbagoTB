@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.math.BigDecimal;
 import java.util.*;
 
+@SuppressWarnings("ALL")
 public class SaleProduction implements ITradeService {
 
     static final Logger log =

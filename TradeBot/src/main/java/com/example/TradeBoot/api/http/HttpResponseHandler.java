@@ -7,6 +7,7 @@ import uk.org.lidalia.slf4jext.LoggerFactory;
 
 import java.net.http.HttpResponse;
 
+@SuppressWarnings("ALL")
 public class HttpResponseHandler {
     static final Logger logger =
             LoggerFactory.getLogger(HttpResponseHandler.class);

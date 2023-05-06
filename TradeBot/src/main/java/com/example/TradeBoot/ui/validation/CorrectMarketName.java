@@ -14,7 +14,7 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 @Constraint(validatedBy = CorrectMarketNameValidator.class)
 @Documented
 public @interface CorrectMarketName {
-    public String message() default "{java.math.BigDecimal.range.error}";
-    public Class<?>[] groups() default {};
-    public Class<? extends Payload>[] payload() default {};
+    String message() default "{java.math.BigDecimal.range.error}";
+    Class<?>[] groups() default {};
+    Class<? extends Payload>[] payload() default {};
 }

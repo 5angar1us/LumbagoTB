@@ -12,9 +12,9 @@ public class CloseByOne implements ICloseOrders {
         this.marketInformation = marketInformation;
     }
 
-    private IOrdersService.Abstract ordersService;
+    private final IOrdersService.Abstract ordersService;
 
-    private MarketInformation marketInformation;
+    private final MarketInformation marketInformation;
     @Override
     public void close() {
         ordersService.cancelAllOrderByMarketByOne(marketInformation.market());

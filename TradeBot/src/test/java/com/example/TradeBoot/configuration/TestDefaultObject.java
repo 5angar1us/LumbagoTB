@@ -15,9 +15,9 @@ public class TestDefaultObject {
         return balance;
     }
 
-    private static Position buyPosition;
+    private static final Position buyPosition;
 
-    private static Balance balance;
+    private static final Balance balance;
 
 
     static {

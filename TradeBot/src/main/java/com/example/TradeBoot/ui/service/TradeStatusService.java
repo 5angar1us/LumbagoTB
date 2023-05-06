@@ -13,6 +13,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+@SuppressWarnings("ALL")
 @Service
 public class TradeStatusService {
 
@@ -25,19 +26,20 @@ public class TradeStatusService {
     }
 
 
-    private ITradeSettingsService tradeSettingsService;
+    private final ITradeSettingsService tradeSettingsService;
 
-    private IWalletService walletService;
+    private final IWalletService walletService;
 
-    private IOrdersService.Base ordersService;
+    private final IOrdersService.Base ordersService;
 
-    private IPositionsService positionsService;
+    private final IPositionsService positionsService;
 
 
     private List<String> ignoredBalanceNames = List.of("USD", "EUR");
 
     public List<MarketOpenOrderSize> getOpenOrdersByConfiguration() {
-        var openOrdersMap = StreamSupport.stream(tradeSettingsService.findAll().spliterator(), false)
+        var openOrdersMap = StreamSupport
+                .stream(tradeSettingsService.findAll().spliterator(), false)
                 .map(tradeSettings -> tradeSettings.getMarketName())
                 .map(ordersService::getOpenOrdersBy)
                 .filter(openOrders -> openOrders.size() > 0)

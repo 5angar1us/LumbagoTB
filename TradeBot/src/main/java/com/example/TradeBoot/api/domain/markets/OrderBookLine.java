@@ -8,7 +8,7 @@ public interface OrderBookLine {
 
     BigDecimal getVolume();
 
-    public abstract class Abstract implements OrderBookLine {
+    abstract class Abstract implements OrderBookLine {
         @Override
         public String toString() {
             return "Abstract{" +

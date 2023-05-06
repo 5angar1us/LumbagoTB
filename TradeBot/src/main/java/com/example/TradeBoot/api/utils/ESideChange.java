@@ -7,7 +7,7 @@ import java.util.Map;
 
 public class ESideChange {
 
-    private static Map<ESide, ESide> changeMap = new HashMap<>();
+    private static final Map<ESide, ESide> changeMap = new HashMap<>();
 
 
     static {

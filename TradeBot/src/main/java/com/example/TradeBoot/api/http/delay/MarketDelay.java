@@ -16,9 +16,9 @@ public class MarketDelay implements IHttpClientWorker {
     static final Logger log =
             LoggerFactory.getLogger(MarketDelay.class);
 
-    private IHttpClientWorker httpClientWorker;
+    private final IHttpClientWorker httpClientWorker;
 
-    private Bucket bucket;
+    private final Bucket bucket;
 
     public MarketDelay(IHttpClientWorker httpClientWorker, int requestLimit200, int requestLimit1000) {
         this.httpClientWorker = httpClientWorker;

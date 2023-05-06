@@ -18,15 +18,15 @@ import java.util.Optional;
 
 @Service
 public class ClosePositionInformationService {
-    private IWalletService walletService;
+    private final IWalletService walletService;
 
-    private FinancialInstrumentService financialInstrumentService;
+    private final FinancialInstrumentService financialInstrumentService;
 
-    private IPositionsService IPositionsService;
+    private final IPositionsService IPositionsService;
 
-    private VolumeVisitor.CoinVolumeVisitor coinVolumeVisitor;
+    private final VolumeVisitor.CoinVolumeVisitor coinVolumeVisitor;
 
-    private VolumeVisitor.FutureVolumeVisitor futureVolumeVisitor;
+    private final VolumeVisitor.FutureVolumeVisitor futureVolumeVisitor;
 
     @Autowired
     public ClosePositionInformationService(

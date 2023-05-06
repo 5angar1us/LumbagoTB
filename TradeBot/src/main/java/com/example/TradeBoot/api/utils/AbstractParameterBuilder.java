@@ -6,7 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.HashMap;
 
 public abstract class AbstractParameterBuilder {
-    protected HashMap<String, Object> parameters;
+    protected final HashMap<String, Object> parameters;
 
     public AbstractParameterBuilder(int parameterCount){
         parameters = new HashMap<>(parameterCount);
@@ -18,8 +18,7 @@ public abstract class AbstractParameterBuilder {
 
     public String toString() {
         try {
-            String json = new ObjectMapper().writeValueAsString(parameters);
-            return json;
+            return new ObjectMapper().writeValueAsString(parameters);
         }catch (JsonProcessingException e){
             throw new RuntimeException(e);
         }

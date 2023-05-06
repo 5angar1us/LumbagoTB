@@ -36,8 +36,8 @@ public class Auntification {
 
     private Optional<String> subAccountName;
 
-    private Encoder encoder;
-    private TimeKeper timeKeper;
+    private final Encoder encoder;
+    private final TimeKeper timeKeper;
 
     private String CreateSignature(SignaturePayloadBuilder signaturePayloadBuilder) {
         long time = timeKeper.currentTimeMillis();

@@ -22,7 +22,7 @@ public interface HashAlgorithm {
             return Mac.getInstance(algorithmName);
         }
 
-        private String algorithmName;
+        private final String algorithmName;
 
     }
 
@@ -31,6 +31,4 @@ public interface HashAlgorithm {
             super("HmacSHA256");
         }
     }
-
-    ;
 }

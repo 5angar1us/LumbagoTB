@@ -42,11 +42,11 @@ public class TestUtils {
         joiner.add(addParameter("InitialMarginRequirement",accountInfo.getInitialMarginRequirement().toString()));
         joiner.add(addParameter("MaintenanceMarginRequirement",accountInfo.getMaintenanceMarginRequirement().toString()));
 
-        System.out.println(joiner.toString());
+        System.out.println(joiner);
     }
 
 
-    private static String TABULATION = "\t";
+    private static final String TABULATION = "\t";
 
     private static String addParameter(String parameterName, String value){
        return addParameter(parameterName, value, 1);
@@ -74,7 +74,7 @@ public class TestUtils {
             joiner.add(addParameter("Cost", position.getCost().toString(), 2));
             joiner.add(addParameter("OpenSize", position.getOpenSize().toString(), 2));
             joiner.add(addParameter("NetSize",position.getNetSize().toString(), 2));
-            System.out.println(joiner.toString());
+            System.out.println(joiner);
         }
     }
 

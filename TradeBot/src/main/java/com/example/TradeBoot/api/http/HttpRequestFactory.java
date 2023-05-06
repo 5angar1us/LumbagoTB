@@ -7,12 +7,13 @@ import java.net.http.HttpRequest;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
+@SuppressWarnings("ALL")
 public class HttpRequestFactory {
 
     private final Auntification auntification;
 
-    private URI apiPartUri = URI.create(UriComponentsBuilder.newInstance().path("/api").toUriString());
-    private URI defaultSiteUri = URI.create(CreateSiteUri());
+    private final URI apiPartUri = URI.create(UriComponentsBuilder.newInstance().path("/api").toUriString());
+    private final URI defaultSiteUri = URI.create(CreateSiteUri());
 
     public HttpRequestFactory(Auntification auntification) {
         this.auntification = auntification;

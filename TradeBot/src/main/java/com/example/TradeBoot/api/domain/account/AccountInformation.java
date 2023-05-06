@@ -70,19 +70,34 @@ public class AccountInformation {
 
     private BigDecimal accountIdentifier;
 
+    private String accountType;
+
+    private String positionLimitUsed;
+
+    private boolean spotLendingEnabled;
+
+    private boolean spotMarginWithdrawalsEnabled;
+
+    private boolean spotMarginEnabled;
+
+    private boolean chargeInterestOnNegativeUsd;
+
+    private boolean useFttCollateral;
+
+    private BigDecimal positionLimit;
+
+    private BigDecimal futuresLeverage;
+
     public void setFuturesLeverage(BigDecimal futuresLeverage) {
         this.futuresLeverage = futuresLeverage;
     }
     public void setPositionLimitUsed(String positionLimitUsed) {
         this.positionLimitUsed = positionLimitUsed;
     }
-    private String accountType;
 
     public void setAccountType(String accountType) {
         this.accountType = accountType;
     }
-
-    private String positionLimitUsed;
 
     public void setSpotMarginEnabled(boolean spotMarginEnabled) {
         this.spotMarginEnabled = spotMarginEnabled;
@@ -96,16 +111,6 @@ public class AccountInformation {
         this.spotLendingEnabled = spotLendingEnabled;
     }
 
-    private boolean spotLendingEnabled;
-
-    private boolean spotMarginWithdrawalsEnabled;
-
-    private boolean spotMarginEnabled;
-
-    private boolean chargeInterestOnNegativeUsd;
-
-    private boolean useFttCollateral;
-
     public void setChargeInterestOnNegativeUsd(boolean chargeInterestOnNegativeUsd) {
         this.chargeInterestOnNegativeUsd = chargeInterestOnNegativeUsd;
     }
@@ -117,9 +122,6 @@ public class AccountInformation {
     public void setPositionLimit(BigDecimal positionLimit) {
         this.positionLimit = positionLimit;
     }
-
-    private BigDecimal positionLimit;
-    private BigDecimal futuresLeverage;
 
     public BigDecimal getAccountIdentifier() {
         return accountIdentifier;
@@ -248,7 +250,6 @@ public class AccountInformation {
     public void setPositions(Position[] positions) {
         this.positions = Arrays.asList(positions);
     }
-
 
     public BigDecimal getTotalAccountNav() {
         return totalAccountNav;

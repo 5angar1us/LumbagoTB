@@ -37,7 +37,7 @@ public interface IPositionsService {
     @Service
     class Base extends Abstract {
 
-        private IHttpClientWorker httpClient;
+        private final IHttpClientWorker httpClient;
 
         @Autowired
         public Base(IHttpClientWorker httpClient) {

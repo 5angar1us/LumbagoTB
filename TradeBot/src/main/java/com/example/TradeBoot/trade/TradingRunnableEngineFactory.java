@@ -54,7 +54,7 @@ public class TradingRunnableEngineFactory {
         var trapLimitPositionPairs = marketTradeSettings.stream()
                 .map(this::createTrapLimitPositionPairs)
                 .flatMap(List::stream)
-                .collect(Collectors.toList());
+                .toList();
 
         this.globalWorkStatus = globalWorkStatus;
 
@@ -132,6 +132,7 @@ public class TradingRunnableEngineFactory {
         List<OrderInformation> result = new ArrayList<OrderInformation>();
         var volume = new BigDecimal(tradeSettingsDetail.getVolume());
         var distanceInPercent = new Persent(tradeSettingsDetail.getPriceOffset());
+
         switch (tradeSettingsDetail.getTradingStrategy()) {
             case ALL -> {
                 result.add(new OrderInformation(volume, ESide.SELL, distanceInPercent));

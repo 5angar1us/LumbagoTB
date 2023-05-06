@@ -5,12 +5,11 @@ import com.example.TradeBoot.notification.INotificationService;
 import com.google.common.collect.ImmutableMap;
 import org.springframework.stereotype.Service;
 
+@SuppressWarnings("ALL")
 @Service
 public class TelegramNotificationService implements INotificationService {
 
-
-
-    private SendTelegramBotNotificationService sendTelegramBotNotificationService;
+    private final SendTelegramBotNotificationService sendTelegramBotNotificationService;
 
     private final ImmutableMap<EMessageType, String> messageExplanationMap;
 

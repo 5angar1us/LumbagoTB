@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.List;
+import java.util.Objects;
 
 public interface IMarketService {
     List<Market> getAllMarkets();
@@ -103,7 +104,7 @@ public interface IMarketService {
 
         @Override
         public Market getMarket(String marketName) {
-           return markets.stream().filter(market -> market.getName() == marketName).findFirst().orElseThrow();
+           return markets.stream().filter(market -> Objects.equals(market.getName(), marketName)).findFirst().orElseThrow();
         }
 
         @Override

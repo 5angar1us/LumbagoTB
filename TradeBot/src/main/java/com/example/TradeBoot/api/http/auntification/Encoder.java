@@ -7,13 +7,14 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.NoSuchAlgorithmException;
 
+@SuppressWarnings("ALL")
 public class Encoder {
 
     public Encoder(HashAlgorithm hashAlgorithm) {
         this.hashAlgorithm = hashAlgorithm;
     }
 
-    private HashAlgorithm hashAlgorithm;
+    private final HashAlgorithm hashAlgorithm;
 
     public String encode(String signaturePayload, SecretKeySpec secretKey) {
 
@@ -24,6 +25,7 @@ public class Encoder {
             var hash = sha256_HMAC.doFinal(signaturePayload.getBytes(StandardCharsets.UTF_8));
             var hashString = Hex.encodeHexString(hash);
             var signature = hashString.toLowerCase();
+
             return signature;
 
         } catch (NoSuchAlgorithmException | java.security.InvalidKeyException e) {

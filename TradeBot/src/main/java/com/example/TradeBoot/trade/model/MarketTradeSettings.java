@@ -31,12 +31,11 @@ public class MarketTradeSettings {
     public Map<ETradingStrategy, List<OrderInformation>> getAllOrdersInformation(){
         Map<ETradingStrategy,List<OrderInformation>> allOrdersInformation = new HashMap<>();
 
-        if(shortOrderInformations.isPresent()){
-            allOrdersInformation.put(ETradingStrategy.SHORT, shortOrderInformations.get());
-        }
-        if(longOrderInformations.isPresent()){
-            allOrdersInformation.put(ETradingStrategy.LONG, longOrderInformations.get());
-        }
+        shortOrderInformations.ifPresent(
+                orderInformations -> allOrdersInformation.put(ETradingStrategy.SHORT, orderInformations));
+        longOrderInformations.ifPresent(
+                orderInformations -> allOrdersInformation.put(ETradingStrategy.LONG, orderInformations));
+
         return allOrdersInformation;
     }
 
