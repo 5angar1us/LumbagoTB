@@ -19,7 +19,6 @@ public interface IPositionStatusService {
     }
     class ClosePositionStatusService implements IPositionStatusService {
 
-
         private final FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
         public ClosePositionStatusService(FinancialInstrumentPositionsService financialInstrumentPositionsService) {

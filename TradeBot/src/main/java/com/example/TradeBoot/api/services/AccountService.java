@@ -18,8 +18,6 @@ public class AccountService {
         this.httpClient = httpClient;
     }
 
-
-
     public AccountInformation getAccountInformation() {
         String json = this.httpClient.createGetRequest("/account");
         return JsonModelConverter.convertJsonToModel(AccountInformation.class, json);

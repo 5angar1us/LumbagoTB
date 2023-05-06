@@ -4,7 +4,7 @@ import com.example.TradeBoot.api.domain.markets.OrderBook;
 import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.BadRequestByFtxException;
 import com.example.TradeBoot.api.services.IMarketService;
 import com.example.TradeBoot.api.services.IOrdersService;
 import com.example.TradeBoot.trade.model.*;
@@ -36,23 +36,20 @@ public class PlaceTraps implements ITradeService {
         this.globalWorkStatus = globalWorkStatus;
     }
 
-    IOrdersService ordersService;
+    private final IOrdersService ordersService;
 
-    IMarketService marketService;
+    private final IMarketService marketService;
 
-    IPositionStatusService positionStatus;
+    private final IPositionStatusService positionStatus;
 
-    OrderPriceService orderPriceService;
+    private final OrderPriceService orderPriceService;
 
-    IReplaceOrderMap replaceOrders;
+    private final IReplaceOrderMap replaceOrders;
 
-    TradeInformation tradeInformation;
+    private final TradeInformation tradeInformation;
 
-    MarketInformation marketInformation;
-    WorkStatus globalWorkStatus;
-
-
-
+    private final MarketInformation marketInformation;
+    private WorkStatus globalWorkStatus;
 
     public boolean trade() {
         var orderBook = getOrderBook();
@@ -60,7 +57,6 @@ public class PlaceTraps implements ITradeService {
         Map<OrderInformation, OrderToPlace> ordersToPlace = getOrdersToPlace(orderBook, tradeInformation.getOrderInformations());
 
         log.debug("Start place orders as " + ordersToPlace.values().stream().collect(Collectors.toList()));
-
         Map<OrderInformation, PlacedOrder> placedOrders = placeOrders(ordersToPlace);
 
         long startIterationTime = System.currentTimeMillis();

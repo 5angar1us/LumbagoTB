@@ -27,14 +27,6 @@ public class TradeSettingsDetail {
     )
     private int volume;
 
-//    @DecimalMax(
-//            value = "100",
-//            message = "The price offset {validatedValue} must be lover than {value}"
-//    )
-//    @DecimalMin(
-//            value = "0",
-//            message = "The price offset {validatedValue} must be higher than {value}"
-//    )
     @BigDecimalRange(minPrecision = 0, maxPrecision = 100, scale = 6)
     @Column(precision = 9, scale = 6, columnDefinition="numeric")
     private BigDecimal priceOffset;

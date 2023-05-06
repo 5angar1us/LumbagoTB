@@ -1,7 +1,6 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
-import com.example.TradeBoot.api.http.delay.GlobalDelay;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.BadRequestByFtxException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

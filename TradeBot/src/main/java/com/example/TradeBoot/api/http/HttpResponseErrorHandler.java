@@ -1,8 +1,8 @@
 package com.example.TradeBoot.api.http;
 
+import com.example.TradeBoot.api.extentions.RequestExcpetions.*;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 
-import org.springframework.boot.logging.LogLevel;
 import uk.org.lidalia.slf4jext.Level;
 import uk.org.lidalia.slf4jext.Logger;
 import uk.org.lidalia.slf4jext.LoggerFactory;
@@ -31,6 +31,7 @@ public class HttpResponseErrorHandler {
 
 
         var apiErrorMessage = responseData.error().get();
+
         ExceptionData exceptionData = switch (response.statusCode()) {
             case 400 -> switch (apiErrorMessage) {
                 case "Order already closed" ->
@@ -51,7 +52,7 @@ public class HttpResponseErrorHandler {
                 );
                 yield new ExceptionData(new InvalidSignatureException(errorMessage + details), Level.ERROR, "");
             }
-            case 429 -> new ExceptionData(new DoNotSendMoreThanExeption(apiErrorMessage), Level.ERROR, "");
+            case 429 -> new ExceptionData(new DoNotSendMoreThanException(apiErrorMessage), Level.ERROR, "");
             case 500 -> {
                 if (apiErrorMessage.contains("An unexpected error occurred, please try again later")) {
                     yield new ExceptionData(new UnexpectedErrorException(apiErrorMessage), Level.ERROR, "");

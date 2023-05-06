@@ -1,16 +1,13 @@
 package com.example.TradeBoot.api.http.delay;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.ConsumptionProbe;
-import io.github.bucket4j.Refill;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 public class GlobalDelay implements IHttpClientWorker {
 

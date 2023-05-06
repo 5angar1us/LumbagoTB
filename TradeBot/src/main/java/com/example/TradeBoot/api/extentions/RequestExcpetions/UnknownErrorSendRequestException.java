@@ -1,4 +1,4 @@
-package com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked;
+package com.example.TradeBoot.api.extentions.RequestExcpetions;
 
 public class UnknownErrorSendRequestException extends RuntimeException{
 

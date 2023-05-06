@@ -14,14 +14,10 @@ public class ServiceUtils {
     @Autowired
     private FinancialInstrumentService financialInstrumentService;
 
-    /* Post constructor */
-
     @PostConstruct
     public void fillInstance() {
         instance = this;
     }
-
-    /*static methods */
 
     public static FinancialInstrumentService getFinancialInstrumentService() {
         return instance.financialInstrumentService;

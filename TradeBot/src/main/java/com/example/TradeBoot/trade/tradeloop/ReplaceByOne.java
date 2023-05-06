@@ -11,7 +11,7 @@ public class ReplaceByOne implements IReplaceOrder {
         this.ordersService = ordersService;
     }
 
-    IOrdersService ordersService;
+    private final IOrdersService ordersService;
 
     @Override
     public PlacedOrder replace(PlacedOrder placedOrder, OrderToPlace orderToPlace) {

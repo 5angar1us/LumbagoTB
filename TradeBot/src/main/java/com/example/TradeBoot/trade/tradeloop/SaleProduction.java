@@ -26,7 +26,15 @@ public class SaleProduction implements ITradeService {
             LoggerFactory.getLogger(SaleProduction.class);
 
 
-    public SaleProduction(IMarketService marketService, IOrdersService ordersService, OrderPriceService orderPriceService, FinancialInstrumentPositionsService financialInstrumentPositionsService, ClosePositionInformationService closePositionInformationService, IReplaceOrder replaceOrder, MarketInformation marketInformation, WorkStatus globalWorkStatus) {
+    public SaleProduction(
+            IMarketService marketService,
+            IOrdersService ordersService,
+            OrderPriceService orderPriceService,
+            FinancialInstrumentPositionsService financialInstrumentPositionsService,
+            ClosePositionInformationService closePositionInformationService,
+            IReplaceOrder replaceOrder,
+            MarketInformation marketInformation,
+            WorkStatus globalWorkStatus) {
         this.marketService = marketService;
         this.ordersService = ordersService;
         this.orderPriceService = orderPriceService;
@@ -37,28 +45,27 @@ public class SaleProduction implements ITradeService {
         this.globalWorkStatus = globalWorkStatus;
     }
 
-    IMarketService marketService;
+    private IMarketService marketService;
 
-    IOrdersService ordersService;
+    private IOrdersService ordersService;
 
-    OrderPriceService orderPriceService;
+    private OrderPriceService orderPriceService;
 
-    FinancialInstrumentPositionsService financialInstrumentPositionsService;
+    private FinancialInstrumentPositionsService financialInstrumentPositionsService;
 
-    ClosePositionInformationService closePositionInformationService;
+    private ClosePositionInformationService closePositionInformationService;
 
-    IReplaceOrder replaceOrder;
+    private IReplaceOrder replaceOrder;
 
-    MarketInformation marketInformation;
+    private MarketInformation marketInformation;
 
-    WorkStatus globalWorkStatus;
+    private WorkStatus globalWorkStatus;
 
     long maxWorkTime = 6000;
 
 
     @Override
     public boolean trade() {
-        var orderBook = getOrderBook();
 
         var positionSize = financialInstrumentPositionsService.getPositionNetSize(marketInformation.market());
 
@@ -73,10 +80,10 @@ public class SaleProduction implements ITradeService {
         var closePositionTradeInformation = closePositionInformationService
                 .createTradeInformation(positionSize);
 
+        var orderBook = getOrderBook();
         var orderToPlace = createMostFavorableOrderToPlace(orderBook, closePositionTradeInformation.get());
 
         log.debug("Start place position order:" + orderToPlace);
-
         var placedOrder = ordersService.placeOrder(orderToPlace);
 
 
@@ -113,7 +120,6 @@ public class SaleProduction implements ITradeService {
                     log.debug("Replacing orders by market price");
                 }
                 placedOrder = replaceOrder.replace(placedOrder, optionalOrderToPlaces.get());
-
             }
 
             long workTime = (System.currentTimeMillis() - startIterationTime);
@@ -123,13 +129,13 @@ public class SaleProduction implements ITradeService {
                 sleep(currentSleepTime);
             }
 
-
             startIterationTime = System.currentTimeMillis();
 
             var currentTradeTime = startIterationTime - startTradeTime;
             isNeedCloseByMostFavorablePrice = currentTradeTime <= maxWorkTime;
             positionSize = financialInstrumentPositionsService.getPositionNetSize(marketInformation.market());
         }
+
         log.debug("Position closed");
         return true;
     }

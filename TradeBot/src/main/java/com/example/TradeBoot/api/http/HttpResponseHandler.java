@@ -1,6 +1,7 @@
 package com.example.TradeBoot.api.http;
 
 import com.example.TradeBoot.api.extentions.ParseToModelException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.BadRequestByFtxException;
 import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
 import uk.org.lidalia.slf4jext.Logger;
 import uk.org.lidalia.slf4jext.LoggerFactory;

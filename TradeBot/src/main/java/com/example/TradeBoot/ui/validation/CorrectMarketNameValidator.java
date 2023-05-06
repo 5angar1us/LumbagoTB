@@ -32,7 +32,8 @@ public class CorrectMarketNameValidator implements ConstraintValidator<CorrectMa
 
             if (!isValid) {
                 constraintValidatorContext.disableDefaultConstraintViolation();
-                constraintValidatorContext.buildConstraintViolationWithTemplate("Market name does not match any coin or future name").addConstraintViolation();
+                constraintValidatorContext.buildConstraintViolationWithTemplate("Market name does not match any coin or future name")
+                        .addConstraintViolation();
             }
         }
 

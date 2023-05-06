@@ -29,14 +29,15 @@ public class OrderPriceService {
     }
 
 
-    public Map<OrderInformation, OrderToPlace> createWorstOrdersToPlaceMap(OrderBook orderBook, List<OrderInformation> orderInformations, String market) {
+    public Map<OrderInformation, OrderToPlace> createWorstOrdersToPlaceMap(
+            OrderBook orderBook,
+            List<OrderInformation> orderInformations,
+            String market) {
 
         Map<OrderInformation, OrderToPlace> orderToPlaces = new HashMap<>();
+
         for (OrderInformation orderInformation : orderInformations) {
-            BigDecimal price = calculateMarketPrice(
-                    orderBook,
-                    orderInformation.getSide()
-            );
+            BigDecimal price = calculateMarketPrice(orderBook, orderInformation.getSide());
 
             orderToPlaces.put(
                     orderInformation,
@@ -96,6 +97,7 @@ public class OrderPriceService {
 
         log.debug("bottomBording " + bottomBoarding + " currentPrice " + currentPrice + " topBording " + topBoarding + " placedPrice " + placedPrice);
         log.debug("isLessOrEqualTopBoarding " + isLessOrEqualTopBoarding + " " + " isMoreOrEqualsBottomBoarding " + isMoreOrEqualsBottomBoarding);
+
         return isLessOrEqualTopBoarding && isMoreOrEqualsBottomBoarding;
     }
 
@@ -129,6 +131,7 @@ public class OrderPriceService {
 
             log.debug("accamulatedVolume: " + accamulatedVolume);
             log.debug("index: "+ index);
+
             if (BigDecimalUtils.check(accamulatedVolume, BigDecimalUtils.EOperator.GREATER_THAN_OR_EQUALS, maxIgnoredVolume)) {
                 log.debug("break");
                 break;
@@ -144,19 +147,13 @@ public class OrderPriceService {
 
                 log.debug("targetBid:" + price);
 
-                yield targetPriceLower(
-                        price,
-                        distance);
-
+                yield targetPriceLower(price, distance);
             }
 
             case SELL -> {
                 log.debug("targetAsk:" + price);
 
-                yield targetPriceHigher(
-                        price,
-                        distance);
-
+                yield targetPriceHigher(price, distance);
             }
 
             default -> throw new IllegalArgumentException("side");
@@ -180,6 +177,5 @@ public class OrderPriceService {
 
     private static final BigDecimal HUNDRED = BigDecimal.valueOf(100L);
     private static final BigDecimal ONE_HUNDREDTH = new BigDecimal("0.01");
-
 
 }

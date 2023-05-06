@@ -46,7 +46,7 @@ public class TestController {
     @PostMapping("test/send_telegram_notification")
     public String sendTelegramNotification(Model model) {
         if (isProductionMode == false) {
-            telegramNotificationService.sendMessage(EMessageType.Empty,"Проверочка");
+            telegramNotificationService.sendMessage(EMessageType.UNKNOWN_ERROR,"Проверочка");
             return "redirect:/test/notification";
         }
         return "redirect:/index";
@@ -54,7 +54,7 @@ public class TestController {
     @PostMapping("test/send_default_notification")
     public String sendDefaultNotification(Model model) {
         if (isProductionMode == false) {
-            notificationService.sendMessage(EMessageType.Empty,"Проверочка");
+            notificationService.sendMessage(EMessageType.UNKNOWN_ERROR,"Проверочка");
             return "redirect:/test/notification";
         }
         return "redirect:/index";

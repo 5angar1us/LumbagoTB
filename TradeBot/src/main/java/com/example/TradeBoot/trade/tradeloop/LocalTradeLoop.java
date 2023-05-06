@@ -2,7 +2,7 @@ package com.example.TradeBoot.trade.tradeloop;
 
 import com.example.TradeBoot.api.extentions.ParseToJsonException;
 import com.example.TradeBoot.api.extentions.ParseToModelException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.*;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.*;
 import com.example.TradeBoot.notification.EMessageType;
 import com.example.TradeBoot.notification.INotificationService;
 import com.example.TradeBoot.trade.model.*;
@@ -43,18 +43,16 @@ public class LocalTradeLoop {
         int closeAttemptsCount = 1;
         long sleepAfterCloseOrdersInMS = 0;
 
-
         while (localWorkStatus) {
             try {
                 switch (state) {
                     case TRADE -> {
-                       var isWorkedAtLeastOnce =  tradeService.trade();
-                       if(isWorkedAtLeastOnce){
-                           log.debug("Close orders");
-                       }
-                       else {
-                           localWorkStatus = false;
-                       }
+                        var isWorkedAtLeastOnce = tradeService.trade();
+                        if (isWorkedAtLeastOnce) {
+                            log.debug("Close orders");
+                        } else {
+                            localWorkStatus = false;
+                        }
 
                     }
                     case CLOSE_ORDERS -> {
@@ -74,35 +72,38 @@ public class LocalTradeLoop {
                     }
                 }
             } catch (UnexpectedErrorException | RetryRequestException e) {
-                //4 9
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
                 sleepAfterCloseOrdersInMS = 30;
+
             } catch (OrderAlreadyQueuedForCancellationException e) {
                 sleep(closeAttemptsCount * 300L);
-            }  catch(DoNotSendMoreThanExeption e){
+
+            } catch (DoNotSendMoreThanException e) {
                 sleep(DEFAULT_SLEEP_TIME_MS);
+
             } catch (UnknownErrorRequestByFtxException e) {
                 globalWorkStatus.setNeedStop(true);
                 log.error("UnknownErrorRequestByFtxExceptionMessage: " + e.getMessage(), e);
                 notificationServices.sendMessage(EMessageType.API_UNKNOWN_ERROR, e.getMessage());
                 sleep(1000);
+
             } catch (UnceckedIOException | BadRequestByFtxException e) {
                 sleep(closeAttemptsCount * 150L);
 
-            } catch (ParseToModelException | ParseToJsonException e){
+            } catch (ParseToModelException | ParseToJsonException e) {
                 globalWorkStatus.setNeedStop(true);
                 var message = e.getClass().getSimpleName();
                 log.error("ExceptionMessage: " + message, e);
                 notificationServices.sendMessage(EMessageType.CONVERT_EXCEPTION, message);
                 sleep(DEFAULT_SLEEP_TIME_MS);
-            }
-            catch (Exception e){
+
+            } catch (Exception e) {
                 globalWorkStatus.setNeedStop(true);
                 log.error("ExceptionMessage: " + e.getMessage(), e);
                 notificationServices.sendMessage(EMessageType.INTERNAL_ERROR, e.getMessage());
                 sleep((long) (closeAttemptsCount * Math.pow(closeAttemptsCount, 2.45)) + 3);
-            }
-            finally {
+
+            } finally {
                 state = ETradeState.CLOSE_ORDERS;
             }
         }
@@ -113,7 +114,7 @@ public class LocalTradeLoop {
             throw new UnknownErrorRequestByFtxException(errorMessage);
         }
 
-        if(sleepAfterCloseOrdersInMS > 0){
+        if (sleepAfterCloseOrdersInMS > 0) {
             sleep(sleepAfterCloseOrdersInMS);
         }
     }

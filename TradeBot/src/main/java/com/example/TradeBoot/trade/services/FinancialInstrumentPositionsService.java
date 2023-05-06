@@ -23,7 +23,6 @@ public class FinancialInstrumentPositionsService {
         this.positionsService = iPositionsService;
     }
 
-
     public boolean isPositionOpen(String marketName) {
         return isNotZero(getPositionNetSize(marketName));
     }

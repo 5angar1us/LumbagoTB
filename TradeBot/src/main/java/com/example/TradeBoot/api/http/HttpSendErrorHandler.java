@@ -1,7 +1,7 @@
 package com.example.TradeBoot.api.http;
 
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnceckedIOException;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.UnknownErrorSendRequestException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.UnceckedIOException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.UnknownErrorSendRequestException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

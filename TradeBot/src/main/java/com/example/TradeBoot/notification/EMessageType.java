@@ -5,7 +5,7 @@ public enum EMessageType {
     TROUBLE_CLOSING_ORDERS("Проблемы с закрытием ордеров"),
     INTERNAL_ERROR("Внутренняя ошибка"),
     CONVERT_EXCEPTION("Ошибка конвертации модели"),
-    Empty("Ничего");
+    UNKNOWN_ERROR("Неизвестная ошибка");
 
     private final String message;
     EMessageType(String message) {

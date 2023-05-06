@@ -36,7 +36,6 @@ public class TradeSettingsController {
     @GetMapping("trade_settings/signup")
     public String showSignUpForm(TradeSettings tradeSettings, Model model) {
 
-        double epsilon = 0.000001d;
         var isTradeDelay = tradeSettings.getTradeDelay() == 0L;
         var isMax = BigDecimalUtils.check(tradeSettings.getMaximumDefinition(), BigDecimalUtils.EOperator.EQUALS, BigDecimal.ZERO);
         if (isTradeDelay && isMax) {

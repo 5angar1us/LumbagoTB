@@ -8,14 +8,17 @@ import org.telegram.telegrambots.meta.api.objects.Update;
  */
 public class HelpICommand implements ICommand {
 
-    public static final String HELP_MESSAGE = String.format("✨<b>Дотупные команды</b>✨\n\n"
+    public static final String HELP_MESSAGE = String.format("""
+                    ✨<b>Дотупные команды</b>✨
 
-                    + "%s - А мы знакомы?\n"
-                    + "%s - получить id чата\n"
-                    + "\n"
-                    + "%s - получить помощь в работе со мной\n",
+                    %s - А мы знакомы?
+                    %s - получить id чата
 
-            ECommandName.MEET.getCommandName(), ECommandName.CHAT_ID.getCommandName(), ECommandName.HELP.getCommandName());
+                    %s - получить помощь в работе со мной
+                    """,
+            ECommandName.MEET.getCommandName(),
+            ECommandName.CHAT_ID.getCommandName(),
+            ECommandName.HELP.getCommandName());
 
     @Override
     public void execute(SendTelegramBotMessageService sendTelegramBotMessageService, Update update) {

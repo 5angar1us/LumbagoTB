@@ -66,17 +66,12 @@ public class TradingRunnableEngineFactory {
     private TradingRunnableEngine createEngineForMarket(TradingOrderInfoPair tradingOrderInfoPair) {
 
         MarketInformation marketInformation = tradingOrderInfoPair.marketInformation();
-
         TradeInformation tradeInformation = tradingOrderInfoPair.tradeInformation();
-
         IOrdersService.Abstract ordersService = tradingOrderInfoPair.ordersService();
 
         var closeOrders = new CloseByOne(ordersService, marketInformation);
-
         var replaceOrders = new ReplaceMapOrderByOne(ordersService);
-
         var replaceOrder = new ReplaceByOne(ordersService);
-
         var openPositionStatus = new IPositionStatusService.OpenPositionStatusService(financialInstrumentPositionsService);
 
         var PlaceTraps = new PlaceTraps(

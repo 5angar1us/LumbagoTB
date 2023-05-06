@@ -31,7 +31,11 @@ public final class BigDecimalRangeValidator implements ConstraintValidator<BigDe
 
             if (!isValid) {
                 cvc.disableDefaultConstraintViolation();
-                cvc.buildConstraintViolationWithTemplate("Precision expected (minimun : " + minPrecision + ", maximum : " + maxPrecision + "). Maximum scale expected : " + scale + ". Found precision : " + actualPrecision + ", scale : " + actualScale).addConstraintViolation();
+                cvc.buildConstraintViolationWithTemplate(
+                        "Precision expected (minimun : " + minPrecision +
+                                ", maximum : " + maxPrecision + "). " +
+                                "Maximum scale expected : " + scale + ". Found precision : " + actualPrecision + "" +
+                                ", scale : " + actualScale).addConstraintViolation();
             }
         }
 

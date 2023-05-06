@@ -4,7 +4,7 @@ import com.example.TradeBoot.api.domain.orders.EStatus;
 import com.example.TradeBoot.api.domain.orders.Order;
 import com.example.TradeBoot.api.domain.orders.OrderToPlace;
 import com.example.TradeBoot.api.domain.orders.PlacedOrder;
-import com.example.TradeBoot.api.extentions.RequestExcpetions.Uncecked.BadRequestByFtxException;
+import com.example.TradeBoot.api.extentions.RequestExcpetions.BadRequestByFtxException;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
@@ -45,7 +45,6 @@ public interface IOrdersService {
 
             var builder = new ModifyOrderBuilder()
                     .TargetPrice(price);
-            //.TargetSize(placedOrder.getSize());
 
             return modifyOrderBy(builder, placedOrder.getId());
 
