@@ -5,10 +5,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
 
-public abstract class AbstactParameterBuilder {
+public abstract class AbstractParameterBuilder {
     protected HashMap<String, Object> parameters;
 
-    public AbstactParameterBuilder(int parameterCount){
+    public AbstractParameterBuilder(int parameterCount){
         parameters = new HashMap<>(parameterCount);
     }
 

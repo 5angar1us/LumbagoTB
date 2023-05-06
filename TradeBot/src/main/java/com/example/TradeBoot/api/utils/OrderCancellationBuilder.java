@@ -2,7 +2,7 @@ package com.example.TradeBoot.api.utils;
 
 import com.example.TradeBoot.api.domain.markets.ESide;
 
-public class OrderCancellationBuilder extends AbstactParameterBuilder {
+public class OrderCancellationBuilder extends AbstractParameterBuilder {
 
     public OrderCancellationBuilder() {
         super(4);
