@@ -9,7 +9,7 @@ import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
 import com.example.TradeBoot.api.utils.ModifyOrderBuilder;
 import com.example.TradeBoot.api.utils.OrderCancellationBuilder;
-import com.example.TradeBoot.api.utils.Strings;
+import com.example.TradeBoot.api.utils.StringsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -51,7 +51,7 @@ public interface IOrdersService {
         }
 
         public boolean cancelAllOrderByMarket(String marketName) throws BadRequestByFtxException {
-            if (Strings.isNullOrEmpty(marketName))
+            if (StringsUtils.isNullOrEmpty(marketName))
                 throw new IllegalArgumentException("marketName");
 
             OrderCancellationBuilder builder = new OrderCancellationBuilder()
@@ -75,7 +75,7 @@ public interface IOrdersService {
 
         @Override
         public List<Order> getOpenOrdersBy(String marketName) {
-            if (Strings.isNullOrEmpty(marketName))
+            if (StringsUtils.isNullOrEmpty(marketName))
                 throw new IllegalArgumentException("marketName");
 
             String uri = UriComponentsBuilder.newInstance()
@@ -102,7 +102,7 @@ public interface IOrdersService {
 
         @Override
         public boolean cancelOrder(String orderId) throws BadRequestByFtxException {
-            if (Strings.isNullOrEmpty(orderId))
+            if (StringsUtils.isNullOrEmpty(orderId))
                 throw new IllegalArgumentException("orderId");
 
             String uri = UriComponentsBuilder.newInstance()

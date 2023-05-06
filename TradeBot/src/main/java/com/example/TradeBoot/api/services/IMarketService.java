@@ -6,7 +6,7 @@ import com.example.TradeBoot.api.domain.markets.Trade;
 import com.example.TradeBoot.api.domain.markets.Trades;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
-import com.example.TradeBoot.api.utils.Strings;
+import com.example.TradeBoot.api.utils.StringsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -41,7 +41,7 @@ public interface IMarketService {
 
         @Override
         public Market getMarket(String marketName) {
-            if (Strings.isNullOrEmpty(marketName))
+            if (StringsUtils.isNullOrEmpty(marketName))
                 throw new IllegalArgumentException("marketName");
 
             String uri = UriComponentsBuilder.newInstance()
@@ -56,7 +56,7 @@ public interface IMarketService {
 
         @Override
         public OrderBook getOrderBook(String marketName, int depth) {
-            if (Strings.isNullOrEmpty(marketName))
+            if (StringsUtils.isNullOrEmpty(marketName))
                 throw new IllegalArgumentException("marketName");
             if (depth < 1)
                 throw new IllegalArgumentException("depth");
@@ -76,7 +76,7 @@ public interface IMarketService {
 
         @Override
         public Trades getTrade(String marketName) {
-            if (Strings.isNullOrEmpty(marketName))
+            if (StringsUtils.isNullOrEmpty(marketName))
                 throw new IllegalArgumentException("marketName");
 
             String uri = UriComponentsBuilder.newInstance()

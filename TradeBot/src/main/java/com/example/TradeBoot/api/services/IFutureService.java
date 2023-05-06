@@ -3,7 +3,7 @@ package com.example.TradeBoot.api.services;
 import com.example.TradeBoot.api.domain.futures.Future;
 import com.example.TradeBoot.api.http.IHttpClientWorker;
 import com.example.TradeBoot.api.utils.JsonModelConverter;
-import com.example.TradeBoot.api.utils.Strings;
+import com.example.TradeBoot.api.utils.StringsUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -35,7 +35,7 @@ public interface IFutureService {
 
         @Override
         public Future getFutures(String futureName) {
-            if (Strings.isNullOrEmpty(futureName))
+            if (StringsUtils.isNullOrEmpty(futureName))
                 throw new IllegalArgumentException("futureName");
 
             String uri = UriComponentsBuilder.newInstance()
