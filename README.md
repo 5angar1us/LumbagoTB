@@ -1,4 +1,4 @@
-# LumbagoTB
+# Trade-bot
 Это бот для торговли на почившей бирже.
 
 Java+Spring
